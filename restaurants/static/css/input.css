@@ -1,0 +1,466 @@
+@import "tailwindcss";
+
+/* ====================================
+   VARIABLES GLOBALES
+==================================== */
+
+:root {
+    --primary-color: #ea580c;
+    --primary-hover: #c2410c;
+    --background-color: #f9fafb;
+}
+
+/* ====================================
+   STYLE GLOBAL
+==================================== */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: #111827;
+}
+
+/* ====================================
+   NAVBAR
+==================================== */
+
+.nav-link {
+    @apply text-gray-700 transition duration-300;
+}
+
+.nav-link:hover {
+    @apply text-orange-600;
+}
+
+/* ====================================
+   BOUTONS PRINCIPAUX
+==================================== */
+
+.btn-primary {
+    @apply inline-flex
+    items-center
+    justify-center
+    bg-orange-600
+    text-white
+    px-6
+    py-3
+    rounded-full
+    font-semibold
+    transition
+    duration-300;
+}
+
+.btn-primary:hover {
+    @apply bg-orange-700;
+}
+
+.btn-secondary {
+    @apply inline-flex
+    items-center
+    px-6
+    py-3
+    rounded-full
+    border-2
+    border-gray-300
+    text-gray-700
+    font-semibold
+    transition
+    duration-300;
+}
+
+.btn-secondary:hover {
+    @apply border-orange-600 text-orange-600;
+}
+
+/* ====================================
+   BOUTONS AUTHENTIFICATION
+==================================== */
+
+.btn-login {
+    @apply inline-flex
+    items-center
+    justify-center
+    bg-transparent
+    border-2
+    border-orange-600
+    text-orange-600
+    px-5
+    py-2
+    rounded-full
+    font-semibold
+    transition
+    duration-300;
+}
+
+.btn-login:hover {
+    @apply bg-orange-600 text-white;
+}
+
+.btn-register {
+    @apply inline-flex
+    items-center
+    justify-center
+    bg-orange-600
+    text-white
+    px-5
+    py-2
+    rounded-full
+    font-semibold
+    transition
+    duration-300;
+}
+
+.btn-register:hover {
+    @apply bg-orange-700;
+}
+
+/* ====================================
+   BOUTONS CATÉGORIES (FILTRES)
+==================================== */
+
+.category-filter {
+    @apply inline-block
+    bg-orange-100
+    text-orange-700
+    px-6
+    py-2.5
+    rounded-full
+    text-sm
+    font-semibold
+    transition
+    duration-300
+    cursor-pointer
+    hover:bg-orange-600
+    hover:text-white
+    hover:scale-105;
+}
+
+.category-filter.active {
+    @apply bg-orange-600 text-white shadow-lg;
+}
+
+/* ====================================
+   HERO
+==================================== */
+
+.hero-title {
+    @apply text-4xl
+    md:text-6xl
+    font-bold
+    leading-tight
+    text-gray-900;
+}
+
+.hero-title span {
+    @apply text-orange-600;
+}
+
+.hero-description {
+    @apply mt-6
+    text-lg
+    text-gray-600
+    leading-relaxed;
+}
+
+.hero-image {
+    @apply w-full
+    rounded-3xl
+    shadow-xl
+    object-cover;
+}
+
+.hero-badge {
+    @apply bg-orange-100 
+    text-orange-700 
+    px-4 
+    py-1.5 
+    rounded-full 
+    text-sm 
+    font-semibold 
+    inline-block;
+}
+
+/* ====================================
+   CARTES PLATS
+==================================== */
+
+.food-card {
+    @apply bg-white
+    rounded-2xl
+    shadow-md
+    overflow-hidden
+    transition
+    duration-300;
+}
+
+.food-card:hover {
+    @apply -translate-y-2 shadow-xl;
+}
+
+.food-image {
+    @apply w-full
+    h-64
+    object-cover;
+}
+
+.food-title {
+    @apply text-xl
+    font-bold
+    text-gray-900;
+}
+
+.food-price {
+    @apply text-lg
+    font-bold
+    text-orange-600;
+}
+
+.food-btn {
+    @apply bg-orange-600 
+    hover:bg-orange-700 
+    text-white 
+    px-4 
+    py-2 
+    rounded-full 
+    text-sm 
+    transition 
+    duration-300;
+}
+
+/* ====================================
+   TÉMOIGNAGES
+==================================== */
+
+.testimonial-card {
+    @apply bg-white
+    rounded-2xl
+    shadow-lg
+    p-8
+    transition
+    duration-300
+    border
+    border-gray-100;
+}
+
+.testimonial-card:hover {
+    @apply -translate-y-2 shadow-2xl;
+}
+
+.testimonial-avatar {
+    @apply w-16
+    h-16
+    rounded-full
+    object-cover
+    border-4
+    border-orange-100;
+}
+
+.testimonial-name {
+    @apply font-bold text-gray-900;
+}
+
+.testimonial-role {
+    @apply text-sm text-orange-600;
+}
+
+.testimonial-text {
+    @apply text-gray-600 leading-relaxed;
+}
+
+.testimonial-stars {
+    @apply text-yellow-400 text-xl;
+}
+
+/* ====================================
+   STATISTIQUES
+==================================== */
+
+.stat-number {
+    @apply text-2xl font-bold text-orange-600;
+}
+
+.stat-label {
+    @apply text-gray-600 text-sm;
+}
+
+/* ====================================
+   FORMULAIRES
+==================================== */
+
+.form-input {
+    @apply w-full
+    border
+    border-gray-300
+    rounded-lg
+    px-4
+    py-3
+    transition
+    duration-300;
+}
+
+.form-input:focus {
+    @apply outline-none 
+    ring-2 
+    ring-orange-500 
+    border-transparent;
+}
+
+.form-button {
+    @apply w-full
+    bg-orange-600
+    text-white
+    py-3
+    rounded-lg
+    transition
+    duration-300
+    font-semibold;
+}
+
+.form-button:hover {
+    @apply bg-orange-700;
+}
+
+/* ====================================
+   FOOTER
+==================================== */
+
+.footer {
+    @apply bg-gray-900 text-white mt-16;
+}
+
+.footer-brand {
+    @apply text-2xl font-bold;
+}
+
+.footer-brand span {
+    @apply text-orange-500;
+}
+
+.footer-title {
+    @apply text-lg font-semibold mb-4 text-orange-500;
+}
+
+.footer-link {
+    @apply text-gray-400 hover:text-orange-500 transition duration-300;
+}
+
+.footer-social {
+    @apply text-gray-400 hover:text-orange-500 transition duration-300;
+}
+
+.footer-input {
+    @apply w-full 
+    px-4 
+    py-3 
+    bg-gray-800 
+    rounded-lg 
+    text-white 
+    placeholder-gray-500 
+    focus:outline-none 
+    focus:ring-2 
+    focus:ring-orange-500 
+    transition 
+    duration-300;
+}
+
+.footer-copyright {
+    @apply border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm;
+}
+
+/* ====================================
+   SECTION À PROPOS
+==================================== */
+
+.about-image {
+    @apply rounded-3xl shadow-xl w-full h-96 object-cover;
+}
+
+.about-tag {
+    @apply text-orange-600 font-semibold;
+}
+
+.about-title {
+    @apply text-4xl font-bold mt-2 mb-6;
+}
+
+/* ====================================
+   SECTION CONTACT
+==================================== */
+
+.contact-icon-wrapper {
+    @apply w-12 
+    h-12 
+    bg-orange-100 
+    rounded-full 
+    flex 
+    items-center 
+    justify-center 
+    flex-shrink-0;
+}
+
+.contact-icon {
+    @apply w-6 h-6 text-orange-600;
+}
+
+.contact-title {
+    @apply font-semibold;
+}
+
+.contact-text {
+    @apply text-gray-600;
+}
+
+/* ====================================
+   ANIMATIONS
+==================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-title {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.hero-description {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.btn-primary {
+    animation: fadeInUp 1s ease-out;
+}
+
+/* ====================================
+   GRILLE DES PLATS (MASQUER/AFFICHER)
+==================================== */
+
+.food-item {
+    transition: all 0.3s ease;
+}
+
+.food-item.hidden-item {
+    display: none;
+}
+
+/* ====================================
+   UTILITAIRES SUPPLEMENTAIRES
+==================================== */
+
+.bg-gradient-resto {
+    @apply bg-gradient-to-br from-orange-400 to-orange-600;
+}
+
+.text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.transition-all {
+    @apply transition duration-300;
+}
