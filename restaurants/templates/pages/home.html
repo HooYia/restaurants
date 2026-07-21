@@ -146,6 +146,7 @@
     z-index: 90; opacity: 0; pointer-events: none; transition: opacity .4s ease;
   }
   .menu-overlay.open { opacity: 1; pointer-events: all; }
+  .mobile-only-item { display: none; }
 
   /* ---------- Hero ---------- */
   .hero{
@@ -350,7 +351,7 @@
   /* ---------- Responsive ---------- */
   @media (max-width:940px){
     nav.main-nav{
-      position:fixed; top:0; right:0; bottom:0; left:auto;
+      position:absolute; top:0; right:0; left:auto; height:100vh;
       width: 280px; max-width: 100%;
       background:var(--paper); 
       flex-direction:column; align-items:flex-start;
@@ -360,19 +361,20 @@
       box-shadow: -10px 0 30px rgba(0,0,0,0.1);
     }
     nav.main-nav.open{transform:translateX(0);}
-    nav.main-nav ul{flex-direction:column; align-items:flex-start; gap:1.5rem;}
+    nav.main-nav ul{flex-direction:column; align-items:flex-start; gap:1.5rem; width:100%;}
     nav.main-nav a { color: var(--ink); font-size: 1.1rem; }
     nav.main-nav a::after { background: var(--terracotta); }
     
-    .header-actions .btn-outline{display:none;}
+    .header-actions .btn-outline, .header-actions .btn-primary{display:none;}
     .burger{display:flex;}
+    .mobile-only-item{display:block; width:100%; margin-top:1rem;}
     
     .hero-grid, .story-grid, .cta-grid, .contact-grid{grid-template-columns:1fr;}
     .hero-visual{order:-1;}
     .dish-grid{grid-template-columns:repeat(2,1fr);}
     
-    .stats-inner{grid-template-columns:repeat(2,1fr); gap:1.4rem 0;}
-    .stats-inner div{border-right:none; padding:.6rem 0;}
+    .stats-inner{grid-template-columns:repeat(2,1fr); gap:2rem 0; border-radius:24px; padding:2rem 1rem;}
+    .stats-inner div{border-right:none; padding:0;}
     
     .form-row{grid-template-columns:1fr;}
     .footer-grid{grid-template-columns:1fr;}
@@ -382,6 +384,9 @@
     section{padding:70px 0;}
     .hero-ctas .btn { width: 100%; margin-bottom: 0.5rem; }
     .hero h1{font-size: 2.8rem;}
+    .stats-inner{grid-template-columns:1fr; gap:1.5rem 0; padding:2.5rem 1.5rem;}
+    .stats-inner div{border-bottom:1px solid rgba(224,168,92,.15); padding-bottom:1.5rem;}
+    .stats-inner div:last-child{border-bottom:none; padding-bottom:0;}
   }
 </style>
 </head>
@@ -399,6 +404,7 @@
         <li><a href="#histoire">Notre histoire</a></li>
         <li><a href="#menu">Spécialités</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li class="mobile-only-item"><a href="#contact" class="btn btn-primary" style="width:100%; padding:1rem; text-align:center;">Réserver une table</a></li>
       </ul>
     </nav>
     <div class="header-actions">
