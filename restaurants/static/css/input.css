@@ -844,21 +844,62 @@ body {
   .form-note{font-size:.8rem; color:#8a7660; margin-top:.9rem; text-align:center;}
 
   /* ---------- Footer ---------- */
-  footer{ background:var(--dark); color:rgba(239,224,196,.7); padding:64px 0 28px; }
+  footer{
+    background:var(--dark);
+    color:rgba(239,224,196,.75);
+    padding:96px 0 32px;
+    position:relative;
+  }
   .footer-grid{
-    display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.5rem; padding-bottom:2.4rem;
-    border-bottom:1px solid rgba(224,168,92,.1); margin-bottom:1.6rem;
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1.1fr;
+    gap:3rem;
+    padding-bottom:3rem;
+    border-bottom:1px solid rgba(224,168,92,.15);
+    margin-bottom:2rem;
   }
-  .footer-brand{display:flex; align-items:center; gap:.7rem; margin-bottom:1rem;}
-  .footer-brand img{width:44px; height:44px; border-radius:50%;}
-  .footer-brand span{font-family:var(--font-script); font-size:1.5rem; color:var(--amber);}
-  footer p.tag{max-width:34ch; font-size:.9rem; line-height:1.6;}
-  footer h4{color:var(--cream2); font-size:.95rem; margin-bottom:1rem; letter-spacing:.04em; text-transform:uppercase;}
-  footer ul li{margin-bottom:.6rem; font-size:.9rem;}
-  footer ul a:hover{color:var(--amber);}
+  .footer-brand{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;}
+  .footer-brand img{width:52px;height:52px;border-radius:50%;border:2px solid var(--amber);object-fit:cover;}
+  .footer-brand span{font-family:var(--font-script);font-size:1.9rem;color:var(--amber);}
+  footer p.tag{max-width:36ch;font-size:.92rem;line-height:1.7;margin-bottom:1.6rem;}
+  .footer-socials{display:flex;gap:.7rem;}
+  .footer-socials a{
+    width:40px;height:40px;border-radius:50%;
+    background:rgba(224,168,92,.12);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--amber);
+    transition:background .2s ease, transform .2s ease;
+  }
+  .footer-socials a:hover{background:var(--amber);color:var(--dark);transform:translateY(-3px);}
+  footer h4{
+    color:var(--amber);
+    font-family:var(--font-brush);
+    font-size:1.2rem;
+    margin-bottom:1.3rem;
+    letter-spacing:.01em;
+    text-transform: none;
+  }
+  footer ul li{margin-bottom:.75rem;font-size:.92rem;}
+  footer ul a{transition:color .2s ease, padding-left .2s ease;}
+  footer ul a:hover{color:var(--amber);padding-left:4px;}
+  .footer-hours{display:flex;justify-content:space-between;gap:1rem;font-size:.88rem;margin-bottom:.7rem;padding-bottom:.7rem;border-bottom:1px dashed rgba(224,168,92,.15);}
+  .footer-hours span:first-child{color:rgba(239,224,196,.55);}
+  .footer-hours span:last-child{color:var(--cream2);font-weight:600;}
+  .footer-contact-item{display:flex;gap:.7rem;margin-bottom:1rem;align-items:flex-start;font-size:.9rem;}
+  .footer-contact-item svg{width:17px;height:17px;color:var(--terracotta);flex-shrink:0;margin-top:2px;}
   .footer-bottom{
-    display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; font-size:.82rem; color:rgba(239,224,196,.5);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+    font-size:.82rem;color:rgba(239,224,196,.5);
   }
+  .back-to-top{
+    width:42px;height:42px;
+    border-radius:50%;
+    background:rgba(224,168,92,.12);
+    color:var(--amber);
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .back-to-top:hover{background:var(--amber);color:var(--dark);transform:translateY(-3px);}
 
   /* ---------- Responsive ---------- */
   @media (max-width:940px){
@@ -889,7 +930,7 @@ body {
     .stats-inner div{border-right:none; padding:0;}
     
     .form-row{grid-template-columns:1fr;}
-    .footer-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:repeat(2, 1fr);}
   }
   @media (max-width:520px){
     .dish-grid{grid-template-columns:1fr;}
@@ -899,6 +940,7 @@ body {
     .stats-inner{grid-template-columns:1fr; gap:1.5rem 0; padding:2.5rem 1.5rem;}
     .stats-inner div{border-bottom:1px solid rgba(224,168,92,.15); padding-bottom:1.5rem;}
     .stats-inner div:last-child{border-bottom:none; padding-bottom:0;}
+    .footer-grid{grid-template-columns:1fr;}
   }
 
   /* ---------- Témoignages (Nouveau Design) ---------- */
