@@ -83,6 +83,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "restaurants.users",
+    "restaurants.core",
+    "restaurants.meal",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
