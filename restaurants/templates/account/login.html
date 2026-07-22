@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion — Les délices de Mam's</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yesteryear&family=Pacifico&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dark:#231610;
+    --dark2:#2f1c13;
+    --cream:#efe0c4;
+    --cream2:#f7efdc;
+    --maroon:#6b2a1f;
+    --terracotta:#c97a3a;
+    --amber:#e0a85c;
+    --paper:#fbf5e9;
+    --font-script:'Yesteryear', cursive;
+    --font-brush:'Pacifico', cursive;
+    --font-body:'DM Sans', sans-serif;
+    --radius:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:var(--font-body);
+    color:#231610;
+    background:
+      radial-gradient(circle at 15% 85%, rgba(201,122,58,.25), transparent 55%),
+      linear-gradient(180deg, var(--dark) 0%, var(--dark2) 100%);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+  }
+  a{color:inherit;text-decoration:none;}
+
+  .wax-divider{
+    height:14px;width:100%;
+    background:
+      linear-gradient(135deg, var(--terracotta) 25%, transparent 25%) 0 0/22px 22px,
+      linear-gradient(225deg, var(--terracotta) 25%, transparent 25%) 0 0/22px 22px,
+      linear-gradient(315deg, var(--amber) 25%, transparent 25%) 0 0/22px 22px,
+      linear-gradient(45deg, var(--amber) 25%, transparent 25%) 0 0/22px 22px;
+    background-color:var(--maroon);
+    border-radius:var(--radius) var(--radius) 0 0;
+  }
+
+  .login-card{
+    width:100%;
+    max-width:420px;
+    background:var(--paper);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,.35);
+  }
+  .login-body{padding:2.6rem 2.4rem 2.2rem;}
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:.7rem;
+    justify-content:center;
+    margin-bottom:1.4rem;
+  }
+  .brand img{width:44px;height:44px;border-radius:50%;border:2px solid var(--amber);object-fit:cover;}
+  .brand span{font-family:var(--font-script);font-size:1.7rem;color:var(--maroon);}
+
+  h1{
+    font-family:var(--font-brush);
+    color:var(--maroon);
+    font-size:1.7rem;
+    text-align:center;
+    margin-bottom:.4rem;
+  }
+  .subtitle{
+    text-align:center;
+    color:#7a6650;
+    font-size:.9rem;
+    margin-bottom:1.8rem;
+  }
+
+  .form-errors{
+    background:#fbe4de;
+    border:1px solid #c0392b;
+    color:#8a2c1f;
+    border-radius:10px;
+    padding:.8rem 1rem;
+    font-size:.85rem;
+    margin-bottom:1.2rem;
+  }
+  .form-errors ul{margin:0;padding-left:1.1rem;}
+
+  .field{margin-bottom:1.1rem;}
+  .field label{
+    display:block;
+    font-size:.83rem;
+    font-weight:600;
+    color:var(--maroon);
+    margin-bottom:.4rem;
+  }
+  .field input{
+    width:100%;
+    padding:.85rem 1rem;
+    border-radius:10px;
+    border:1.5px solid rgba(107,42,31,.2);
+    background:#fff;
+    font-family:inherit;
+    font-size:.92rem;
+    color:#231610;
+    transition:border-color .2s ease;
+  }
+  .field input:focus{
+    border-color:var(--terracotta);
+    outline:none;
+  }
+  .field-error{font-size:.78rem;color:#c0392b;margin-top:.35rem;}
+
+  .field-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:1.4rem;
+    font-size:.85rem;
+  }
+  .remember-me{display:flex;align-items:center;gap:.5rem;color:#7a6650;}
+  .remember-me input{width:16px;height:16px;accent-color:var(--terracotta);}
+  .forgot-link{color:var(--terracotta);font-weight:600;}
+  .forgot-link:hover{color:var(--maroon);}
+
+  .btn-submit{
+    width:100%;
+    padding:.9rem;
+    border:none;
+    border-radius:999px;
+    background:var(--terracotta);
+    color:#fff;
+    font-weight:700;
+    font-size:.95rem;
+    letter-spacing:.02em;
+    cursor:pointer;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .btn-submit:hover{background:var(--amber);color:var(--dark);transform:translateY(-2px);}
+
+  .register-link{
+    text-align:center;
+    font-size:.87rem;
+    color:#7a6650;
+    margin-top:1.6rem;
+  }
+  .register-link a{color:var(--maroon);font-weight:700;}
+  .register-link a:hover{color:var(--terracotta);}
+
+  .back-home{
+    display:block;
+    text-align:center;
+    font-size:.8rem;
+    color:rgba(239,224,196,.7);
+    margin-top:1.6rem;
+  }
+  .back-home:hover{color:var(--amber);}
+</style>
+</head>
+<body>
+
+<div>
+  <div class="login-card">
+    <div class="wax-divider"></div>
+    <div class="login-body">
+
+      <div class="brand">
+        <img src="{% static 'images/logo-mams.png' %}" alt="Logo Mam's">
+        <span>Mam's</span>
+      </div>
+
+      <h1>Bon retour</h1>
+      <p class="subtitle">Connectez-vous pour commander et suivre vos réservations.</p>
+
+      {% if form.non_field_errors %}
+        <div class="form-errors">
+          <ul>
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="field">
+          <label for="{{ form.username.id_for_label }}">Nom d'utilisateur</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <p class="field-error">{{ form.username.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="field">
+          <label for="{{ form.password.id_for_label }}">Mot de passe</label>
+          {{ form.password }}
+          {% if form.password.errors %}
+            <p class="field-error">{{ form.password.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="field-row">
+          <label class="remember-me">
+            <input type="checkbox" name="remember_me" id="remember_me">
+            Se souvenir de moi
+          </label>
+          <a href="{% url 'users:password_reset' %}" class="forgot-link">Mot de passe oublié ?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">Se connecter</button>
+      </form>
+
+      <p class="register-link">Pas encore de compte ? <a href="{% url 'users:register' %}">Créer un compte</a></p>
+    </div>
+  </div>
+
+  <a href="{% url 'index' %}" class="back-home">← Retour à l'accueil</a>
+</div>
+
+</body>
+</html>
