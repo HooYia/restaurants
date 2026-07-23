@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.utils.text import slugify
 
-from .enum import AvailabilityMode, OrderStatus, PaymentMethod, PaymentStatus
+from .enum import AvailabilityMode, DayOfWeek, OrderStatus, PaymentMethod, PaymentStatus
 from restaurants.users.models import Address, Client
 from restaurants.core.models import OngBaseModel
 
@@ -103,11 +103,6 @@ class Meal(OngBaseModel):
         choices=AvailabilityMode.choices,
         default=AvailabilityMode.ALWAYS,
     )
-    available_days = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Ex : Lundi,Mardi,Mercredi — utilisé si availability_mode = specific_days",
-    )
     is_available = models.BooleanField(default=True)
 
     class Meta:
@@ -122,6 +117,36 @@ class Meal(OngBaseModel):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+
+class DailyMenu(OngBaseModel):
+    """
+    Menu journalier (Lundi, Mardi, etc.).
+    Permet de regrouper les plats (Meals) disponibles ce jour-là.
+    """
+    day = models.CharField(
+        max_length=15, 
+        choices=DayOfWeek.choices, 
+        unique=True,
+        help_text="Jour de la semaine"
+    )
+    meals = models.ManyToManyField(
+        Meal,
+        blank=True,
+        related_name="daily_menus",
+        help_text="Plats disponibles ce jour-là"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Désactiver ce jour rendra indisponible tout son menu."
+    )
+
+    class Meta:
+        verbose_name = "Menu Journalier"
+        verbose_name_plural = "Menus Journaliers"
+
+    def __str__(self):
+        return f"Menu du {self.get_day_display()}"
 
 
 class Order(OngBaseModel):

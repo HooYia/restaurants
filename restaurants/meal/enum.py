@@ -8,6 +8,17 @@ class AvailabilityMode(models.TextChoices):
     SOLD_OUT = "sold_out", "Épuisé"
 
 
+class DayOfWeek(models.TextChoices):
+    """Jours de la semaine pour les menus journaliers."""
+    MONDAY = "monday", "Lundi"
+    TUESDAY = "tuesday", "Mardi"
+    WEDNESDAY = "wednesday", "Mercredi"
+    THURSDAY = "thursday", "Jeudi"
+    FRIDAY = "friday", "Vendredi"
+    SATURDAY = "saturday", "Samedi"
+    SUNDAY = "sunday", "Dimanche"
+
+
 class OrderStatus(models.TextChoices):
     """Statut d'avancement d'une commande."""
     PENDING = "pending", "En attente"

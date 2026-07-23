@@ -1,0 +1,157 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Catégories — Mam's Admin{% endblock %}
+{% block dashboard_title %}Catégories{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<style>
+  /* Styling for modal */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(35,22,16,0.6);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-content {
+    background: #fff; border-radius: var(--radius);
+    padding: 2rem; width: 90%; max-width: 500px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; font-size: 1.5rem; color: #8a7660; cursor: pointer;
+  }
+  .form-group { margin-bottom: 1.5rem; }
+  .form-label { display: block; font-size: .85rem; color: #8a7660; margin-bottom: .4rem; font-weight: 600; }
+  .form-input { 
+    width: 100%; padding: .8rem 1rem; 
+    border: 1px solid rgba(107,42,31,.15); border-radius: 8px; 
+    font-family: inherit; font-size: .9rem; outline: none; 
+  }
+  .form-input:focus { border-color: var(--terracotta); }
+  .btn-submit {
+    background: var(--terracotta); color: #fff;
+    padding: .8rem 1.5rem; border-radius: 8px; font-weight: 600;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: var(--maroon); }
+  
+  /* Styling for DataTables to match our theme */
+  .dataTables_wrapper .dataTables_filter input {
+    border: 1px solid rgba(107,42,31,.15);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    outline: none;
+    margin-bottom: 1rem;
+  }
+  .dataTables_wrapper .dataTables_length select {
+    border: 1px solid rgba(107,42,31,.15);
+    border-radius: 8px;
+    padding: 0.2rem;
+    outline: none;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--terracotta);
+    color: white !important;
+    border: none;
+    border-radius: 5px;
+  }
+  table.dataTable.no-footer {
+    border-bottom: 1px solid rgba(107,42,31,.08);
+  }
+</style>
+
+<div class="panel" style="padding: 1.5rem;">
+  <div class="panel-head" style="border-bottom: none; padding-bottom: 1rem;">
+    <h2 style="font-size:1.3rem;">Catégories de Plats</h2>
+    <button onclick="openModal()" class="btn-mini" style="background:var(--terracotta);color:#fff;padding:.5rem 1rem;border-radius:999px;font-weight:600;cursor:pointer;">+ Nouvelle Catégorie</button>
+  </div>
+  
+  <table id="categoriesTable" style="width:100%; margin-top: 1rem;">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Ordre d'affichage</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for category in categories %}
+      <tr>
+        <td style="font-weight:600;">{{ category.name }}</td>
+        <td>{{ category.display_order }}</td>
+        <td>
+          <a href="#" class="panel-link" style="margin-right:10px;">Modifier</a>
+          <a href="#" class="panel-link" style="color:var(--maroon);">Supprimer</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="categoryModal" {% if show_modal %}style="display:flex;"{% endif %}>
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 style="color: var(--maroon); margin-bottom: 1.5rem; margin-top:0;">Créer une Catégorie</h2>
+    
+    <form method="POST" action="{% url 'meal:category-list' %}">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+        {{ form.name }}
+        {% if form.name.errors %}
+          <div style="color: var(--maroon); font-size: .8rem; margin-top: .3rem;">{{ form.name.errors }}</div>
+        {% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="{{ form.display_order.id_for_label }}">{{ form.display_order.label }}</label>
+        {{ form.display_order }}
+        {% if form.display_order.errors %}
+          <div style="color: var(--maroon); font-size: .8rem; margin-top: .3rem;">{{ form.display_order.errors }}</div>
+        {% endif %}
+      </div>
+      
+      <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+        <button type="submit" class="btn-submit">Créer</button>
+        <button type="button" onclick="closeModal()" class="btn-outline" style="padding: .8rem 1.5rem; border: 1px solid rgba(107,42,31,.15); border-radius: 8px; font-weight: 600; color: var(--dark); cursor:pointer;">Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('#categoriesTable').DataTable({
+          language: {
+              url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+          },
+          order: [[1, 'asc']],
+          pageLength: 10
+      });
+  });
+
+  function openModal() {
+      document.getElementById('categoryModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+      document.getElementById('categoryModal').style.display = 'none';
+  }
+</script>
+{% endblock %}
