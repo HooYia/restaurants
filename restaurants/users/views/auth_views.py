@@ -3,7 +3,7 @@ import random
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.views import View
@@ -12,6 +12,11 @@ from restaurants.users.models import Client
 
 User = get_user_model()
 
+
+class CustomLogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("users:home")
 
 class RegisterView(View):
 

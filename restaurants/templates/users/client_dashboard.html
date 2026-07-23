@@ -332,7 +332,7 @@
     </a>
     <!-- Use standard logout url or remove it if not needed, assuming logout is handled elsewhere? Wait, we can't be sure users:logout exists since we didn't see it in users/urls.py. Actually I saw it in admin_dashboar.html as users:logout -->
     <!-- Well, users:logout might exist, but if not, I'll use # to avoid NoReverseMatch. Actually admin_dashboar.html had it. Let's keep # for safety or if the user added it. Wait, the user provided admin_dashboar.html with users:logout. -->
-    <a href="#" class="nav-link">
+    <a href="{% url 'users:logout' %}" class="nav-link">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
       Déconnexion
     </a>

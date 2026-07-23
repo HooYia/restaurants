@@ -11,18 +11,39 @@
         <li><a href="#menu">Spécialités</a></li>
         <li><a href="#contact">Contact</a></li>
         <li class="mobile-only-item"><a href="#contact" class="btn btn-primary" style="width:100%; padding:1rem; text-align:center;">Réserver une table</a></li>
+        {% if request.user.is_authenticated %}
+          <li class="mobile-only-item">
+            {% if request.user.is_staff or request.user.is_superuser %}
+              <a href="{% url 'users:admin-dashboard' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Mon Espace</a>
+            {% else %}
+              <a href="{% url 'users:client-dashboard' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Mon Espace</a>
+            {% endif %}
+          </li>
+          <li class="mobile-only-item">
+             <a href="{% url 'users:logout' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem; border-color:#c0392b; color:#c0392b;">Déconnexion</a>
+          </li>
+        {% else %}
+          <li class="mobile-only-item"><a href="{% url 'users:register' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Créer un compte</a></li>
+          <li class="mobile-only-item"><a href="{% url 'users:login' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Se connecter</a></li>
+        {% endif %}
       </ul>
     </nav>
     <div class="header-actions">
+{% if request.user.is_authenticated %}
+  {% if request.user.is_staff or request.user.is_superuser %}
+    <a href="{% url 'users:admin-dashboard' %}" class="btn btn-outline">Mon Espace</a>
+  {% else %}
+    <a href="{% url 'users:client-dashboard' %}" class="btn btn-outline">Mon Espace</a>
+  {% endif %}
+  <a href="{% url 'users:logout' %}" class="btn btn-outline" style="border-color:#c0392b; color:#c0392b; margin-left:0.5rem;">Déconnexion</a>
+{% else %}
   <a href="{% url 'users:register' %}" class="btn btn-outline">
     Créer un compte
-</a>
-<a 
-    href="{% url 'users:login' %}" class="btn btn-outline"
->
+  </a>
+  <a href="{% url 'users:login' %}" class="btn btn-outline">
     Se connecter
-</a>
-
+  </a>
+{% endif %}
       <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
         <span></span><span></span><span></span>
       </button>

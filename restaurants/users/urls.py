@@ -1,4 +1,5 @@
 from django.urls import path
+from restaurants.users.views.auth_views import CustomLogoutView
 
 from restaurants.users.views.auth_views import RegisterView, VerifyOtpView
 from restaurants.users.views.home_view import HomeView
@@ -43,5 +44,10 @@ path(
     "admin-dashboard/",
     AdminDashboardView.as_view(),
     name="admin-dashboard"
+),
+path(
+    "logout/",
+    CustomLogoutView.as_view(),
+    name="logout"
 )
 ]
