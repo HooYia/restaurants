@@ -3,11 +3,17 @@ from restaurants.users.views.auth_views import CustomLogoutView
 
 from restaurants.users.views.auth_views import RegisterView, VerifyOtpView
 from restaurants.users.views.home_view import HomeView
+from restaurants.users.views.cart_view import CartView
 
 from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, AdminDashboardView
 app_name = "users"
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
+    path(
+        "panier/",
+        CartView.as_view(),
+        name="cart"
+    ),
       path(
         "register/",
         RegisterView.as_view(),

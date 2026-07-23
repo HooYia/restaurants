@@ -228,11 +228,11 @@
 
 <header class="cart-header">
   <div class="container">
-    <a href="{% url 'index' %}" class="brand">
+    <a href="{% url 'users:home' %}" class="brand">
       <img src="{% static 'images/logo-mams.png' %}" alt="Logo Mam's">
       <span>Mam's</span>
     </a>
-    <a href="{% url 'meal:menu' %}" class="continue-shopping">
+    <a href="{% url 'users:home' %}#menu" class="continue-shopping">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
       Continuer mes achats
     </a>
@@ -312,7 +312,7 @@
           <button type="submit">Appliquer</button>
         </form>
 
-        <a href="{% url 'meal:checkout' %}" class="btn-checkout">Passer la commande</a>
+        <a href="#checkout" class="btn-checkout">Passer la commande</a>
         <p class="summary-note">Paiement à la livraison ou par Mobile Money.</p>
       </aside>
 
@@ -323,7 +323,7 @@
       <div class="emoji">🛒</div>
       <h3>Votre panier est vide</h3>
       <p>Découvrez nos spécialités camerounaises et ajoutez vos plats préférés.</p>
-      <a href="{% url 'meal:menu' %}" class="btn-checkout" style="display:inline-block;width:auto;padding:.9rem 2.2rem;">Voir le menu</a>
+      <a href="{% url 'users:home' %}#menu" class="btn-checkout" style="display:inline-block;width:auto;padding:.9rem 2.2rem;">Voir le menu</a>
     </div>
     {% endif %}
 
