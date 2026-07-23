@@ -19,18 +19,19 @@
 {% endblock %}
 
 {% include "components/footer.html" %}
+<script src="{% static 'js/toast_manager.js' %}"></script>
 {% if messages %}
-
-<div style="position:fixed;top:20px;right:20px;background:green;color:white;padding:20px;z-index:9999">
-
-{% for message in messages %}
-
-    <h3>{{ message }}</h3>
-
-{% endfor %}
-
-</div>
-
+<script>
+    {% for message in messages %}
+        setTimeout(() => {
+            console.log("Showing toast:", "{{ message|escapejs }}", "Tags:", "{{ message.tags }}");
+            toastManager.create()
+                .setMessage("{{ message|escapejs }}")
+                .setType("{% if 'error' in message.tags %}error{% elif 'success' in message.tags %}success{% elif 'warning' in message.tags %}warning{% else %}info{% endif %}")
+                .show();
+        }, 100);
+    {% endfor %}
+</script>
 {% endif %}
 
 <!-- <script>

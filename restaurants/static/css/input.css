@@ -1,5 +1,6 @@
 @import "tailwindcss";
-
+@source "../js";
+@source "../../templates";
 /* ====================================
    VARIABLES GLOBALES
 ==================================== */

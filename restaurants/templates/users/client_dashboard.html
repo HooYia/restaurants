@@ -487,5 +487,19 @@
   </div>
 </div>
 
+<script src="{% static 'js/toast_manager.js' %}"></script>
+{% if messages %}
+<script>
+    {% for message in messages %}
+        setTimeout(() => {
+            console.log("Showing toast:", "{{ message|escapejs }}", "Tags:", "{{ message.tags }}");
+            toastManager.create()
+                .setMessage("{{ message|escapejs }}")
+                .setType("{% if 'error' in message.tags %}error{% elif 'success' in message.tags %}success{% elif 'warning' in message.tags %}warning{% else %}info{% endif %}")
+                .show();
+        }, 100);
+    {% endfor %}
+</script>
+{% endif %}
 </body>
 </html>

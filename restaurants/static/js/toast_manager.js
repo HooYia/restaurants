@@ -13,8 +13,8 @@ const toastStyles = {
   success: {
     bg: "bg-white",
     border: "border-green-500",
-    iconBg: "bg-accent-success",
-    iconColor: "text-green-600",
+    iconBg: "bg-green-500",
+    iconColor: "text-white",
     titleColor: "text-green-700",
     textColor: "text-green-600",
     progressColor: "bg-green-500",
@@ -24,8 +24,8 @@ const toastStyles = {
   warning: {
     bg: "bg-white",
     border: "border-yellow-500",
-    iconBg: "bg-accent-warning",
-    iconColor: "text-yellow-600",
+    iconBg: "bg-yellow-500",
+    iconColor: "text-white",
     titleColor: "text-yellow-700",
     textColor: "text-yellow-600",
     progressColor: "bg-yellow-500",
@@ -39,7 +39,7 @@ const toastStyles = {
   info: {
     bg: "bg-white",
     border: "border-gray-300",
-    iconBg: "bg-accent-info",
+    iconBg: "bg-blue-500",
     iconColor: "text-white",
     titleColor: "text-blue-700",
     textColor: "text-blue-600",
@@ -50,8 +50,8 @@ const toastStyles = {
   error: {
     bg: "bg-white",
     border: "border-red-500",
-    iconBg: "bg-destructive",
-    iconColor: "white",
+    iconBg: "bg-red-500",
+    iconColor: "text-white",
     titleColor: "text-red-700",
     textColor: "text-red-600",
     progressColor: "bg-red-500",
@@ -88,7 +88,7 @@ class ToastManager {
       // Base classes: fixed, z-index, flex column
       // We use a helper method to set the specific corner CSS
       container.className =
-        "fixed z-[9999999] flex flex-col gap-2 w-full max-w-[85vw] ms:max-w-xs md:max-w-sm pointer-events-none transition-all duration-400";
+        "fixed z-[9999999] flex flex-col gap-2 w-full max-w-[85vw] sm:max-w-xs md:max-w-sm pointer-events-none transition-all duration-400";
 
       this.containers[pos] = container;
       this.applyContainerStyles(container, pos);

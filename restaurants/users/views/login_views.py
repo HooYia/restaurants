@@ -73,6 +73,7 @@ class LoginView(View):
             user
         )
 
+        messages.success(request, "Connexion réussie ! Heureux de vous revoir.")
 
         # ADMIN
 

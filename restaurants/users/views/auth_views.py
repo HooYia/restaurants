@@ -16,6 +16,7 @@ User = get_user_model()
 class CustomLogoutView(View):
     def get(self, request):
         logout(request)
+        messages.info(request, "Vous avez été déconnecté.")
         return redirect("users:home")
 
 class RegisterView(View):
