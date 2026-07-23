@@ -1,0 +1,53 @@
+{% load static %}
+<aside class="sidebar">
+  <a href="{% url 'users:home' %}">
+  <div class="sidebar-brand">
+    <img src="{% static 'images/logo-mams.png' %}" alt="Logo Mam's">
+    <span>Mam's</span>
+  </div>
+</a
+  <nav class="nav-group">
+    <p class="nav-label">Général</p>
+    <a href="{% url 'users:admin-dashboard' %}" class="nav-link active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Tableau de bord
+    </a>
+    <a href="#" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/></svg>
+      Commandes
+      <span class="nav-badge">{{ stats.pending_orders_count|default:"3" }}</span>
+    </a>
+    <a href="#" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v7a3 3 0 003 3v8M4 3v7M7 3v7M10 3v7M17 3c-2 1-3 3-3 6s1 4 3 4v8"/></svg>
+      Plats
+    </a>
+    <a href="#" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+      Catégories
+    </a>
+  </nav>
+
+  <nav class="nav-group">
+    <p class="nav-label">Clients</p>
+    <a href="#" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Clients
+    </a>
+    <a href="#" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3l-6.2 3.3 1.2-6.9L2 8.9l7-1L12 1.5l3 6.4 7 1-5 4.8 1.2 6.9z"/></svg>
+      Avis
+      <span class="nav-badge">{{ stats.pending_testimonials_count|default:"5" }}</span>
+    </a>
+    <a href="#" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Messages
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="{% url 'users:logout' %}" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+      Déconnexion
+    </a>
+  </div>
+</aside>

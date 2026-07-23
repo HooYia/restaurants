@@ -295,193 +295,34 @@
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <img src="{% static 'images/logo-mams.png' %}" alt="Logo Mam's">
-    <span>Mam's</span>
-  </div>
-
-  <nav class="nav-group">
-    <p class="nav-label">Général</p>
-    <a href="{% url 'users:admin-dashboard' %}" class="nav-link active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-      Tableau de bord
-    </a>
-    <a href="#" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/></svg>
-      Commandes
-      <span class="nav-badge">{{ stats.pending_orders_count|default:"3" }}</span>
-    </a>
-    <a href="#" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v7a3 3 0 003 3v8M4 3v7M7 3v7M10 3v7M17 3c-2 1-3 3-3 6s1 4 3 4v8"/></svg>
-      Plats
-    </a>
-    <a href="#" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
-      Catégories
-    </a>
-  </nav>
-
-  <nav class="nav-group">
-    <p class="nav-label">Clients</p>
-    <a href="#" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-      Clients
-    </a>
-    <a href="#" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3l-6.2 3.3 1.2-6.9L2 8.9l7-1L12 1.5l3 6.4 7 1-5 4.8 1.2 6.9z"/></svg>
-      Avis
-      <span class="nav-badge">{{ stats.pending_testimonials_count|default:"5" }}</span>
-    </a>
-    <a href="#" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      Messages
-    </a>
-  </nav>
-
-  <div class="sidebar-footer">
-    <a href="{% url 'users:logout' %}" class="nav-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
-      Déconnexion
-    </a>
-  </div>
-</aside>
+{% block sidebar %}{% endblock %}
 
 <div class="main">
+  {% block topbar %}
   <div class="topbar">
-    <h1>Tableau de bord</h1>
+    <h1>{% block dashboard_title %}Tableau de bord{% endblock %}</h1>
     <div class="topbar-actions">
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="search" placeholder="Rechercher une commande, un client...">
+        <input type="search" placeholder="Rechercher...">
       </div>
       <button class="icon-btn" aria-label="Notifications">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
         <span class="icon-dot"></span>
       </button>
       <div class="admin-chip">
-        <div class="admin-avatar">{{ request.user.first_name|slice:":1"|default:"A" }}{{ request.user.last_name|slice:":1"|default:"M" }}</div>
+        <div class="admin-avatar">{{ request.user.first_name|slice:":1"|default:"U" }}{{ request.user.last_name|slice:":1"|default:"" }}</div>
         <div>
-          <div class="name">{{ request.user.get_full_name|default:"Admin Mam's" }}</div>
-          <div class="role">Administrateur</div>
+          <div class="name">{{ request.user.get_full_name|default:request.user.email }}</div>
+          <div class="role">{% if request.user.is_staff or request.user.is_superuser %}Administrateur{% else %}Gourmet{% endif %}</div>
         </div>
       </div>
     </div>
   </div>
+  {% endblock %}
 
   <div class="content">
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div>
-          <p class="label">Commandes aujourd'hui</p>
-          <p class="value">{{ stats.today_orders|default:"18" }}</p>
-          <p class="delta up">↑ 12% vs hier</p>
-        </div>
-        <div class="stat-icon orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/></svg>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div>
-          <p class="label">Chiffre d'affaires (mois)</p>
-          <p class="value">{{ stats.monthly_revenue|default:"842 500" }} FCFA</p>
-          <p class="delta up">↑ 8% vs mois dernier</p>
-        </div>
-        <div class="stat-icon amber">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div>
-          <p class="label">Nouveaux clients</p>
-          <p class="value">{{ stats.new_clients|default:"27" }}</p>
-          <p class="delta up">↑ 5% cette semaine</p>
-        </div>
-        <div class="stat-icon green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div>
-          <p class="label">Avis en attente</p>
-          <p class="value">{{ stats.pending_testimonials_count|default:"5" }}</p>
-          <p class="delta down">À modérer</p>
-        </div>
-        <div class="stat-icon maroon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3l-6.2 3.3 1.2-6.9L2 8.9l7-1L12 1.5l3 6.4 7 1-5 4.8 1.2 6.9z"/></svg>
-        </div>
-      </div>
-    </div>
-
-    <div class="panels-grid">
-
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Commandes récentes</h2>
-          <a href="#" class="panel-link">Voir tout</a>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Client</th>
-              <th>Plats</th>
-              <th>Montant</th>
-              <th>Statut</th>
-              <th>Heure</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for order in recent_orders %}
-            <tr>
-              <td>
-                <div class="order-client">
-                  <div class="order-avatar">{{ order.client.user.first_name|slice:":1" }}{{ order.client.user.last_name|slice:":1" }}</div>
-                  {{ order.client.user.get_full_name }}
-                </div>
-              </td>
-              <td>{{ order.items.count }} plat{{ order.items.count|pluralize }}</td>
-              <td>{{ order.total_amount }} FCFA</td>
-              <td><span class="badge {{ order.status }}">{{ order.get_status_display }}</span></td>
-              <td>{{ order.order_date|time:"H:i" }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="5">
-                <div class="empty-state">Aucune commande pour le moment.</div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Avis à modérer</h2>
-          <a href="#" class="panel-link">Voir tout</a>
-        </div>
-        {% for testimonial in pending_testimonials %}
-        <div class="review-item">
-          <div class="review-top">
-            <span class="review-name">{{ testimonial.client.user.get_full_name }}</span>
-            <span class="stars">{% for i in "12345" %}{% if forloop.counter <= testimonial.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
-          </div>
-          <p class="review-text">"{{ testimonial.comment }}"</p>
-          <div class="review-actions">
-            <button class="btn-mini approve" data-testimonial-id="{{ testimonial.id }}" data-action="approve">Approuver</button>
-            <button class="btn-mini reject" data-testimonial-id="{{ testimonial.id }}" data-action="reject">Rejeter</button>
-          </div>
-        </div>
-        {% empty %}
-        <div class="empty-state">Aucun avis en attente de modération.</div>
-        {% endfor %}
-      </div>
-
-    </div>
+    {% block dashboard_content %}{% endblock %}
   </div>
 </div>
 

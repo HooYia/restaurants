@@ -111,7 +111,7 @@ class ClientDashboardView(
     TemplateView
 ):
 
-    template_name = "users/client_dashboard.html"
+    template_name = "pages/dashboard/user_dashboad/client_dashboard.html"
 
 
 
@@ -121,4 +121,4 @@ class AdminDashboardView(
     TemplateView
 ):
 
-    template_name = "users/admin_dashboard.html"
+    template_name = "pages/dashboard/admin_dashboard/admin_dashboard.html"
