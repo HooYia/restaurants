@@ -1,0 +1,232 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Plats — Mam's Admin{% endblock %}
+{% block dashboard_title %}Plats{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<style>
+  /* Styling for modal */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(35,22,16,0.6);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-content {
+    background: #fff; border-radius: var(--radius);
+    padding: 2rem; width: 95%; max-width: 800px; max-height: 90vh;
+    overflow-y: auto; position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; font-size: 1.5rem; color: #8a7660; cursor: pointer;
+  }
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-label { display: block; font-size: .85rem; color: #8a7660; margin-bottom: .4rem; font-weight: 600; }
+  .form-input { 
+    width: 100%; padding: .8rem 1rem; 
+    border: 1px solid rgba(107,42,31,.15); border-radius: 8px; 
+    font-family: inherit; font-size: .9rem; outline: none; 
+  }
+  .form-input[type="checkbox"] { width: auto; margin-top: .5rem; }
+  .form-input:focus { border-color: var(--terracotta); }
+  .btn-submit {
+    background: var(--terracotta); color: #fff;
+    padding: .8rem 1.5rem; border-radius: 8px; font-weight: 600;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: var(--maroon); }
+  
+  /* Styling for DataTables to match our theme */
+  .dataTables_wrapper .dataTables_filter input {
+    border: 1px solid rgba(107,42,31,.15);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    outline: none;
+    margin-bottom: 1rem;
+  }
+  .dataTables_wrapper .dataTables_length select {
+    border: 1px solid rgba(107,42,31,.15);
+    border-radius: 8px;
+    padding: 0.2rem;
+    outline: none;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--terracotta);
+    color: white !important;
+    border: none;
+    border-radius: 5px;
+  }
+  table.dataTable.no-footer {
+    border-bottom: 1px solid rgba(107,42,31,.08);
+  }
+  
+  @media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; gap: 0; }
+  }
+</style>
+
+<div class="panel" style="padding: 1.5rem;">
+  <div class="panel-head" style="border-bottom: none; padding-bottom: 1rem;">
+    <h2 style="font-size:1.3rem;">Gestion des Plats</h2>
+    <button onclick="openModal()" class="btn-mini" style="background:var(--terracotta);color:#fff;padding:.5rem 1rem;border-radius:999px;font-weight:600;cursor:pointer;">+ Nouveau Plat</button>
+  </div>
+  
+  <table id="mealsTable" style="width:100%; margin-top: 1rem;">
+    <thead>
+      <tr>
+        <th>Photo</th>
+        <th>Nom</th>
+        <th>Catégorie</th>
+        <th>Prix</th>
+        <th>Disponibilité</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for meal in meals %}
+      <tr>
+        <td>
+          {% if meal.image %}
+            <img src="{{ meal.image.url }}" alt="{{ meal.name }}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+          {% else %}
+            <div style="width:40px;height:40px;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:#fff;">🍽️</div>
+          {% endif %}
+        </td>
+        <td style="font-weight:600;">{{ meal.name }}</td>
+        <td>{{ meal.category.name }}</td>
+        <td style="color:var(--terracotta);font-weight:700;">{{ meal.price }} FCFA</td>
+        <td>
+          {% if meal.is_available %}
+            <span style="color:var(--green);font-weight:600;font-size:.8rem;">Disponible</span>
+          {% else %}
+            <span style="color:var(--maroon);font-weight:600;font-size:.8rem;">Indisponible</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="#" class="panel-link" style="margin-right:10px;">Modifier</a>
+          <a href="#" class="panel-link" style="color:var(--maroon);">Supprimer</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="mealModal" {% if show_modal %}style="display:flex;"{% endif %}>
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 style="color: var(--maroon); margin-bottom: 1.5rem; margin-top:0;">Créer un Plat</h2>
+    
+    <form method="POST" action="{% url 'meal:meal-list' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="form-grid">
+        <!-- Colonne 1 -->
+        <div>
+          <div class="form-group">
+            <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name }}
+            {% if form.name.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.name.errors }}</div>{% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+            {{ form.category }}
+            {% if form.category.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.category.errors }}</div>{% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+            {{ form.price }}
+            {% if form.price.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.price.errors }}</div>{% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+            {{ form.image }}
+            {% if form.image.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.image.errors }}</div>{% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% if form.description.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.description.errors }}</div>{% endif %}
+          </div>
+        </div>
+        
+        <!-- Colonne 2 -->
+        <div>
+          <div class="form-group">
+            <label class="form-label" for="{{ form.accompaniments.id_for_label }}">{{ form.accompaniments.label }}</label>
+            {{ form.accompaniments }}
+            {% if form.accompaniments.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.accompaniments.errors }}</div>{% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="{{ form.max_included_accompaniments.id_for_label }}">{{ form.max_included_accompaniments.label }}</label>
+            {{ form.max_included_accompaniments }}
+            {% if form.max_included_accompaniments.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.max_included_accompaniments.errors }}</div>{% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="{{ form.availability_mode.id_for_label }}">{{ form.availability_mode.label }}</label>
+            {{ form.availability_mode }}
+            {% if form.availability_mode.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.availability_mode.errors }}</div>{% endif %}
+          </div>
+          
+          <div class="form-group" style="display:flex;align-items:center;gap:0.5rem;margin-top:2rem;">
+            {{ form.is_available }}
+            <label class="form-label" for="{{ form.is_available.id_for_label }}" style="margin:0;">{{ form.is_available.label }} (Affiché au client)</label>
+            {% if form.is_available.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.is_available.errors }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 2rem; display: flex; gap: 1rem; border-top: 1px solid rgba(107,42,31,.1); padding-top: 1.5rem;">
+        <button type="submit" class="btn-submit">Enregistrer le Plat</button>
+        <button type="button" onclick="closeModal()" class="btn-outline" style="padding: .8rem 1.5rem; border: 1px solid rgba(107,42,31,.15); border-radius: 8px; font-weight: 600; color: var(--dark); cursor:pointer;">Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('#mealsTable').DataTable({
+          language: {
+              url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+          },
+          order: [[1, 'asc']],
+          pageLength: 10,
+          columnDefs: [
+              { orderable: false, targets: [0, 5] } // Désactiver le tri pour la photo et les actions
+          ]
+      });
+  });
+
+  function openModal() {
+      document.getElementById('mealModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+      document.getElementById('mealModal').style.display = 'none';
+  }
+</script>
+{% endblock %}
