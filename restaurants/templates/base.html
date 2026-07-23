@@ -14,11 +14,71 @@
 <body>
 
 {% include "components/navbar.html" %}
-
+{% include "users/login_choice.html" %}
 {% block content %}
 {% endblock %}
 
 {% include "components/footer.html" %}
+{% if messages %}
+
+<div style="position:fixed;top:20px;right:20px;background:green;color:white;padding:20px;z-index:9999">
+
+{% for message in messages %}
+
+    <h3>{{ message }}</h3>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div style="position:fixed;top:20px;right:20px;background:red;color:white;padding:20px;z-index:9999">
+
+Aucun message Django
+
+</div>
+
+{% endif %}
+
+<!-- <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const openBtn =
+        document.getElementById("open-register-modal");
+
+    const closeBtn =
+        document.getElementById("close-register-modal");
+
+    const modal =
+        document.getElementById("register-modal");
+
+    if(openBtn){
+
+        openBtn.addEventListener("click", function(e){
+
+            e.preventDefault();
+
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+        });
+
+    }
+
+    if(closeBtn){
+
+        closeBtn.addEventListener("click", function(){
+
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+
+        });
+
+    }
+
+});
+</script> -->
 
 <script>
   // Header shadow on scroll

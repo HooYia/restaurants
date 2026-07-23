@@ -14,8 +14,15 @@
       </ul>
     </nav>
     <div class="header-actions">
-      <a href="#contact" class="btn btn-outline">Nous appeler</a>
-      <a href="#contact" class="btn btn-primary">Réserver une table</a>
+  <a href="{% url 'users:register' %}" class="btn btn-outline">
+    Créer un compte
+</a>
+<a 
+    href="#" id="open-login-choice"class="btn btn-outline"
+>
+    Se connecter
+</a>
+
       <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
         <span></span><span></span><span></span>
       </button>

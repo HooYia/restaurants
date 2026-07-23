@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion | Le Chef's Table</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Yesteryear&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="auth-page-register">
+
+    <div class="auth-bg-image-login"></div>
+
+    <div class="auth-container">
+        <!-- Formulaire -->
+        <div class="auth-form-card">
+            <div class="auth-form-header">
+                <div class="auth-icon-wrapper">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                </div>
+                <h2>Bon retour</h2>
+                <p>Connectez-vous à votre espace personnel</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="auth-error">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="auth-field">
+                    <label>Email</label>
+                    <div class="field-group">
+                        <svg class="field-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <input type="email" name="email" placeholder="exemple@email.com" required class="auth-input" autofocus>
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <label>Mot de passe</label>
+                        <a href="#" class="auth-forgot-link">Mot de passe oublié ?</a>
+                    </div>
+                    <div class="field-group">
+                        <svg class="field-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        <input type="password" name="password" placeholder="••••••••" required class="auth-input">
+                    </div>
+                </div>
+
+                <div class="auth-checkbox-wrapper">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Se souvenir de moi</label>
+                </div>
+
+                <button type="submit" class="auth-btn-primary">
+                    <span>
+                        Se connecter
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </span>
+                </button>
+
+                <div class="auth-or-divider">
+                    <div class="line"></div>
+                    <span>ou</span>
+                    <div class="line"></div>
+                </div>
+
+                <div class="auth-footer-link">
+                    Pas encore de compte ? <a href="{% url 'users:register' %}">Créez-en un</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Image side -->
+        <div class="auth-side-image">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80" alt="Plat gastronomique">
+            <div class="image-overlay"></div>
+            <div class="image-badge">
+                <div class="badge-text">
+                    <strong>🍷 Dégustation exclusive</strong><br>
+                    "L'art de la gastronomie française"
+                </div>
+                <div class="badge-stars">★★★★★</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

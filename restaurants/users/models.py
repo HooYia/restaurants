@@ -5,22 +5,107 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.auth.base_user import BaseUserManager
 
 from .enum import TestimonialStatus
 from restaurants.core.models import OngBaseModel
 
 
+class UserManager(BaseUserManager):
+
+    def create_user(
+        self,
+        email,
+        password=None,
+        phone=None,
+        first_name="",
+        last_name="",
+        **extra_fields
+    ):
+
+        if not email:
+            raise ValueError("L'adresse email est requise")
+
+        if not phone:
+            raise ValueError("Le numéro de téléphone est requis")
+
+        if not password:
+            raise ValueError("Le mot de passe est requis")
+
+        email = self.normalize_email(email)
+
+        user = self.model(
+            email=email,
+            phone=phone,
+            first_name=first_name,
+            last_name=last_name,
+            **extra_fields
+        )
+
+        user.set_password(password)
+
+        user.save(using=self._db)
+
+        return user
+
+    def create_superuser(
+        self,
+        email,
+        password=None,
+        **extra_fields
+    ):
+
+        extra_fields.setdefault(
+            "is_staff",
+            True
+        )
+
+        extra_fields.setdefault(
+            "is_superuser",
+            True
+        )
+
+        extra_fields.setdefault(
+            "is_active",
+            True
+        )
+
+        user = self.model(
+            email=self.normalize_email(email),
+            phone=None,
+            **extra_fields
+        )
+
+        user.set_password(password)
+
+        user.save(using=self._db)
+
+        return user
+
+
 class User(AbstractUser):
-    """
-    Utilisateur de base. Django gère déjà first_name, last_name,
-    username et password via AbstractUser — on ajoute juste le téléphone.
-    Le rôle (Admin / Client) est déterminé par la présence d'un profil
-    lié (voir Admin et Client ci-dessous).
-    """
-    phone = models.CharField(max_length=20, unique=True)
+
+    username = None
+
+    email = models.EmailField(
+        unique=True
+    )
+
+    phone = models.CharField(
+        max_length=20,
+        unique=True,
+        null=True,
+        blank=True,
+    )
+
+    USERNAME_FIELD = "email"
+
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
 
     def __str__(self):
-        return self.get_full_name() or self.username
+        return self.email
 
 
 class Admin(OngBaseModel):

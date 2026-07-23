@@ -9,4 +9,97 @@
     {% include "components/home/temoignages.html" %}
   {% include "components/home/contact.html" %}
 
+
+  <!-- <div
+    id="register-modal"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"
+>
+
+    <div class="bg-white rounded-2xl p-8 w-full max-w-lg relative">
+
+        <button
+            id="close-register-modal"
+            class="absolute top-4 right-4 text-2xl"
+        >
+            ×
+        </button>
+
+        <h2 class="text-3xl font-bold mb-6">
+            Créer un compte
+        </h2>
+
+        <form
+            method="post"
+            action="{% url 'users:register' %}"
+        >
+
+            {% csrf_token %}
+
+            <input
+                type="text"
+                name="first_name"
+                placeholder="Nom"
+                class="form-input mb-4"
+                required
+            >
+
+            <input
+                type="text"
+                name="last_name"
+                placeholder="Prénom"
+                class="form-input mb-4"
+                required
+            >
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Adresse email"
+                class="form-input mb-4"
+                required
+            >
+
+            <input 
+type="text"
+name="phone"
+placeholder="Numéro de téléphone">
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Mot de passe"
+                class="form-input mb-4"
+                required
+            >
+
+            <input
+                type="password"
+                name="confirm_password"
+                placeholder="Confirmer le mot de passe"
+                class="form-input mb-6"
+                required
+            >
+
+
+
+            <button
+                type="submit"
+                class="form-button"
+            >
+                Créer mon compte
+            </button>
+
+        </form>
+
+    </div>
+
+</div> -->
+
+
+{% if messages %}
+    MESSAGE PRESENT
+{% else %}
+    AUCUN MESSAGE
+{% endif %}
+
 {% endblock %}

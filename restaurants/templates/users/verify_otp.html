@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification OTP | Le Chef's Table</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Yesteryear&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="auth-page-register">
+
+    <div class="auth-bg-image-otp"></div>
+
+    <div class="auth-container" style="max-width:600px;margin:0 auto;">
+        <!-- Formulaire centré -->
+        <div class="auth-form-card" style="max-width:500px;margin:0 auto;">
+            <div class="auth-form-header">
+                <div class="auth-icon-wrapper">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h2>Vérification</h2>
+                <p>Un code à 6 chiffres a été envoyé à votre email</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="auth-error">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="auth-field">
+                    <label style="text-align:center;">Code OTP</label>
+                    <div class="field-group">
+                        <input
+                            type="text"
+                            name="otp"
+                            maxlength="6"
+                            placeholder="000000"
+                            required
+                            class="auth-input auth-input-plain"
+                            autofocus
+                            inputmode="numeric"
+                            style="padding:1rem;text-align:center;font-size:1.8rem;letter-spacing:0.5em;font-family:monospace;"
+                        >
+                    </div>
+                    <p style="text-align:center;color:rgba(255,255,255,0.25);font-size:0.8rem;margin-top:0.5rem;">
+                        Le code expire dans 5 minutes
+                    </p>
+                </div>
+
+                <button type="submit" class="auth-btn-primary">
+                    <span>
+                        Vérifier
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </span>
+                </button>
+
+                <div style="text-align:center;margin-top:1.5rem;">
+                    <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;">
+                        Vous n'avez pas reçu le code ?
+                        <a href="#" style="color:var(--amber);text-decoration:none;font-weight:500;">Renvoyer</a>
+                    </p>
+                </div>
+
+                <div class="auth-footer-link" style="margin-top:1rem;">
+                    <a href="{% url 'users:login' %}" style="color:rgba(255,255,255,0.3);">
+                        ← Retour à la connexion
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
