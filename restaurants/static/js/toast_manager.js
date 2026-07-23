@@ -19,7 +19,7 @@ const toastStyles = {
     textColor: "text-green-600",
     progressColor: "bg-green-500",
     title: typeof gettext === "function" ? gettext("Success") : "Success",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" style="width:14px; height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`,
   },
   warning: {
     bg: "bg-white",
@@ -30,7 +30,7 @@ const toastStyles = {
     textColor: "text-yellow-600",
     progressColor: "bg-yellow-500",
     title: typeof gettext === "function" ? gettext("Warning") : "Warning",
-    icon: `<svg class="size-2.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    icon: `<svg style="width:12px; height:12px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
                     <path d="M12 9v4"/>
                     <path d="M12 17h.01"/>
@@ -56,7 +56,7 @@ const toastStyles = {
     textColor: "text-red-600",
     progressColor: "bg-red-500",
     title: typeof gettext === "function" ? gettext("Error") : "Error",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" style="width:14px; height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 6 6 18"/>
                     <path d="m6 6 12 12"/>
                 </svg>`,
@@ -220,7 +220,7 @@ class ToastManager {
                     <div class="flex items-start md:items-center gap-3 w-full">
                         ${
                           icon ??
-                          `<div class="${style.iconBg} text-white rounded-full size-4 flex items-center justify-center shrink-0">
+                          `<div class="${style.iconBg} text-white rounded-full flex items-center justify-center shrink-0" style="width:20px; height:20px; min-width:20px; min-height:20px;">
                                 ${style.icon}
                             </div> `
                         }
