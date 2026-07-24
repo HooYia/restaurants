@@ -75,7 +75,8 @@
     <h2>Rejoignez la famille Mam's et profitez de -15%</h2>
     <p>Inscrivez-vous et recevez nos offres, nouveaux plats et événements directement par email.</p>
     <form class="newsletter-form" id="newsletter-form">
-      <input type="email" id="newsletter-email" placeholder="Votre adresse email" required aria-label="Votre adresse email">
+      <input type="email" id="newsletter-email" placeholder="Votre adresse email" required aria-label="Votre adresse email"
+             {% if request.user.is_authenticated %}value="{{ request.user.email }}" readonly style="background-color: rgba(255,255,255,0.8); color: #6b7280; cursor: not-allowed;"{% endif %}>
       <button type="submit" class="btn btn-primary" id="newsletter-submit">S'inscrire</button>
     </form>
     <p class="newsletter-note">Pas de spam, seulement de bonnes nouvelles et de bons plats.</p>

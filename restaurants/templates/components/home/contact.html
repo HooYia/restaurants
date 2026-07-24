@@ -31,11 +31,13 @@
       <div class="form-row">
         <div class="field">
           <label for="name">Nom complet</label>
-          <input type="text" id="name" name="name" placeholder="Votre nom" required>
+          <input type="text" id="name" name="name" placeholder="Votre nom" 
+                 {% if request.user.is_authenticated and request.user.first_name %}value="{{ request.user.get_full_name }}" readonly style="background-color: #f3f4f6; color: #6b7280;"{% endif %} required>
         </div>
         <div class="field">
           <label for="phone">Téléphone</label>
-          <input type="tel" id="phone" name="phone" placeholder="+237 6XX XX XX XX" required>
+          <input type="tel" id="phone" name="phone" placeholder="+237 6XX XX XX XX" 
+                 {% if request.user.is_authenticated and request.user.phone %}value="{{ request.user.phone }}" readonly style="background-color: #f3f4f6; color: #6b7280;"{% endif %} required>
         </div>
       </div>
       <div class="form-row">
