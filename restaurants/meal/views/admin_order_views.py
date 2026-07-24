@@ -74,12 +74,11 @@ class AdminOrderUpdateStatusView(AdminRequiredMixin, View):
         order.status = new_status
         order.save(update_fields=["status"])
 
-        # Send Email to Client
+        # Send Email to Client via Celery
         try:
-            from restaurants.users.utils.emails import EmailUtil
-            EmailUtil().send_order_status_update(order)
+            from restaurants.users.tasks import send_order_status_update_task
+            send_order_status_update_task.delay(order.id)
         except Exception as e:
-            # Ne pas bloquer la mise à jour
             pass
 
         new_label = order.get_status_display()

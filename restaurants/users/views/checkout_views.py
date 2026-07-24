@@ -103,12 +103,11 @@ class CheckoutView(LoginRequiredMixin, View):
 
         cart.clear()
         
-        # Send Email to Admins
+        # Send Email to Admins via Celery
         try:
-            from restaurants.users.utils.emails import EmailUtil
-            EmailUtil().send_new_order_admin_notification(order)
+            from restaurants.users.tasks import send_new_order_admin_notification_task
+            send_new_order_admin_notification_task.delay(order.id)
         except Exception as e:
-            # Ne pas bloquer la commande si l'email échoue
             pass
 
         # Trigger success message
