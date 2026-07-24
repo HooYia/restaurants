@@ -1,5 +1,5 @@
 <!-- TÉMOIGNAGES -->
- {% lo%}
+{% load static %}
 <section class="light-bg" id="avis">
   <div class="container">
     <div class="section-head reveal center">
@@ -56,8 +56,8 @@
 
 <!-- NEWSLETTER -->
 <section class="newsletter-band">
-  <img src="/static/images/eru.png" class="newsletter-corner tl" alt="" aria-hidden="true" style="mix-blend-mode: multiply; filter: contrast(1.2);">
-  <img src="/static/images/riz.png" class="newsletter-corner br" alt="" aria-hidden="true" style="mix-blend-mode: multiply; filter: contrast(1.2);">
+  <img src="{% static 'images/eru.png' %}" class="newsletter-corner tl" alt="" aria-hidden="true" style="mix-blend-mode: multiply; filter: contrast(1.2);">
+  <img src="{% static 'images/riz.png' %}" class="newsletter-corner br" alt="" aria-hidden="true" style="mix-blend-mode: multiply; filter: contrast(1.2);">
   <div class="container newsletter-inner reveal">
     <p class="eyebrow">Restons en contact</p>
     <h2>Rejoignez la famille Mam's et profitez de -15%</h2>

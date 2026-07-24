@@ -993,9 +993,9 @@ body {
     background: var(--paper); padding: 5rem 0; position: relative; overflow: hidden;
     border-top: 1px solid rgba(224,168,92,.2); border-bottom: 1px solid rgba(224,168,92,.2);
   }
-  .newsletter-corner { position: absolute; width: 280px; height: 280px; z-index: 0; object-fit: cover; border-radius: 50%; opacity: 0.9; }
-  .newsletter-corner.tl { top: -120px; left: -120px; }
-  .newsletter-corner.br { bottom: -120px; right: -120px; transform: rotate(180deg); }
+  .newsletter-corner { position: absolute; width: 350px; height: 350px; z-index: 0; object-fit: cover; border-radius: 50%; opacity: 1; }
+  .newsletter-corner.tl { top: -80px; left: -80px; }
+  .newsletter-corner.br { bottom: -80px; right: -80px; transform: rotate(180deg); }
   
   .newsletter-inner {
     position: relative; z-index: 1; max-width: 600px; margin: 0 auto; text-align: center;
