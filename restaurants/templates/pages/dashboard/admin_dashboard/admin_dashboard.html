@@ -8,6 +8,32 @@
 {% endblock %}
 
 {% block dashboard_content %}
+<style>
+  /* Soft mobile adaptations for admin dashboard */
+  @media (max-width: 600px) {
+    /* Transform table into soft cards */
+    .panel table thead { display: none; }
+    .panel table tbody tr {
+      display: flex; flex-direction: column; gap: .6rem;
+      padding: 1.2rem;
+      border-bottom: 6px solid rgba(239,224,196,.3);
+    }
+    .panel table tbody td {
+      padding: 0; border: none; font-size: .88rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel table tbody td::before {
+      content: attr(data-label);
+      font-weight: 700; color: #9a8570; font-size: .75rem; text-transform: uppercase;
+    }
+    .order-client { justify-content: flex-end; }
+    .order-avatar { display: none; }
+
+    /* Soften review items */
+    .review-item { padding: 1.1rem; }
+    .review-text { font-size: .82rem; }
+  }
+</style>
 
     <div class="stats-grid">
       <div class="stat-card">
@@ -75,16 +101,16 @@
           <tbody>
             {% for order in recent_orders %}
             <tr>
-              <td>
+              <td data-label="Client">
                 <div class="order-client">
                   <div class="order-avatar">{{ order.client.user.first_name|slice:":1" }}{{ order.client.user.last_name|slice:":1" }}</div>
                   {{ order.client.user.get_full_name }}
                 </div>
               </td>
-              <td>{{ order.items.count }} plat{{ order.items.count|pluralize }}</td>
-              <td>{{ order.total_amount }} FCFA</td>
-              <td><span class="badge {{ order.status }}">{{ order.get_status_display }}</span></td>
-              <td>{{ order.order_date|time:"H:i" }}</td>
+              <td data-label="Plats">{{ order.items.count }} plat{{ order.items.count|pluralize }}</td>
+              <td data-label="Montant"><strong>{{ order.total_amount }} FCFA</strong></td>
+              <td data-label="Statut"><span class="badge {{ order.status }}">{{ order.get_status_display }}</span></td>
+              <td data-label="Heure">{{ order.order_date|time:"H:i" }}</td>
             </tr>
             {% empty %}
             <tr>

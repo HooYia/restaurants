@@ -145,6 +145,20 @@
   .admin-chip .name{font-size:.85rem;font-weight:600;}
   .admin-chip .role{font-size:.72rem;color:#9a8570;}
 
+  .mobile-menu-btn {
+    display: none;
+    background: none; border: none; color: var(--dark);
+    padding: .5rem; margin-left: -.5rem; cursor: pointer;
+  }
+  .mobile-menu-btn svg { width: 24px; height: 24px; }
+
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(35,22,16,.55); z-index: 999;
+    backdrop-filter: blur(2px);
+  }
+  .sidebar-overlay.mobile-open { display: block; }
+
   .content{padding:2rem;}
 
   /* ---------- Stat cards ---------- */
@@ -269,22 +283,23 @@
 
   /* ---------- Responsive — Mobile First ---------- */
 
-  /* Bottom navigation bar on mobile */
   @media (max-width: 820px) {
     body { flex-direction: column; padding-bottom: 64px; }
 
-    /* Hide the full sidebar, replaced by bottom nav */
+    /* Transform sidebar into an off-canvas drawer */
     .sidebar {
-      display: none;
+      position: fixed; left: -100%; top: 0; bottom: 0;
+      z-index: 1000; box-shadow: 10px 0 24px rgba(0,0,0,0.15);
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    .sidebar.mobile-open { left: 0; }
+    .mobile-menu-btn { display: block; }
 
     /* Topbar adaptations */
     .topbar {
-      padding: .9rem 1rem;
-      gap: .8rem;
-      flex-wrap: nowrap;
+      padding: .9rem 1rem; gap: .5rem; flex-wrap: nowrap;
     }
-    .topbar h1 { font-size: 1.05rem; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .topbar h1 { font-size: 1.05rem; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: .3rem; }
     .search-box { display: none; }
     .topbar-actions { gap: .7rem; }
     .admin-chip .name, .admin-chip .role { display: none; }
@@ -315,10 +330,12 @@
   }
 
   @media (max-width: 480px) {
-    .stats-grid { grid-template-columns: 1fr 1fr; gap: .6rem; }
-    .stat-card .value { font-size: 1.15rem; }
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: .7rem; }
+    .stat-card { padding: 1rem .9rem; border-radius: 14px; box-shadow: 0 4px 15px rgba(35,22,16,.04); }
+    .stat-card .value { font-size: 1.25rem; }
     .stat-card .label { font-size: .75rem; }
-    .stat-icon { width: 36px; height: 36px; border-radius: 10px; }
+    .stat-icon { width: 34px; height: 34px; border-radius: 10px; }
+    .stat-icon svg { width: 16px; height: 16px; }
     .content { padding: .75rem; }
     .topbar { padding: .8rem .75rem; }
     .topbar h1 { font-size: .95rem; }
@@ -367,12 +384,17 @@
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
 {% block sidebar %}{% endblock %}
 
 <div class="main">
   {% block topbar %}
   <div class="topbar">
-    <h1>{% block dashboard_title %}Tableau de bord{% endblock %}</h1>
+    <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <h1>{% block dashboard_title %}Vue d'ensemble{% endblock %}</h1>
     <div class="topbar-actions">
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -412,6 +434,23 @@
     {% endfor %}
 </script>
 {% endif %}
+
+<script>
+  function toggleMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('mobile-open');
+    
+    if (sidebar.classList.contains('mobile-open')) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+</script>
+
 <!-- Mobile bottom navigation (visible only on small screens) -->
 <nav class="mobile-bottom-nav" role="navigation" aria-label="Navigation mobile">
   {% block mobile_nav %}
