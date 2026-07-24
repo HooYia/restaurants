@@ -3,6 +3,7 @@ from .views.admin_category_views import AdminCategoryListView, AdminCategoryUpda
 from .views.admin_meal_views import AdminMealListView, AdminMealUpdateView, AdminMealDeleteView
 from .views.admin_accompaniment_views import AdminAccompanimentListView, AdminAccompanimentUpdateView, AdminAccompanimentDeleteView
 from .views.admin_boisson_views import AdminBoissonListView, AdminBoissonUpdateView, AdminBoissonDeleteView
+from .views.admin_order_views import AdminOrderListView, AdminOrderUpdateStatusView
 
 app_name = "meal"
 
@@ -22,4 +23,8 @@ urlpatterns = [
     path("admin-dashboard/boissons/", AdminBoissonListView.as_view(), name="boisson-list"),
     path("admin-dashboard/boissons/<uuid:pk>/update/", AdminBoissonUpdateView.as_view(), name="boisson-update"),
     path("admin-dashboard/boissons/<uuid:pk>/delete/", AdminBoissonDeleteView.as_view(), name="boisson-delete"),
+
+    # Commandes
+    path("admin-dashboard/commandes/", AdminOrderListView.as_view(), name="order-list"),
+    path("admin-dashboard/commandes/<uuid:pk>/statut/", AdminOrderUpdateStatusView.as_view(), name="order-update-status"),
 ]

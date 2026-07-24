@@ -124,13 +124,13 @@
         <div class="field">
           <label for="city">Ville <span class="req">*</span></label>
           <input type="text" id="city" name="city"
-                 value="{{ form_data.city|default:address.city }}"
+                 value="{% if form_data %}{{ form_data.city }}{% elif address %}{{ address.city }}{% endif %}"
                  placeholder="Ex : Yaoundé" required>
         </div>
         <div class="field">
           <label for="street">Rue / Quartier <span class="req">*</span></label>
           <input type="text" id="street" name="street"
-                 value="{{ form_data.street|default:address.street }}"
+                 value="{% if form_data %}{{ form_data.street }}{% elif address %}{{ address.street }}{% endif %}"
                  placeholder="Ex : Bastos, rue des Manguiers" required>
         </div>
       </div>
@@ -138,7 +138,7 @@
       <div class="field">
         <label for="description">Point de repère</label>
         <input type="text" id="description" name="description"
-               value="{{ form_data.description|default:address.description }}"
+               value="{% if form_data %}{{ form_data.description }}{% elif address %}{{ address.description }}{% endif %}"
                placeholder="Ex : En face du marché, après le carrefour Shell">
         <span class="field-hint">Aide le livreur à trouver facilement.</span>
       </div>
@@ -146,13 +146,14 @@
       <div class="field">
         <label for="complement">Complément d'adresse</label>
         <input type="text" id="complement" name="complement"
-               value="{{ form_data.complement|default:address.complement }}"
+               value="{% if form_data %}{{ form_data.complement }}{% elif address %}{{ address.complement }}{% endif %}"
                placeholder="Ex : Appartement 3B, 2ème étage">
       </div>
 
       <label class="check-row" for="is_default">
         <input type="checkbox" id="is_default" name="is_default"
-               {% if form_data.is_default == "on" or address.is_default %}checked{% endif %}>
+               {% if form_data.is_default == "on" %}checked
+               {% elif address.is_default %}checked{% endif %}>
         <div>
           <div class="check-label">Définir comme adresse par défaut</div>
           <div class="check-sub">Cette adresse sera présélectionnée lors de vos prochaines commandes.</div>
@@ -160,6 +161,7 @@
       </label>
 
     </div>
+
 
     <div class="form-footer">
       <button type="submit" class="btn-submit">

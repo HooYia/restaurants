@@ -60,7 +60,7 @@
       <div class="panel">
         <div class="panel-head">
           <h2>Commandes récentes</h2>
-          <a href="#" class="panel-link">Voir tout</a>
+          <a href="{% url 'meal:order-list' %}" class="panel-link">Voir tout</a>
         </div>
         <table>
           <thead>
@@ -122,4 +122,27 @@
     </div>
   </div>
 
+{% endblock %}
+
+{% block mobile_nav %}
+<a href="{% url 'users:admin-dashboard' %}" class="mob-nav-item {% if request.resolver_match.url_name == 'admin-dashboard' %}active{% endif %}">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+  Tableau
+</a>
+<a href="{% url 'meal:meal-list' %}" class="mob-nav-item {% if 'meal' in request.resolver_match.url_name %}active{% endif %}">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/></svg>
+  Plats
+</a>
+<a href="{% url 'meal:category-list' %}" class="mob-nav-item {% if 'category' in request.resolver_match.url_name %}active{% endif %}">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+  Catégories
+</a>
+<a href="{% url 'users:home' %}" class="mob-nav-item">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  Accueil
+</a>
+<a href="{% url 'users:logout' %}" class="mob-nav-item">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+  Quitter
+</a>
 {% endblock %}

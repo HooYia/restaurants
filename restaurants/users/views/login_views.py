@@ -141,9 +141,52 @@ class ClientDashboardView(LoginRequiredMixin, View):
         })
 
 
-class AdminDashboardView(
-    LoginRequiredMixin,
-    TemplateView
-):
+class AdminDashboardView(LoginRequiredMixin, View):
 
     template_name = "pages/dashboard/admin_dashboard/admin_dashboard.html"
+
+    def get(self, request):
+        from restaurants.meal.models import Order
+        from restaurants.meal.enum import OrderStatus
+        from restaurants.users.models import Client, Testimonial
+        from django.utils import timezone
+        from django.db.models import Sum
+
+        today = timezone.now().date()
+
+        # Stats
+        today_orders = Order.objects.filter(created__date=today).count()
+        pending_orders = Order.objects.filter(status=OrderStatus.PENDING).count()
+        monthly_revenue = Order.objects.filter(
+            status=OrderStatus.DELIVERED,
+            created__year=today.year,
+            created__month=today.month,
+        ).aggregate(total=Sum("total_amount"))["total"] or 0
+        new_clients = Client.objects.filter(created__date=today).count()
+
+        from restaurants.users.models import Testimonial
+        from restaurants.users.enum import TestimonialStatus
+        pending_testimonials_qs = Testimonial.objects.filter(
+            status=TestimonialStatus.PENDING
+        ).select_related("client__user")[:5]
+        pending_testimonials_count = Testimonial.objects.filter(
+            status=TestimonialStatus.PENDING
+        ).count()
+
+        recent_orders = Order.objects.select_related(
+            "client__user"
+        ).prefetch_related("items").order_by("-created")[:8]
+
+        stats = {
+            "today_orders": today_orders,
+            "pending_orders_count": pending_orders,
+            "monthly_revenue": f"{int(monthly_revenue):,}".replace(",", " "),
+            "new_clients": new_clients,
+            "pending_testimonials_count": pending_testimonials_count,
+        }
+
+        return render(request, self.template_name, {
+            "stats": stats,
+            "recent_orders": recent_orders,
+            "pending_testimonials": pending_testimonials_qs,
+        })
