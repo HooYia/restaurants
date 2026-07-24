@@ -195,10 +195,10 @@
        class="chip {% if not status_filter %}active{% endif %}">
       Toutes <span class="chip-count">{{ total }}</span>
     </a>
-    {% for value, label in status_choices %}
+    {% for value, label, count in status_choices_with_counts %}
     <a href="?status={{ value }}{% if search %}&q={{ search }}{% endif %}"
        class="chip {% if status_filter == value %}active{% endif %}">
-      {{ label }} <span class="chip-count">{{ counts|get_item:value|default:"0" }}</span>
+      {{ label }} <span class="chip-count">{{ count }}</span>
     </a>
     {% endfor %}
   </div>

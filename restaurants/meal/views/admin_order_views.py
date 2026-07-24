@@ -36,8 +36,11 @@ class AdminOrderListView(AdminRequiredMixin, View):
                 client__user__email__icontains=search
             )
 
-        # Compteurs par statut
-        counts = {s: Order.objects.filter(status=s).count() for s in OrderStatus}
+        # Liste (value, label, count) pour les filtres
+        status_choices_with_counts = [
+            (s.value, s.label, Order.objects.filter(status=s).count())
+            for s in OrderStatus
+        ]
         total = Order.objects.count()
 
         return render(request, self.template_name, {
@@ -45,7 +48,8 @@ class AdminOrderListView(AdminRequiredMixin, View):
             "status_filter": status_filter,
             "search": search,
             "status_choices": OrderStatus.choices,
-            "counts": counts,
+            "status_choices_with_counts": status_choices_with_counts,
+            "counts": {s.value: Order.objects.filter(status=s).count() for s in OrderStatus},
             "total": total,
             "active_page": "orders",
         })
