@@ -9,6 +9,7 @@ from restaurants.users.views.checkout_views import CheckoutView, OrderSuccessVie
 
 from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, AdminDashboardView
 from .views.order_tracking_view import OrderTrackingView
+from .views.admin_messages_view import AdminMessagesView
 from .views.address_views import (
     AddressListView, AddressCreateView, AddressUpdateView,
     AddressDeleteView, AddressSetDefaultView,
@@ -119,6 +120,11 @@ path(
     "admin-dashboard/",
     AdminDashboardView.as_view(),
     name="admin-dashboard"
+),
+path(
+    "admin-dashboard/messages/",
+    AdminMessagesView.as_view(),
+    name="admin-messages"
 ),
 path(
     "logout/",
