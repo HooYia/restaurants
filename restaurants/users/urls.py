@@ -1,4 +1,11 @@
 from django.urls import path
+from restaurants.users.views import (
+    address_views,
+    auth_views,
+    login_views,
+    order_views,
+    profile_views,
+)
 from restaurants.users.views.auth_views import CustomLogoutView
 
 from restaurants.users.views.auth_views import RegisterView, VerifyOtpView
@@ -89,6 +96,18 @@ urlpatterns = [
         "client/commandes/",
         OrderListView.as_view(),
         name="order-list"
+    ),
+
+    # Profile
+    path(
+        "profil/",
+        view=profile_views.ProfileUpdateView.as_view(),
+        name="profile-update",
+    ),
+    path(
+        "profil/mot-de-passe/",
+        view=profile_views.UserPasswordChangeView.as_view(),
+        name="password-change",
     ),
     path(
         "client/commandes/<uuid:order_id>/suivi/",

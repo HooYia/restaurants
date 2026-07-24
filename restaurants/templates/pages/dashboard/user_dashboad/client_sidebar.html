@@ -1,8 +1,10 @@
 {% load static %}
 <aside class="sidebar">
   <div class="sidebar-brand">
+    <a href="{% url 'users:home' %}" target="_blank" rel="noopener noreferrer">
     <img src="{% static 'images/logo-mams.png' %}" alt="Mam's">
     <span>Mam's</span>
+    </a>
   </div>
 
   <nav class="nav-group">
@@ -23,7 +25,7 @@
 
   <nav class="nav-group">
     <p class="nav-label">Paramètres</p>
-    <a href="#" class="nav-link {% if 'profile' in request.path %}active{% endif %}">
+    <a href="{% url 'users:profile-update' %}" class="nav-link {% if 'profil' in request.path %}active{% endif %}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       Mon Profil
     </a>

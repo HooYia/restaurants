@@ -42,3 +42,23 @@ class UserSocialSignupForm(SocialSignupForm):
     Default fields will be added automatically.
     See UserSignupForm otherwise.
     """
+
+
+from django import forms
+
+class UserProfileUpdateForm(forms.ModelForm):
+    """
+    Formulaire pour la mise à jour des informations de profil.
+    L'email est en lecture seule.
+    """
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "phone", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].disabled = True
+        self.fields["email"].help_text = "Votre adresse e-mail ne peut pas être modifiée."
+        self.fields["first_name"].required = True
+        self.fields["last_name"].required = True
+        self.fields["phone"].required = True
