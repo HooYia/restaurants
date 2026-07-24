@@ -74,6 +74,14 @@ class AdminOrderUpdateStatusView(AdminRequiredMixin, View):
         order.status = new_status
         order.save(update_fields=["status"])
 
+        # Send Email to Client
+        try:
+            from restaurants.users.utils.emails import EmailUtil
+            EmailUtil().send_order_status_update(order)
+        except Exception as e:
+            # Ne pas bloquer la mise à jour
+            pass
+
         new_label = order.get_status_display()
         messages.success(
             request,

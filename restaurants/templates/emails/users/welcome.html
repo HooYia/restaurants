@@ -1,0 +1,22 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Bienvenue dans la famille Mam's !</h2>
+<p>Bonjour {{ user.first_name|default:"Cher gourmand" }},</p>
+<p>Nous sommes ravis de vous compter parmi nous. Votre compte sur <strong>Les délices de Mam's</strong> a été créé avec succès.</p>
+
+<p>Vous pouvez dès maintenant parcourir nos spécialités camerounaises et passer vos commandes en toute simplicité.</p>
+
+{% if raw_password %}
+<div style="background-color: #f9fafb; padding: 15px; border-left: 4px solid #e0a85c; margin: 20px 0;">
+    <p style="margin-top: 0;"><strong>Voici vos identifiants temporaires :</strong></p>
+    <p>Email : {{ user.email }}</p>
+    <p style="margin-bottom: 0;">Mot de passe : <code>{{ raw_password }}</code></p>
+</div>
+<p><em>Nous vous recommandons de modifier votre mot de passe dès votre première connexion.</em></p>
+{% endif %}
+
+<p style="text-align: center; margin-top: 30px;">
+    <a href="{{ login_url }}" class="btn">Se connecter à mon compte</a>
+</p>
+{% endblock %}

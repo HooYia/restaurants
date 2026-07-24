@@ -103,6 +103,14 @@ class CheckoutView(LoginRequiredMixin, View):
 
         cart.clear()
         
+        # Send Email to Admins
+        try:
+            from restaurants.users.utils.emails import EmailUtil
+            EmailUtil().send_new_order_admin_notification(order)
+        except Exception as e:
+            # Ne pas bloquer la commande si l'email échoue
+            pass
+
         # Trigger success message
         messages.success(request, f"Votre commande #{order.id} a été validée avec succès !")
         return redirect('users:order-success', order_id=order.id)
