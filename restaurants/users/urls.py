@@ -11,6 +11,7 @@ from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, 
 from .views.order_tracking_view import OrderTrackingView
 from .views.admin_messages_view import AdminMessagesView
 from .views.client_messages_view import ClientMessagesView
+from .views.newsletter_view import NewsletterSubscribeView
 from .views.address_views import (
     AddressListView, AddressCreateView, AddressUpdateView,
     AddressDeleteView, AddressSetDefaultView,
@@ -38,6 +39,11 @@ urlpatterns = [
         "api/cart/update/",
         CartUpdateView.as_view(),
         name="cart-update"
+    ),
+    path(
+        "api/newsletter/subscribe/",
+        NewsletterSubscribeView.as_view(),
+        name="newsletter-subscribe"
     ),
     path(
         "checkout/",

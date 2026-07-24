@@ -244,3 +244,16 @@ class Testimonial(OngBaseModel):
             base_slug = slugify(f"{self.client}-{uuid.uuid4().hex[:6]}")
             self.slug = base_slug
         super().save(*args, **kwargs)
+
+
+class NewsletterSubscriber(OngBaseModel):
+    """Abonné à la newsletter."""
+    email = models.EmailField(unique=True)
+
+    class Meta:
+        ordering = ["-created"]
+        verbose_name = "Abonné Newsletter"
+        verbose_name_plural = "Abonnés Newsletter"
+
+    def __str__(self):
+        return self.email
