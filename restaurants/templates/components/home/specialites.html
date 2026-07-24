@@ -15,7 +15,6 @@
       <div class="filter-pills" id="filter-pills">
         <button class="filter-pill active" data-filter="all">Tout</button>
         <button class="filter-pill" data-filter="plats">Plats principaux</button>
-        <button class="filter-pill" data-filter="accompagnements">Accompagnements</button>
         <button class="filter-pill" data-filter="boissons">Boissons</button>
       </div>
     </div>
@@ -31,7 +30,11 @@
           {% else %}
             <span aria-hidden="true">🍲</span>
           {% endif %}
-          <span class="dish-badge">Plat principal</span>
+          {% if meal.is_today %}
+            <span class="dish-badge" style="background:var(--maroon);color:#fff;">Repas du jour</span>
+          {% else %}
+            <span class="dish-badge">Plat principal</span>
+          {% endif %}
         </div>
         <div class="dish-body">
           <h3>{{ meal.name }}</h3>
@@ -49,22 +52,6 @@
       </div>
       {% endfor %}
 
-      <!-- Accompaniments -->
-      {% for acc in accompaniments %}
-      <div class="dish-card reveal" data-category="accompagnements" data-name="{{ acc.name|lower }}">
-        <div class="dish-img-wrap dish-img-placeholder">
-          <span aria-hidden="true">🍌</span>
-          <span class="dish-badge">Accompagnement</span>
-        </div>
-        <div class="dish-body">
-          <h3>{{ acc.name }}</h3>
-          <p>L'accompagnement parfait pour sublimer votre plat.</p>
-          <div class="dish-footer">
-            <span class="dish-price">+{{ acc.price }} FCFA</span>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
 
       <!-- Boissons -->
       {% for boisson in boissons %}
@@ -115,7 +102,7 @@
       <select id="modal_boisson" style="width:100%; padding:0.8rem; border:1px solid rgba(107,42,31,.15); border-radius:8px; font-family:inherit; outline:none;">
         <option value="">-- Aucune boisson --</option>
         {% for boisson in boissons %}
-        <option value="{{ boisson.id }}">{{ boisson.name }} (+{{ boisson.price }} FCFA)</option>
+        <option value="{{ boisson.id }}" data-price="{{ boisson.price|stringformat:"f" }}">{{ boisson.name }} (+{{ boisson.price }} FCFA)</option>
         {% endfor %}
       </select>
     </div>
@@ -135,11 +122,17 @@
 {% csrf_token %}
 <script>
 
+let currentBasePrice = 0;
+let currentMaxIncluded = 0;
+
 function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
   document.getElementById('modal_meal_id').value = id;
   document.getElementById('modal_meal_name').innerText = name;
   document.getElementById('modal_meal_price').innerText = price;
   document.getElementById('modal_quantity').value = 1;
+  
+  currentBasePrice = parseFloat(price.replace(',', '.'));
+  currentMaxIncluded = parseInt(maxIncluded) || 0;
   
   // Populate accompaniments dynamically
   const accContainer = document.getElementById('modal_acc_container');
@@ -166,7 +159,7 @@ function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
       label.style.cursor = 'pointer';
       
       label.innerHTML = `
-        <input type="checkbox" name="modal_accompaniments" value="${accId}">
+        <input type="checkbox" name="modal_accompaniments" value="${accId}" data-price="${accPrice}" onchange="updateModalPrice()">
         <span>${accName} <strong style="color:var(--terracotta);">+${accPrice} FCFA</strong></span>
       `;
       accContainer.appendChild(label);
@@ -174,13 +167,47 @@ function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
   }
   
   document.getElementById('modal_boisson').value = '';
+  document.getElementById('modal_boisson').addEventListener('change', updateModalPrice);
+  document.getElementById('modal_quantity').addEventListener('input', updateModalPrice);
   
   const text = maxIncluded > 0 
     ? `Vous avez droit à ${maxIncluded} accompagnement(s) inclus. Les suivants seront facturés en supplément.`
     : `Les accompagnements sont en supplément.`;
   document.getElementById('modal_acc_text').innerText = text;
   
+  updateModalPrice();
+  
   document.getElementById('addToCartModal').style.display = 'flex';
+}
+
+function updateModalPrice() {
+  let extraFee = 0;
+  const checkboxes = document.querySelectorAll('input[name="modal_accompaniments"]:checked');
+  let selectedAccs = [];
+  
+  checkboxes.forEach(cb => {
+    selectedAccs.push(parseFloat(cb.dataset.price.replace(',', '.')));
+  });
+  
+  if (selectedAccs.length > currentMaxIncluded) {
+    selectedAccs.sort((a,b) => a - b);
+    let extraAccs = selectedAccs.slice(currentMaxIncluded);
+    extraFee = extraAccs.reduce((a,b) => a + b, 0);
+  }
+  
+  const boissonSelect = document.getElementById('modal_boisson');
+  let boissonPrice = 0;
+  if (boissonSelect.value) {
+    const selectedOption = boissonSelect.options[boissonSelect.selectedIndex];
+    boissonPrice = parseFloat(selectedOption.dataset.price.replace(',', '.'));
+  }
+  
+  let quantity = parseInt(document.getElementById('modal_quantity').value) || 1;
+  let totalUnitPrice = currentBasePrice + extraFee + boissonPrice;
+  let totalPrice = totalUnitPrice * quantity;
+  
+  // Format exactly like Django does (e.g., 2500.00 -> 2500)
+  document.getElementById('modal_meal_price').innerText = totalPrice.toLocaleString('fr-FR');
 }
 
 function closeAddToCartModal() {

@@ -336,8 +336,6 @@
 
 {% csrf_token %}
 <script>
-  function getCookie(name) {
-
   document.querySelectorAll('.qty-increase, .qty-decrease').forEach(btn => {
     btn.addEventListener('click', function(){
       const stepper = this.closest('.qty-stepper');
