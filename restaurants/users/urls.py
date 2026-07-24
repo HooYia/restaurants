@@ -6,6 +6,7 @@ from restaurants.users.views import (
     order_views,
     profile_views,
     testimonial_views,
+    admin_user_views,
 )
 from restaurants.users.views.auth_views import CustomLogoutView
 
@@ -173,6 +174,11 @@ path(
     "admin-dashboard/avis/<uuid:pk>/statut/",
     testimonial_views.AdminTestimonialStatusUpdateView.as_view(),
     name="admin-testimonial-status"
+),
+path(
+    "admin-dashboard/utilisateurs/",
+    admin_user_views.AdminUserListView.as_view(),
+    name="admin-user-list"
 ),
 path(
     "logout/",
