@@ -5,6 +5,7 @@ from restaurants.users.views import (
     login_views,
     order_views,
     profile_views,
+    testimonial_views,
 )
 from restaurants.users.views.auth_views import CustomLogoutView
 
@@ -146,6 +147,12 @@ urlpatterns = [
         name="address-set-default"
     ),
 
+    # Avis Client
+    path(
+        "client/avis/rediger/",
+        testimonial_views.ClientTestimonialCreateView.as_view(),
+        name="testimonial-create"
+    ),
 
 path(
     "admin-dashboard/",
@@ -156,6 +163,16 @@ path(
     "admin-dashboard/messages/",
     AdminMessagesView.as_view(),
     name="admin-messages"
+),
+path(
+    "admin-dashboard/avis/",
+    testimonial_views.AdminTestimonialListView.as_view(),
+    name="admin-testimonial-list"
+),
+path(
+    "admin-dashboard/avis/<uuid:pk>/statut/",
+    testimonial_views.AdminTestimonialStatusUpdateView.as_view(),
+    name="admin-testimonial-status"
 ),
 path(
     "logout/",

@@ -1,0 +1,123 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+
+{% block title %}Avis clients — Mam's Admin{% endblock %}
+{% block dashboard_title %}Avis clients{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  .filter-tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(107,42,31,.08); }
+  .filter-tab { 
+    padding: 1rem 1.5rem; color: #6b7280; text-decoration: none; 
+    font-weight: 600; font-size: .9rem; border-bottom: 3px solid transparent; 
+  }
+  .filter-tab.active { color: var(--maroon); border-bottom-color: var(--maroon); }
+  .filter-tab:hover:not(.active) { color: var(--terracotta); }
+  
+  .badge { padding: .25rem .6rem; border-radius: 99px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+  .badge-pending { background: #fbe4de; color: #c0392b; }
+  .badge-approved { background: rgba(92,112,72,.14); color: var(--green); }
+  .badge-rejected { background: #f3f4f6; color: #6b7280; }
+  
+  .action-btn { 
+    padding: .4rem .8rem; border-radius: 6px; font-size: .75rem; font-weight: 600; 
+    border: none; cursor: pointer; transition: opacity .2s; 
+  }
+  .action-btn:hover { opacity: .8; }
+  .btn-approve { background: rgba(92,112,72,.14); color: var(--green); }
+  .btn-reject { background: #fbe4de; color: #c0392b; }
+</style>
+
+<div class="filter-tabs">
+  <a href="?status=" class="filter-tab {% if not current_status %}active{% endif %}">Tous</a>
+  <a href="?status={{ TestimonialStatus.PENDING }}" class="filter-tab {% if current_status == TestimonialStatus.PENDING %}active{% endif %}">En attente</a>
+  <a href="?status={{ TestimonialStatus.APPROVED }}" class="filter-tab {% if current_status == TestimonialStatus.APPROVED %}active{% endif %}">Approuvés</a>
+  <a href="?status={{ TestimonialStatus.REJECTED }}" class="filter-tab {% if current_status == TestimonialStatus.REJECTED %}active{% endif %}">Rejetés</a>
+</div>
+
+<div class="panel">
+  <div class="panel-head">
+    <h2>Liste des avis</h2>
+  </div>
+  <div style="overflow-x: auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Note</th>
+          <th>Commentaire</th>
+          <th>Statut</th>
+          <th>Date</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for testimonial in testimonials %}
+        <tr>
+          <td>
+            <div style="font-weight: 600; color: var(--dark);">{{ testimonial.client.user.get_full_name|default:testimonial.client.user.email }}</div>
+            <div style="font-size: .75rem; color: #8a7660;">{{ testimonial.client.addresses.first.city|default:"-" }}</div>
+          </td>
+          <td style="color: var(--amber); font-size: 1.1rem;">
+            {% if testimonial.rating == 5 %}★★★★★
+            {% elif testimonial.rating == 4 %}★★★★☆
+            {% elif testimonial.rating == 3 %}★★★☆☆
+            {% elif testimonial.rating == 2 %}★★☆☆☆
+            {% else %}★☆☆☆☆
+            {% endif %}
+          </td>
+          <td style="max-width: 300px;">
+            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ testimonial.comment }}">
+              "{{ testimonial.comment }}"
+            </div>
+          </td>
+          <td>
+            {% if testimonial.status == TestimonialStatus.PENDING %}
+              <span class="badge badge-pending">En attente</span>
+            {% elif testimonial.status == TestimonialStatus.APPROVED %}
+              <span class="badge badge-approved">Approuvé</span>
+            {% elif testimonial.status == TestimonialStatus.REJECTED %}
+              <span class="badge badge-rejected">Rejeté</span>
+            {% endif %}
+          </td>
+          <td style="color: #8a7660; font-size: .8rem;">{{ testimonial.created|date:"d M Y" }}</td>
+          <td style="text-align: right;">
+            {% if testimonial.status == TestimonialStatus.PENDING %}
+              <form method="post" action="{% url 'users:admin-testimonial-status' testimonial.id %}" style="display: inline-block;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" name="action" value="approve" class="action-btn btn-approve">Approuver</button>
+              </form>
+              <form method="post" action="{% url 'users:admin-testimonial-status' testimonial.id %}" style="display: inline-block;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" name="action" value="reject" class="action-btn btn-reject">Rejeter</button>
+              </form>
+            {% elif testimonial.status == TestimonialStatus.APPROVED %}
+              <form method="post" action="{% url 'users:admin-testimonial-status' testimonial.id %}" style="display: inline-block;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" name="action" value="reject" class="action-btn btn-reject">Rejeter</button>
+              </form>
+            {% elif testimonial.status == TestimonialStatus.REJECTED %}
+              <form method="post" action="{% url 'users:admin-testimonial-status' testimonial.id %}" style="display: inline-block;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" name="action" value="approve" class="action-btn btn-approve">Approuver</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 2rem; color: #8a7660;">Aucun avis trouvé.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

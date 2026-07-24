@@ -2,6 +2,8 @@ from django.views.generic import TemplateView
 from django.db.models import Exists, OuterRef
 import datetime
 from restaurants.meal.models import Meal, Boisson, DailyMenu
+from restaurants.users.models import Testimonial
+from restaurants.users.enum import TestimonialStatus
 
 class HomeView(TemplateView):
     template_name = "pages/home.html"
@@ -22,4 +24,5 @@ class HomeView(TemplateView):
         ).order_by('-is_today', 'category__display_order', 'name').select_related('category')
         
         context['boissons'] = Boisson.objects.filter(is_available=True)
+        context['testimonials'] = Testimonial.objects.filter(status=TestimonialStatus.APPROVED)[:5]
         return context
