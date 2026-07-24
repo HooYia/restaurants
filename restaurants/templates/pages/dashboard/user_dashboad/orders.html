@@ -1,0 +1,179 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Mes Commandes — Mam's{% endblock %}
+{% block dashboard_title %}Mes Commandes{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/user_dashboad/client_sidebar.html' with active_page="orders" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  .filter-bar {
+    display: flex; align-items: center; gap: .6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.6rem;
+  }
+  .filter-btn {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .48rem 1rem;
+    border-radius: 999px;
+    font-size: .8rem; font-weight: 600;
+    background: #fff;
+    border: 1.5px solid rgba(107,42,31,.15);
+    color: #6b5a48;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .2s;
+  }
+  .filter-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+  .filter-btn.active { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+  .filter-btn .count {
+    background: rgba(255,255,255,.2);
+    padding: .1rem .4rem;
+    border-radius: 999px;
+    font-size: .7rem;
+  }
+  .filter-btn.active .count { background: rgba(255,255,255,.25); }
+
+  .orders-panel {
+    background: #fff;
+    border: 1px solid rgba(107,42,31,.08);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 24px rgba(35,22,16,.05);
+    overflow: hidden;
+  }
+  .orders-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.3rem 1.6rem;
+    border-bottom: 1px solid rgba(107,42,31,.08);
+  }
+  .orders-panel-head h2 { font-size: 1rem; font-weight: 700; color: var(--maroon); }
+  .orders-count { font-size: .82rem; color: #9a8570; }
+
+  .order-row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr auto auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.6rem;
+    border-bottom: 1px solid rgba(107,42,31,.05);
+    transition: background .2s;
+  }
+  .order-row:last-child { border-bottom: none; }
+  .order-row:hover { background: rgba(239,224,196,.25); }
+
+  .order-id { font-size: .88rem; font-weight: 700; color: var(--dark); }
+  .order-date { font-size: .77rem; color: #9a8570; margin-top: .15rem; }
+  .order-items { font-size: .83rem; color: #6b5a48; }
+  .order-item-names { font-size: .77rem; color: #9a8570; margin-top: .1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+  .order-amount { font-size: .92rem; font-weight: 700; color: var(--dark); white-space: nowrap; }
+  .order-actions { display: flex; gap: .5rem; align-items: center; }
+
+  .btn-track {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .45rem .9rem;
+    border-radius: 999px;
+    font-size: .78rem; font-weight: 600;
+    background: var(--maroon);
+    color: #fff;
+    text-decoration: none;
+    transition: background .2s, transform .15s;
+  }
+  .btn-track:hover { background: var(--terracotta); transform: translateY(-1px); }
+  .btn-track svg { width: 13px; height: 13px; }
+
+  .empty-orders {
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .empty-orders svg { width: 56px; height: 56px; color: rgba(107,42,31,.15); margin-bottom: 1rem; }
+  .empty-orders p { color: #9a8570; font-size: .92rem; }
+  .empty-orders a { color: var(--terracotta); font-weight: 600; }
+
+  @media (max-width: 768px) {
+    .order-row { grid-template-columns: 1fr auto; }
+    .order-items, .order-amount { display: none; }
+  }
+</style>
+
+<!-- Filtres par statut -->
+<div class="filter-bar">
+  <a href="{% url 'users:order-list' %}" class="filter-btn {% if not status_filter %}active{% endif %}">
+    Toutes
+  </a>
+  {% for value, label in status_choices %}
+  <a href="?status={{ value }}" class="filter-btn {% if status_filter == value %}active{% endif %}">
+    {{ label }}
+  </a>
+  {% endfor %}
+
+</div>
+
+<!-- Tableau des commandes -->
+<div class="orders-panel">
+  <div class="orders-panel-head">
+    <h2>
+      {% if status_filter %}
+        Commandes — {{ status_filter|title }}
+      {% else %}
+        Toutes mes commandes
+      {% endif %}
+    </h2>
+    <span class="orders-count">{{ orders|length }} commande{{ orders|length|pluralize }}</span>
+  </div>
+
+  {% if orders %}
+    <!-- En-tête tableau -->
+    <div class="order-row" style="background:rgba(239,224,196,.3); border-bottom:1px solid rgba(107,42,31,.08);">
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#9a8570;font-weight:600;">Commande</div>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#9a8570;font-weight:600;">Plats</div>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#9a8570;font-weight:600;">Montant</div>
+      <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#9a8570;font-weight:600;">Statut</div>
+      <div></div>
+    </div>
+
+    {% for order in orders %}
+    <div class="order-row">
+      <div>
+        <div class="order-id">#{{ order.id|stringformat:"s"|slice:":8"|upper }}</div>
+        <div class="order-date">{{ order.created|date:"d M Y à H:i" }}</div>
+      </div>
+      <div>
+        <div class="order-items">{{ order.items.count }} plat{{ order.items.count|pluralize }}</div>
+        <div class="order-item-names">
+          {% for item in order.items.all %}{{ item.meal.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </div>
+      </div>
+      <div class="order-amount">{{ order.total_amount|floatformat:0 }} FCFA</div>
+      <div><span class="badge {{ order.status }}">{{ order.get_status_display }}</span></div>
+      <div class="order-actions">
+        <a href="{% url 'users:order-tracking' order.id %}" class="btn-track">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Suivi
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="empty-orders">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/>
+      </svg>
+      <p>
+        {% if status_filter %}
+          Aucune commande avec ce statut.
+        {% else %}
+          Vous n'avez pas encore passé de commande.
+        {% endif %}
+      </p>
+      {% if not status_filter %}
+        <p style="margin-top:.5rem;"><a href="{% url 'users:home' %}">Découvrir notre menu →</a></p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

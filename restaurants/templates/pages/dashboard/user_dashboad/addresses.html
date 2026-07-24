@@ -1,0 +1,183 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Mes Adresses — Mam's{% endblock %}
+{% block dashboard_title %}Mes Adresses{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/user_dashboad/client_sidebar.html' with active_page="addresses" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  .addr-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.4rem;
+  }
+  .addr-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--dark); }
+  .btn-add-addr {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .6rem 1.2rem;
+    border-radius: 999px;
+    background: var(--maroon);
+    color: #fff;
+    font-size: .85rem; font-weight: 600;
+    text-decoration: none;
+    transition: background .2s, transform .15s;
+  }
+  .btn-add-addr:hover { background: var(--terracotta); transform: translateY(-1px); }
+  .btn-add-addr svg { width: 16px; height: 16px; }
+
+  .addr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.2rem;
+  }
+  .addr-card {
+    background: #fff;
+    border: 1.5px solid rgba(107,42,31,.1);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.5rem;
+    box-shadow: 0 6px 20px rgba(35,22,16,.05);
+    position: relative;
+    transition: box-shadow .2s, border-color .2s;
+  }
+  .addr-card:hover { box-shadow: 0 10px 30px rgba(35,22,16,.1); }
+  .addr-card.is-default {
+    border-color: var(--terracotta);
+    background: linear-gradient(135deg, #fff 0%, rgba(201,122,58,.04) 100%);
+  }
+
+  .addr-default-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: var(--terracotta);
+    color: #fff;
+    font-size: .68rem; font-weight: 700;
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    margin-bottom: .8rem;
+  }
+  .addr-default-badge svg { width: 11px; height: 11px; }
+
+  .addr-street { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: .25rem; }
+  .addr-city { font-size: .88rem; color: var(--terracotta); font-weight: 600; margin-bottom: .4rem; }
+  .addr-extra { font-size: .8rem; color: #9a8570; line-height: 1.5; }
+
+  .addr-actions {
+    display: flex; align-items: center; gap: .5rem;
+    margin-top: 1.1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(107,42,31,.07);
+  }
+  .addr-btn {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .38rem .8rem;
+    border-radius: 999px;
+    font-size: .76rem; font-weight: 600;
+    text-decoration: none;
+    transition: all .2s;
+    border: none; cursor: pointer; font-family: inherit;
+  }
+  .addr-btn svg { width: 13px; height: 13px; }
+  .addr-btn.edit { background: rgba(201,122,58,.12); color: var(--terracotta); }
+  .addr-btn.edit:hover { background: var(--terracotta); color: #fff; }
+  .addr-btn.del { background: rgba(192,57,43,.08); color: #c0392b; }
+  .addr-btn.del:hover { background: #e74c3c; color: #fff; }
+  .addr-btn.default { background: rgba(92,112,72,.1); color: var(--green); }
+  .addr-btn.default:hover { background: var(--green); color: #fff; }
+  .addr-btn.default[disabled] { opacity: .4; cursor: default; pointer-events: none; }
+
+  .addr-gps { font-size: .75rem; color: #bba98a; margin-top: .3rem; display: flex; align-items: center; gap: .3rem; }
+  .addr-gps svg { width: 12px; height: 12px; }
+
+  .empty-addr {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #fff;
+    border: 2px dashed rgba(107,42,31,.12);
+    border-radius: var(--radius);
+    color: #9a8570;
+  }
+  .empty-addr svg { width: 52px; height: 52px; color: rgba(107,42,31,.15); margin-bottom: 1rem; }
+
+  @media (max-width: 600px) {
+    .addr-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="addr-header">
+  <h2>{{ addresses|length }} adresse{{ addresses|length|pluralize }} enregistrée{{ addresses|length|pluralize }}</h2>
+  <a href="{% url 'users:address-create' %}" class="btn-add-addr">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Ajouter une adresse
+  </a>
+</div>
+
+<div class="addr-grid">
+  {% for addr in addresses %}
+  <div class="addr-card {% if addr.is_default %}is-default{% endif %}">
+
+    {% if addr.is_default %}
+    <div class="addr-default-badge">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Adresse par défaut
+    </div>
+    {% endif %}
+
+    <div class="addr-street">{{ addr.street }}</div>
+    <div class="addr-city">{{ addr.city }}</div>
+
+    {% if addr.description %}
+      <div class="addr-extra">📍 {{ addr.description }}</div>
+    {% endif %}
+    {% if addr.complement %}
+      <div class="addr-extra">🏢 {{ addr.complement }}</div>
+    {% endif %}
+    {% if addr.gps_lat and addr.gps_lng %}
+      <div class="addr-gps">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+        {{ addr.gps_lat|floatformat:4 }}, {{ addr.gps_lng|floatformat:4 }}
+      </div>
+    {% endif %}
+
+    <div class="addr-actions">
+      <a href="{% url 'users:address-update' addr.pk %}" class="addr-btn edit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Modifier
+      </a>
+
+      {% if not addr.is_default %}
+      <form method="post" action="{% url 'users:address-set-default' addr.pk %}" style="margin:0;">
+        {% csrf_token %}
+        <button type="submit" class="addr-btn default">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Par défaut
+        </button>
+      </form>
+      {% endif %}
+
+      <form method="post" action="{% url 'users:address-delete' addr.pk %}"
+            style="margin:0; margin-left:auto;"
+            onsubmit="return confirm('Supprimer cette adresse ?')">
+        {% csrf_token %}
+        <button type="submit" class="addr-btn del">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          Supprimer
+        </button>
+      </form>
+    </div>
+
+  </div>
+  {% empty %}
+  <div class="empty-addr">
+    <div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    </div>
+    <p style="font-size:.95rem; font-weight:600; color:var(--dark); margin-bottom:.4rem;">Aucune adresse enregistrée</p>
+    <p>Ajoutez une adresse de livraison pour faciliter vos prochaines commandes.</p>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

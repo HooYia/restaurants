@@ -22,11 +22,12 @@ class OrderTrackingView(LoginRequiredMixin, View):
 
     def get(self, request, order_id):
         try:
-            client = request.user.client
+            client = request.user.client_profile
         except Exception:
             from django.contrib import messages
+            from django.shortcuts import redirect
             messages.error(request, "Accès non autorisé.")
-            return __import__('django.shortcuts', fromlist=['redirect']).redirect('users:home')
+            return redirect('users:home')
 
         order = get_object_or_404(
             Order.objects.prefetch_related("items__meal", "items__accompaniments", "items__boisson"),

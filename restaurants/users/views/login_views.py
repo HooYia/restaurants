@@ -114,7 +114,7 @@ class ClientDashboardView(LoginRequiredMixin, View):
         from restaurants.meal.models import Order, Meal
 
         try:
-            client = request.user.client
+            client = request.user.client_profile
         except Exception:
             client = None
 
@@ -129,7 +129,8 @@ class ClientDashboardView(LoginRequiredMixin, View):
         if client:
             client_orders = Order.objects.filter(client=client).prefetch_related("items")[:10]
             stats["total_orders"] = Order.objects.filter(client=client).count()
-            stats["loyalty_points"] = stats["total_orders"] * 10  # 10 pts par commande
+            stats["loyalty_points"] = stats["total_orders"] * 10
+            stats["total_testimonials"] = client.testimonials.count()
 
         popular_meals = Meal.objects.filter(is_available=True)[:3]
 

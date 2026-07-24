@@ -1,0 +1,174 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} une adresse — Mam's{% endblock %}
+{% block dashboard_title %}{{ action }} une adresse{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/user_dashboad/client_sidebar.html' with active_page="addresses" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  .form-card {
+    background: #fff;
+    border: 1px solid rgba(107,42,31,.08);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 24px rgba(35,22,16,.05);
+    max-width: 660px;
+    overflow: hidden;
+  }
+  .form-card-head {
+    padding: 1.3rem 1.8rem;
+    border-bottom: 1px solid rgba(107,42,31,.08);
+    display: flex; align-items: center; gap: .8rem;
+  }
+  .form-card-head h2 { font-size: 1rem; font-weight: 700; color: var(--maroon); }
+  .form-card-head svg { width: 20px; height: 20px; color: var(--terracotta); flex-shrink: 0; }
+
+  .form-body { padding: 1.8rem; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+
+  .field {
+    display: flex; flex-direction: column; gap: .4rem;
+    margin-bottom: 1.1rem;
+  }
+  .field label {
+    font-size: .8rem; font-weight: 600; color: #6b5a48;
+    display: flex; align-items: center; gap: .3rem;
+  }
+  .field label span.req { color: var(--terracotta); }
+  .field input, .field textarea {
+    padding: .65rem .9rem;
+    border: 1.5px solid rgba(107,42,31,.15);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: .88rem;
+    color: var(--dark);
+    background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+  }
+  .field input:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--terracotta);
+    box-shadow: 0 0 0 3px rgba(201,122,58,.1);
+  }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .field-hint { font-size: .74rem; color: #bba98a; margin-top: .1rem; }
+
+  .check-row {
+    display: flex; align-items: center; gap: .7rem;
+    background: rgba(239,224,196,.3);
+    border-radius: 10px;
+    padding: .8rem 1rem;
+    margin-bottom: 1.4rem;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: border-color .2s;
+  }
+  .check-row:has(input:checked) { border-color: var(--terracotta); background: rgba(201,122,58,.07); }
+  .check-row input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--terracotta); }
+  .check-row .check-label { font-size: .88rem; font-weight: 600; color: var(--dark); }
+  .check-row .check-sub { font-size: .77rem; color: #9a8570; }
+
+  .form-footer {
+    display: flex; align-items: center; gap: .8rem;
+    padding: 1.3rem 1.8rem;
+    border-top: 1px solid rgba(107,42,31,.08);
+    background: rgba(239,224,196,.2);
+  }
+  .btn-submit {
+    padding: .65rem 1.6rem;
+    border-radius: 999px;
+    background: var(--maroon);
+    color: #fff;
+    font-size: .88rem; font-weight: 700;
+    border: none; cursor: pointer; font-family: inherit;
+    transition: background .2s, transform .15s;
+    display: inline-flex; align-items: center; gap: .5rem;
+  }
+  .btn-submit:hover { background: var(--terracotta); transform: translateY(-1px); }
+  .btn-submit svg { width: 16px; height: 16px; }
+  .btn-cancel {
+    padding: .65rem 1.2rem;
+    border-radius: 999px;
+    border: 1.5px solid rgba(107,42,31,.2);
+    background: transparent;
+    color: #6b5a48;
+    font-size: .88rem; font-weight: 600;
+    text-decoration: none;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-cancel:hover { border-color: var(--terracotta); color: var(--terracotta); }
+</style>
+
+<a href="{% url 'users:address-list' %}" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:600;color:var(--terracotta);margin-bottom:1.4rem;transition:color .2s;" onmouseover="this.style.color='var(--maroon)'" onmouseout="this.style.color='var(--terracotta)'">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><polyline points="15 18 9 12 15 6"/></svg>
+  Retour aux adresses
+</a>
+
+<div class="form-card">
+  <div class="form-card-head">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <h2>{{ action }} une adresse de livraison</h2>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-body">
+
+      <div class="field-row">
+        <div class="field">
+          <label for="city">Ville <span class="req">*</span></label>
+          <input type="text" id="city" name="city"
+                 value="{{ form_data.city|default:address.city }}"
+                 placeholder="Ex : Yaoundé" required>
+        </div>
+        <div class="field">
+          <label for="street">Rue / Quartier <span class="req">*</span></label>
+          <input type="text" id="street" name="street"
+                 value="{{ form_data.street|default:address.street }}"
+                 placeholder="Ex : Bastos, rue des Manguiers" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="description">Point de repère</label>
+        <input type="text" id="description" name="description"
+               value="{{ form_data.description|default:address.description }}"
+               placeholder="Ex : En face du marché, après le carrefour Shell">
+        <span class="field-hint">Aide le livreur à trouver facilement.</span>
+      </div>
+
+      <div class="field">
+        <label for="complement">Complément d'adresse</label>
+        <input type="text" id="complement" name="complement"
+               value="{{ form_data.complement|default:address.complement }}"
+               placeholder="Ex : Appartement 3B, 2ème étage">
+      </div>
+
+      <label class="check-row" for="is_default">
+        <input type="checkbox" id="is_default" name="is_default"
+               {% if form_data.is_default == "on" or address.is_default %}checked{% endif %}>
+        <div>
+          <div class="check-label">Définir comme adresse par défaut</div>
+          <div class="check-sub">Cette adresse sera présélectionnée lors de vos prochaines commandes.</div>
+        </div>
+      </label>
+
+    </div>
+
+    <div class="form-footer">
+      <button type="submit" class="btn-submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        {{ action }}
+      </button>
+      <a href="{% url 'users:address-list' %}" class="btn-cancel">Annuler</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

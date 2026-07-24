@@ -9,6 +9,11 @@ from restaurants.users.views.checkout_views import CheckoutView, OrderSuccessVie
 
 from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, AdminDashboardView
 from .views.order_tracking_view import OrderTrackingView
+from .views.address_views import (
+    AddressListView, AddressCreateView, AddressUpdateView,
+    AddressDeleteView, AddressSetDefaultView,
+)
+from .views.order_views import OrderListView
 app_name = "users"
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
@@ -73,9 +78,40 @@ urlpatterns = [
         name="client-dashboard"
     ),
     path(
+        "client/commandes/",
+        OrderListView.as_view(),
+        name="order-list"
+    ),
+    path(
         "client/commandes/<uuid:order_id>/suivi/",
         OrderTrackingView.as_view(),
         name="order-tracking"
+    ),
+    # Adresses
+    path(
+        "client/adresses/",
+        AddressListView.as_view(),
+        name="address-list"
+    ),
+    path(
+        "client/adresses/ajouter/",
+        AddressCreateView.as_view(),
+        name="address-create"
+    ),
+    path(
+        "client/adresses/<uuid:pk>/modifier/",
+        AddressUpdateView.as_view(),
+        name="address-update"
+    ),
+    path(
+        "client/adresses/<uuid:pk>/supprimer/",
+        AddressDeleteView.as_view(),
+        name="address-delete"
+    ),
+    path(
+        "client/adresses/<uuid:pk>/par-defaut/",
+        AddressSetDefaultView.as_view(),
+        name="address-set-default"
     ),
 
 
