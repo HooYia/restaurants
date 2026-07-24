@@ -16,7 +16,7 @@ class CheckoutView(LoginRequiredMixin, View):
             messages.warning(request, "Votre panier est vide.")
             return redirect('users:home')
             
-        client = request.user.client_profile
+        client, _ = Client.objects.get_or_create(user=request.user)
         addresses = client.addresses.all()
         
         context = {
@@ -31,7 +31,7 @@ class CheckoutView(LoginRequiredMixin, View):
         if len(cart) == 0:
             return redirect('users:home')
 
-        client = request.user.client_profile
+        client, _ = Client.objects.get_or_create(user=request.user)
         
         # Address handling
         address_id = request.POST.get('address_id')
@@ -110,5 +110,6 @@ class CheckoutView(LoginRequiredMixin, View):
 
 class OrderSuccessView(LoginRequiredMixin, View):
     def get(self, request, order_id):
-        order = get_object_or_404(Order, id=order_id, client=request.user.client_profile)
+        client, _ = Client.objects.get_or_create(user=request.user)
+        order = get_object_or_404(Order, id=order_id, client=client)
         return render(request, 'pages/order_success.html', {'order': order})

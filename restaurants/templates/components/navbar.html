@@ -1,7 +1,8 @@
+{% load static %}
 <header id="site-header">
   <div class="container nav-wrap">
     <a href="#top" class="brand">
-      <img src="../static/images/logo-mams.png" alt="Logo Les délices de Mam's" onerror="this.src='../static/images/restaurent.jpg'">
+      <img src="{% static 'images/logo-mams.png' %}" alt="Logo Les délices de Mam's" onerror="this.src='{% static 'images/restaurent.jpg' %}'">
       <span>Mam's</span>
     </a>
     <nav class="main-nav" id="main-nav">
