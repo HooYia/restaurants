@@ -202,6 +202,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "restaurants.users.context_processors.allauth_settings",
                 "restaurants.users.context_processors.cart_processor",
+                "restaurants.users.context_processors.dashboard_stats",
             ],
         },
     },
