@@ -6,3 +6,7 @@ def allauth_settings(request):
     return {
         "ACCOUNT_ALLOW_REGISTRATION": settings.ACCOUNT_ALLOW_REGISTRATION,
     }
+
+from restaurants.users.cart import Cart
+def cart_processor(request):
+    return {'cart': Cart(request)}

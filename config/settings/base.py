@@ -201,6 +201,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "restaurants.users.context_processors.allauth_settings",
+                "restaurants.users.context_processors.cart_processor",
             ],
         },
     },
@@ -395,3 +396,4 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+CART_SESSION_ID = 'cart'

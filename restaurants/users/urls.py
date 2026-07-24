@@ -4,6 +4,7 @@ from restaurants.users.views.auth_views import CustomLogoutView
 from restaurants.users.views.auth_views import RegisterView, VerifyOtpView
 from restaurants.users.views.home_view import HomeView
 from restaurants.users.views.cart_view import CartView
+from restaurants.users.views.cart_api import CartAddView, CartRemoveView, CartUpdateView
 
 from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, AdminDashboardView
 app_name = "users"
@@ -13,6 +14,21 @@ urlpatterns = [
         "panier/",
         CartView.as_view(),
         name="cart"
+    ),
+    path(
+        "api/cart/add/",
+        CartAddView.as_view(),
+        name="cart-add"
+    ),
+    path(
+        "api/cart/remove/",
+        CartRemoveView.as_view(),
+        name="cart-remove"
+    ),
+    path(
+        "api/cart/update/",
+        CartUpdateView.as_view(),
+        name="cart-update"
     ),
       path(
         "register/",
