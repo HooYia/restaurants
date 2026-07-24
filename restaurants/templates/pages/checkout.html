@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .checkout-page { padding: 4rem 0 6rem; background: var(--paper); }
+  .checkout-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; align-items: start; }
+  .checkout-panel { background: #fff; border: 1px solid rgba(107,42,31,.08); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; }
+  .checkout-panel h2 { font-family: var(--font-brush); color: var(--maroon); font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(107,42,31,.1); padding-bottom: 0.8rem; }
+  
+  .form-group { margin-bottom: 1.5rem; }
+  .form-label { display: block; font-size: .9rem; color: #8a7660; margin-bottom: .4rem; font-weight: 600; }
+  .form-input { width: 100%; padding: .9rem 1rem; border: 1px solid rgba(107,42,31,.15); border-radius: 10px; font-family: inherit; font-size: .95rem; outline: none; }
+  .form-input:focus { border-color: var(--terracotta); }
+  
+  .address-card { border: 1px solid rgba(107,42,31,.15); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; cursor: pointer; display: flex; align-items: center; gap: 1rem; }
+  .address-card.selected { border-color: var(--terracotta); background: rgba(201,122,58,.05); }
+  
+  .summary-card{ background: var(--dark); color: var(--cream2); border-radius: var(--radius); padding: 1.8rem; position: sticky; top: 1.5rem; }
+  .summary-card h2{ font-family: var(--font-brush); color: var(--amber); font-size: 1.2rem; margin-bottom: 1.3rem; }
+  .summary-row{ display: flex; justify-content: space-between; font-size: .9rem; color: rgba(239,224,196,.8); margin-bottom: .9rem; }
+  .summary-row.total{ color: var(--cream2); font-weight: 700; font-size: 1.1rem; padding-top: 1rem; margin-top: .4rem; border-top: 1px solid rgba(224,168,92,.2); }
+  .btn-checkout{ display: block; width: 100%; padding: 1rem; border-radius: 999px; background: var(--terracotta); color: #fff; text-align: center; font-weight: 700; font-size: .95rem; border: none; cursor: pointer; transition: background .2s ease, transform .2s ease; margin-top: 1.5rem;}
+  .btn-checkout:hover{ background: var(--amber); color: var(--dark); transform: translateY(-2px); }
+
+  /* Responsive */
+  @media (max-width:900px){ .checkout-grid{ grid-template-columns: 1fr; } .summary-card{ position: static; } }
+</style>
+
+<div class="checkout-page">
+  <div class="container">
+    <h1 style="font-family: var(--font-brush); color: var(--maroon); font-size: 2.2rem; margin-bottom: 2rem;">Validation de la commande</h1>
+    
+    <form method="POST" action="{% url 'users:checkout' %}">
+      {% csrf_token %}
+      <div class="checkout-grid">
+        <div class="checkout-main">
+          
+          <div class="checkout-panel">
+            <h2>1. Adresse de livraison</h2>
+            {% if addresses %}
+              <p style="margin-bottom:1rem; color:#8a7660; font-size:0.9rem;">Sélectionnez une adresse existante :</p>
+              {% for addr in addresses %}
+                <label class="address-card">
+                  <input type="radio" name="address_id" value="{{ addr.id }}" {% if forloop.first %}checked{% endif %}>
+                  <div>
+                    <div style="font-weight:600; color:var(--dark);">{{ addr.street }} - {{ addr.city }}</div>
+                    {% if addr.description %}<div style="font-size:0.85rem; color:#8a7660;">{{ addr.description }}</div>{% endif %}
+                  </div>
+                </label>
+              {% endfor %}
+              
+              <div style="margin: 1.5rem 0; text-align: center; color:#8a7660; font-weight:bold;">OU</div>
+            {% endif %}
+            
+            <p style="margin-bottom:1rem; color:#8a7660; font-size:0.9rem;">Entrez une nouvelle adresse :</p>
+            <div class="form-group">
+              <label class="form-label">Ville</label>
+              <input type="text" name="city" class="form-input" placeholder="Bafoussam">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rue / Quartier</label>
+              <input type="text" name="street" class="form-input" placeholder="Quartier Tamdja">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description (facultatif)</label>
+              <input type="text" name="description" class="form-input" placeholder="Près de la pharmacie, portail noir...">
+            </div>
+          </div>
+
+          <div class="checkout-panel">
+            <h2>2. Paiement</h2>
+            <div class="form-group">
+              <label class="address-card">
+                <input type="radio" name="payment_method" value="CASH" checked>
+                <div>
+                  <div style="font-weight:600; color:var(--dark);">Paiement à la livraison</div>
+                  <div style="font-size:0.85rem; color:#8a7660;">Payez en espèces lorsque le livreur arrive.</div>
+                </div>
+              </label>
+              <label class="address-card">
+                <input type="radio" name="payment_method" value="MOBILE_MONEY">
+                <div>
+                  <div style="font-weight:600; color:var(--dark);">Mobile Money (Bientôt disponible)</div>
+                  <div style="font-size:0.85rem; color:#8a7660;">Orange Money / MTN Mobile Money</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <aside class="summary-card">
+          <h2>Votre Commande</h2>
+          {% for item in cart %}
+          <div style="margin-bottom:1rem; border-bottom:1px solid rgba(224,168,92,.1); padding-bottom:0.5rem;">
+            <div style="display:flex; justify-content:space-between; font-weight:600; font-size:0.95rem;">
+              <span>{{ item.quantity }}x {{ item.meal_name }}</span>
+              <span>{{ item.subtotal }} FCFA</span>
+            </div>
+            {% if item.accompaniments %}
+              <div style="font-size:0.8rem; color:rgba(239,224,196,.6);">
+                Avec: {% for acc in item.accompaniments %}{{ acc.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              </div>
+            {% endif %}
+            {% if item.boisson %}
+              <div style="font-size:0.8rem; color:rgba(239,224,196,.6);">
+                Boisson: {{ item.boisson.name }}
+              </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+          
+          <div class="summary-row" style="margin-top:1.5rem;">
+            <span>Sous-total</span>
+            <span>{{ cart.get_total_price }} FCFA</span>
+          </div>
+          <div class="summary-row">
+            <span>Frais de livraison</span>
+            <span>{{ delivery_fee }} FCFA</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total à payer</span>
+            <span>{{ cart.get_total_price|add:delivery_fee }} FCFA</span>
+          </div>
+
+          <button type="submit" class="btn-checkout">Confirmer la commande</button>
+        </aside>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

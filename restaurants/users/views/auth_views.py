@@ -133,17 +133,20 @@ class VerifyOtpView(View):
 
             return redirect("users:verify-otp")
 
-        user = User.objects.create_user(
+        user, created = User.objects.get_or_create(
             email=register_data["email"],
-            phone=register_data["phone"],
-            password=register_data["password"],
-            first_name=register_data["first_name"],
-            last_name=register_data["last_name"],
+            defaults={
+                "phone": register_data["phone"],
+                "first_name": register_data["first_name"],
+                "last_name": register_data["last_name"],
+            }
         )
 
-        Client.objects.create(
-            user=user
-        )
+        if created:
+            user.set_password(register_data["password"])
+            user.save()
+
+        Client.objects.get_or_create(user=user)
 
         login(
             request,

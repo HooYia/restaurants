@@ -106,14 +106,38 @@ class LoginView(View):
 
 
 
-class ClientDashboardView(
-    LoginRequiredMixin,
-    TemplateView
-):
+class ClientDashboardView(LoginRequiredMixin, View):
 
     template_name = "pages/dashboard/user_dashboad/client_dashboard.html"
 
+    def get(self, request):
+        from restaurants.meal.models import Order, Meal
 
+        try:
+            client = request.user.client
+        except Exception:
+            client = None
+
+        client_orders = []
+        stats = {
+            "total_orders": 0,
+            "loyalty_points": 0,
+            "upcoming_reservations": 0,
+            "total_testimonials": 0,
+        }
+
+        if client:
+            client_orders = Order.objects.filter(client=client).prefetch_related("items")[:10]
+            stats["total_orders"] = Order.objects.filter(client=client).count()
+            stats["loyalty_points"] = stats["total_orders"] * 10  # 10 pts par commande
+
+        popular_meals = Meal.objects.filter(is_available=True)[:3]
+
+        return render(request, self.template_name, {
+            "client_orders": client_orders,
+            "stats": stats,
+            "popular_meals": popular_meals,
+        })
 
 
 class AdminDashboardView(

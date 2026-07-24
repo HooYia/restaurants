@@ -5,8 +5,10 @@ from restaurants.users.views.auth_views import RegisterView, VerifyOtpView
 from restaurants.users.views.home_view import HomeView
 from restaurants.users.views.cart_view import CartView
 from restaurants.users.views.cart_api import CartAddView, CartRemoveView, CartUpdateView
+from restaurants.users.views.checkout_views import CheckoutView, OrderSuccessView
 
 from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, AdminDashboardView
+from .views.order_tracking_view import OrderTrackingView
 app_name = "users"
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
@@ -29,6 +31,16 @@ urlpatterns = [
         "api/cart/update/",
         CartUpdateView.as_view(),
         name="cart-update"
+    ),
+    path(
+        "checkout/",
+        CheckoutView.as_view(),
+        name="checkout"
+    ),
+    path(
+        "checkout/success/<uuid:order_id>/",
+        OrderSuccessView.as_view(),
+        name="order-success"
     ),
       path(
         "register/",
@@ -59,6 +71,11 @@ urlpatterns = [
         "client/dashboard/",
         ClientDashboardView.as_view(),
         name="client-dashboard"
+    ),
+    path(
+        "client/commandes/<uuid:order_id>/suivi/",
+        OrderTrackingView.as_view(),
+        name="order-tracking"
     ),
 
 

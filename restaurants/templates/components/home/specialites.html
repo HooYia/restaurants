@@ -38,7 +38,12 @@
           <p>{{ meal.description|truncatewords:15 }}</p>
           <div class="dish-footer">
             <span class="dish-price">{{ meal.price }} FCFA</span>
-            <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}')">+</button>
+            <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}', this)">+</button>
+          </div>
+          <div class="meal-accompaniments-data" style="display:none;">
+            {% for acc in meal.accompaniments.all %}
+              <div class="acc-data" data-id="{{ acc.id }}" data-name="{{ acc.name|escapejs }}" data-price="{{ acc.price }}"></div>
+            {% endfor %}
           </div>
         </div>
       </div>
@@ -97,16 +102,11 @@
     
     <input type="hidden" id="modal_meal_id">
     
-    <div style="margin-top:1.5rem;">
+    <div style="margin-top:1.5rem;" id="modal_acc_section">
       <h3 style="font-size:1.1rem; margin-bottom:0.5rem;">Accompagnements</h3>
       <p style="font-size:0.85rem; color:#8a7660; margin-bottom:1rem;" id="modal_acc_text">Choisissez vos accompagnements.</p>
-      <div style="display:flex; flex-direction:column; gap:0.5rem; max-height:150px; overflow-y:auto; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px;">
-        {% for acc in accompaniments %}
-        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
-          <input type="checkbox" name="modal_accompaniments" value="{{ acc.id }}">
-          <span>{{ acc.name }} <strong style="color:var(--terracotta);">+{{ acc.price }} FCFA</strong></span>
-        </label>
-        {% endfor %}
+      <div id="modal_acc_container" style="display:flex; flex-direction:column; gap:0.5rem; max-height:150px; overflow-y:auto; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px;">
+        <!-- Filled by JS -->
       </div>
     </div>
     
@@ -132,30 +132,47 @@
   </div>
 </div>
 
+{% csrf_token %}
 <script>
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
 
-function openAddToCartModal(id, name, price, maxIncluded) {
+function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
   document.getElementById('modal_meal_id').value = id;
   document.getElementById('modal_meal_name').innerText = name;
   document.getElementById('modal_meal_price').innerText = price;
   document.getElementById('modal_quantity').value = 1;
   
-  // Uncheck all
-  document.querySelectorAll('input[name="modal_accompaniments"]').forEach(cb => cb.checked = false);
+  // Populate accompaniments dynamically
+  const accContainer = document.getElementById('modal_acc_container');
+  const accSection = document.getElementById('modal_acc_section');
+  accContainer.innerHTML = ''; // Clear previous
+  
+  // Find the hidden data div next to the button
+  const dataDiv = btnElem.closest('.dish-card').querySelector('.meal-accompaniments-data');
+  const accDataElements = dataDiv.querySelectorAll('.acc-data');
+  
+  if (accDataElements.length === 0) {
+    accSection.style.display = 'none';
+  } else {
+    accSection.style.display = 'block';
+    accDataElements.forEach(el => {
+      const accId = el.dataset.id;
+      const accName = el.dataset.name;
+      const accPrice = el.dataset.price;
+      
+      const label = document.createElement('label');
+      label.style.display = 'flex';
+      label.style.alignItems = 'center';
+      label.style.gap = '0.5rem';
+      label.style.cursor = 'pointer';
+      
+      label.innerHTML = `
+        <input type="checkbox" name="modal_accompaniments" value="${accId}">
+        <span>${accName} <strong style="color:var(--terracotta);">+${accPrice} FCFA</strong></span>
+      `;
+      accContainer.appendChild(label);
+    });
+  }
+  
   document.getElementById('modal_boisson').value = '';
   
   const text = maxIncluded > 0 
@@ -184,7 +201,7 @@ function submitAddToCart() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken')
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
     },
     body: JSON.stringify({
       meal_id: mealId,
@@ -197,17 +214,17 @@ function submitAddToCart() {
   .then(data => {
     if(data.status === 'success') {
       closeAddToCartModal();
-      showToast('success', 'Plat ajouté au panier !');
+      toastManager.create().setMessage('Plat ajouté au panier !').setType('success').show();
       // Update cart count badge if it exists
       const badge = document.getElementById('cart-count-badge');
       if(badge) badge.innerText = data.cart_count;
     } else {
-      showToast('error', 'Erreur : ' + data.message);
+      toastManager.create().setMessage('Erreur : ' + data.message).setType('error').show();
     }
   })
   .catch(err => {
     console.error(err);
-    showToast('error', 'Une erreur est survenue.');
+    toastManager.create().setMessage('Une erreur est survenue.').setType('error').show();
   });
 }
 </script>
