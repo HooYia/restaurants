@@ -11,52 +11,36 @@
  */
 const toastStyles = {
   success: {
-    bg: "bg-white",
-    border: "border-green-500",
-    iconBg: "bg-green-500",
-    iconColor: "text-white",
-    titleColor: "text-green-700",
-    textColor: "text-green-600",
-    progressColor: "bg-green-500",
-    title: typeof gettext === "function" ? gettext("Success") : "Success",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" style="width:14px; height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`,
+    iconBg: "#10b981", // emerald-500
+    titleColor: "#047857", // emerald-700
+    progressColor: "#10b981",
+    title: typeof gettext === "function" ? gettext("Success") : "Succès",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" style="width:14px; height:14px; color:white;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`,
   },
   warning: {
-    bg: "bg-white",
-    border: "border-yellow-500",
-    iconBg: "bg-yellow-500",
-    iconColor: "text-white",
-    titleColor: "text-yellow-700",
-    textColor: "text-yellow-600",
-    progressColor: "bg-yellow-500",
-    title: typeof gettext === "function" ? gettext("Warning") : "Warning",
-    icon: `<svg style="width:12px; height:12px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    iconBg: "#f59e0b", // amber-500
+    titleColor: "#b45309", // amber-700
+    progressColor: "#f59e0b",
+    title: typeof gettext === "function" ? gettext("Warning") : "Attention",
+    icon: `<svg style="width:14px; height:14px; color:white;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
                     <path d="M12 9v4"/>
                     <path d="M12 17h.01"/>
                 </svg>`,
   },
   info: {
-    bg: "bg-white",
-    border: "border-gray-300",
-    iconBg: "bg-blue-500",
-    iconColor: "text-white",
-    titleColor: "text-blue-700",
-    textColor: "text-blue-600",
-    progressColor: "bg-blue-500",
+    iconBg: "#3b82f6", // blue-500
+    titleColor: "#1d4ed8", // blue-700
+    progressColor: "#3b82f6",
     title: typeof gettext === "function" ? gettext("Info") : "Info",
-    icon: `<span class="text-xs font-bold">i</span>`,
+    icon: `<span style="font-size:12px; font-weight:bold; color:white;">i</span>`,
   },
   error: {
-    bg: "bg-white",
-    border: "border-red-500",
-    iconBg: "bg-red-500",
-    iconColor: "text-white",
-    titleColor: "text-red-700",
-    textColor: "text-red-600",
-    progressColor: "bg-red-500",
-    title: typeof gettext === "function" ? gettext("Error") : "Error",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" style="width:14px; height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    iconBg: "#ef4444", // red-500
+    titleColor: "#b91c1c", // red-700
+    progressColor: "#ef4444",
+    title: typeof gettext === "function" ? gettext("Error") : "Erreur",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" style="width:14px; height:14px; color:white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 6 6 18"/>
                     <path d="m6 6 12 12"/>
                 </svg>`,
@@ -85,10 +69,8 @@ class ToastManager {
       const container = document.createElement("div");
       container.id = `toast-container-${pos}`;
 
-      // Base classes: fixed, z-index, flex column
-      // We use a helper method to set the specific corner CSS
-      container.className =
-        "fixed z-[9999999] flex flex-col gap-2 w-full max-w-[85vw] sm:max-w-xs md:max-w-sm pointer-events-none transition-all duration-400";
+      // Base classes: flex column
+      container.className = "tm-container";
 
       this.containers[pos] = container;
       this.applyContainerStyles(container, pos);
@@ -126,34 +108,109 @@ class ToastManager {
     }
   }
 
-  /**
-   *  Injects the CSS keyframes and utility classes for toast animations (slide-in/out and progress bar).
-   * @private
-   */
   injectStyles() {
     const styles = `
-            [id^="toast-container-"] > div { pointer-events: auto; }
-            @keyframes slide-in-right { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-            @keyframes slide-out-right { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-            @keyframes slide-in-left { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-            @keyframes slide-out-left { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
-            @keyframes slide-in-bottom { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-            @keyframes slide-out-bottom { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100%); opacity: 0; } }
-            @keyframes slide-in-top { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-            @keyframes slide-out-top { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-100%); opacity: 0; } }
+      .tm-container {
+        position: fixed;
+        z-index: 9999999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 350px;
+        pointer-events: none;
+        transition: all 0.4s;
+      }
+      @media (max-width: 768px) {
+        .tm-container { max-width: 90vw; }
+      }
+      .tm-toast {
+        pointer-events: auto;
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        font-family: 'DM Sans', 'Montserrat', sans-serif;
+      }
+      .tm-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .tm-icon-wrapper {
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+      .tm-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.2;
+      }
+      .tm-message {
+        color: #4b5563;
+        font-size: 0.875rem;
+        margin: 0.5rem 0 0 0;
+        line-height: 1.5;
+      }
+      .tm-close-btn {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 0.5rem;
+        top: 0.5rem;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        transition: background 0.2s;
+      }
+      .tm-close-btn:hover {
+        background: #f3f4f6;
+        color: #374151;
+      }
+      .tm-progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+      }
+      [id^="toast-container-"] > div { pointer-events: auto; }
+      @keyframes slide-in-right { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes slide-out-right { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+      @keyframes slide-in-left { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes slide-out-left { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+      @keyframes slide-in-bottom { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      @keyframes slide-out-bottom { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100%); opacity: 0; } }
+      @keyframes slide-in-top { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      @keyframes slide-out-top { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-100%); opacity: 0; } }
 
-            .animate-slide-in-right { animation: slide-in-right 0.3s ease-out forwards; }
-            .animate-slide-out-right { animation: slide-out-right 0.3s ease-in forwards; }
-            .animate-slide-in-left { animation: slide-in-left 0.3s ease-out forwards; }
-            .animate-slide-out-left { animation: slide-out-left 0.3s ease-in forwards; }
-            .animate-slide-in-bottom { animation: slide-in-bottom 0.3s ease-out forwards; }
-            .animate-slide-out-bottom { animation: slide-out-bottom 0.3s ease-in forwards; }
-            .animate-slide-in-top { animation: slide-in-top 0.3s ease-out forwards; }
-            .animate-slide-out-top { animation: slide-out-top 0.3s ease-in forwards; }
+      .animate-slide-in-right { animation: slide-in-right 0.3s ease-out forwards; }
+      .animate-slide-out-right { animation: slide-out-right 0.3s ease-in forwards; }
+      .animate-slide-in-left { animation: slide-in-left 0.3s ease-out forwards; }
+      .animate-slide-out-left { animation: slide-out-left 0.3s ease-in forwards; }
+      .animate-slide-in-bottom { animation: slide-in-bottom 0.3s ease-out forwards; }
+      .animate-slide-out-bottom { animation: slide-out-bottom 0.3s ease-in forwards; }
+      .animate-slide-in-top { animation: slide-in-top 0.3s ease-out forwards; }
+      .animate-slide-out-top { animation: slide-out-top 0.3s ease-in forwards; }
 
-            @keyframes progress { from { width: 100%; } to { width: 0%; } }
-            .progress-bar-toast { animation: progress linear forwards; }
-        `;
+      @keyframes progress { from { width: 100%; } to { width: 0%; } }
+      .progress-bar-toast { animation: progress linear forwards; }
+    `;
     const styleSheet = document.createElement("style");
     styleSheet.textContent = styles;
     document.head.appendChild(styleSheet);
@@ -203,7 +260,7 @@ class ToastManager {
     }
 
     const toast = document.createElement("div");
-    toast.className = `w-full bg-white border border-gray-300 p-3 md:p-4 rounded-lg shadow-md ${slideIn} relative overflow-hidden transform transition-all`;
+    toast.className = `tm-toast ${slideIn}`;
 
     toast.style.animationDelay = `${staggerDelay}ms`;
     // On cache le toast initialement pour éviter qu'il clignote avant l'animation
@@ -215,28 +272,21 @@ class ToastManager {
     toast.dataset.animateIn = slideIn;
 
     toast.innerHTML = `
-            <div class="">
-                <div>
-                    <div class="flex items-start md:items-center gap-3 w-full">
-                        ${
-                          icon ??
-                          `<div class="${style.iconBg} text-white rounded-full flex items-center justify-center shrink-0" style="width:20px; height:20px; min-width:20px; min-height:20px;">
-                                ${style.icon}
-                            </div> `
-                        }
-
-                        <h2 class="font-montserrat text-xs md:text-sm lg:text-base font-bold leading-tight">${title ?? style.title}</h2>
+            <div class="tm-content">
+                <div class="tm-header">
+                    <div class="tm-icon-wrapper" style="background-color: ${style.iconBg};">
+                        ${icon ?? style.icon}
                     </div>
-                    <p class="font-montserrat text-neutral-600 text-xs md:text-sm leading-relaxed mt-4">${message}</p>
+                    <h2 class="tm-title" style="color: ${style.titleColor};">${title ?? style.title}</h2>
                 </div>
-                <button class="text-white bg-neutral-400 cursor-pointer hover:bg-neutral-700 flex justify-center items-center rounded-full close-toast shrink-0 absolute right-2 top-2"
-                style="animation-duration: ${duration}ms; animation-delay: ${staggerDelay}ms">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-3 m-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <p class="tm-message">${message}</p>
+                <button class="tm-close-btn close-toast" style="animation-duration: ${duration}ms; animation-delay: ${staggerDelay}ms">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width:14px; height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <div class="absolute bottom-0 left-0 h-1 ${style.progressColor} progress-bar-toast" style="animation-duration: ${duration}ms"></div>
+            <div class="tm-progress-bar progress-bar-toast" style="background-color: ${style.progressColor}; animation-duration: ${duration}ms"></div>
         `;
 
     targetContainer.appendChild(toast);
