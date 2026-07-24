@@ -1,8 +1,8 @@
 {% extends 'pages/dashboard/dashboard_base.html' %}
 {% load static %}
 
-{% block title %}Catégories — Mam's Admin{% endblock %}
-{% block dashboard_title %}Catégories{% endblock %}
+{% block title %}Accompagnements — Mam's Admin{% endblock %}
+{% block dashboard_title %}Accompagnements{% endblock %}
 
 {% block sidebar %}
   {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
@@ -72,26 +72,26 @@
 
 <div class="panel" style="padding: 1.5rem;">
   <div class="panel-head" style="border-bottom: none; padding-bottom: 1rem;">
-    <h2 style="font-size:1.3rem;">Catégories de Plats</h2>
-    <button onclick="openModal()" class="btn-mini" style="background:var(--terracotta);color:#fff;padding:.5rem 1rem;border-radius:999px;font-weight:600;cursor:pointer;">+ Nouvelle Catégorie</button>
+    <h2 style="font-size:1.3rem;">Gestion des Accompagnements</h2>
+    <button onclick="openModal()" class="btn-mini" style="background:var(--terracotta);color:#fff;padding:.5rem 1rem;border-radius:999px;font-weight:600;cursor:pointer;">+ Nouvel Accompagnement</button>
   </div>
   
-  <table id="categoriesTable" style="width:100%; margin-top: 1rem;">
+  <table id="accTable" style="width:100%; margin-top: 1rem;">
     <thead>
       <tr>
         <th>Nom</th>
-        <th>Ordre d'affichage</th>
+        <th>Prix Supplémentaire</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      {% for category in categories %}
+      {% for acc in accompaniments %}
       <tr>
-        <td style="font-weight:600;">{{ category.name }}</td>
-        <td>{{ category.display_order }}</td>
+        <td style="font-weight:600;">{{ acc.name }}</td>
+        <td style="color:var(--terracotta);font-weight:700;">+{{ acc.price }} FCFA</td>
         <td>
-          <a href="{% url 'meal:category-update' category.pk %}" class="btn-mini" style="background:var(--terracotta);color:#fff;border-radius:4px;padding:4px 8px;text-decoration:none;margin-right:5px;font-size:0.8rem;">Modifier</a>
-          <form action="{% url 'meal:category-delete' category.pk %}" method="POST" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+          <a href="{% url 'meal:accompaniment-update' acc.pk %}" class="btn-mini" style="background:var(--terracotta);color:#fff;border-radius:4px;padding:4px 8px;text-decoration:none;margin-right:5px;font-size:0.8rem;">Modifier</a>
+          <form action="{% url 'meal:accompaniment-delete' acc.pk %}" method="POST" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet accompagnement ?');">
             {% csrf_token %}
             <button type="submit" class="btn-mini" style="background:var(--maroon);color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:0.8rem;">Supprimer</button>
           </form>
@@ -103,12 +103,12 @@
 </div>
 
 <!-- Modal -->
-<div class="modal-overlay" id="categoryModal" {% if show_modal %}style="display:flex;"{% endif %}>
+<div class="modal-overlay" id="accModal" {% if show_modal %}style="display:flex;"{% endif %}>
   <div class="modal-content">
     <button class="modal-close" onclick="closeModal()">&times;</button>
-    <h2 style="color: var(--maroon); margin-bottom: 1.5rem; margin-top:0;">Créer une Catégorie</h2>
+    <h2 style="color: var(--maroon); margin-bottom: 1.5rem; margin-top:0;">Créer un Accompagnement</h2>
     
-    <form method="POST" action="{% url 'meal:category-list' %}">
+    <form method="POST" action="{% url 'meal:accompaniment-list' %}">
       {% csrf_token %}
       
       <div class="form-group">
@@ -120,10 +120,10 @@
       </div>
       
       <div class="form-group">
-        <label class="form-label" for="{{ form.display_order.id_for_label }}">{{ form.display_order.label }}</label>
-        {{ form.display_order }}
-        {% if form.display_order.errors %}
-          <div style="color: var(--maroon); font-size: .8rem; margin-top: .3rem;">{{ form.display_order.errors }}</div>
+        <label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+        {{ form.price }}
+        {% if form.price.errors %}
+          <div style="color: var(--maroon); font-size: .8rem; margin-top: .3rem;">{{ form.price.errors }}</div>
         {% endif %}
       </div>
       
@@ -140,21 +140,21 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
   $(document).ready(function() {
-      $('#categoriesTable').DataTable({
+      $('#accTable').DataTable({
           language: {
               url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
           },
-          order: [[1, 'asc']],
+          order: [[0, 'asc']],
           pageLength: 10
       });
   });
 
   function openModal() {
-      document.getElementById('categoryModal').style.display = 'flex';
+      document.getElementById('accModal').style.display = 'flex';
   }
 
   function closeModal() {
-      document.getElementById('categoryModal').style.display = 'none';
+      document.getElementById('accModal').style.display = 'none';
   }
 </script>
 {% endblock %}

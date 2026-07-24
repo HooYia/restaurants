@@ -1,4 +1,5 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect
 
@@ -29,3 +30,23 @@ class AdminMealListView(AdminRequiredMixin, ListView):
         messages.error(request, "Erreur lors de la création du plat. Veuillez vérifier les champs.")
         self.object_list = self.get_queryset()
         return self.render_to_response(self.get_context_data(form=form, show_modal=True))
+
+
+class AdminMealUpdateView(AdminRequiredMixin, UpdateView):
+    model = Meal
+    form_class = MealForm
+    template_name = "pages/dashboard/admin_dashboard/meal_update.html"
+    success_url = reverse_lazy("meal:meal-list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Plat mis à jour avec succès !")
+        return super().form_valid(form)
+
+
+class AdminMealDeleteView(AdminRequiredMixin, DeleteView):
+    model = Meal
+    success_url = reverse_lazy("meal:meal-list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Plat supprimé avec succès !")
+        return super().form_valid(form)

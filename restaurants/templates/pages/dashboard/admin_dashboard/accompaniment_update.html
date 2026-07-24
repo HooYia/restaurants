@@ -1,0 +1,52 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Modifier Accompagnement — Mam's Admin{% endblock %}
+{% block dashboard_title %}Modifier Accompagnement{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  .form-group { margin-bottom: 1.5rem; }
+  .form-label { display: block; font-size: .85rem; color: #8a7660; margin-bottom: .4rem; font-weight: 600; }
+  .form-input { 
+    width: 100%; max-width: 500px; padding: .8rem 1rem; 
+    border: 1px solid rgba(107,42,31,.15); border-radius: 8px; 
+    font-family: inherit; font-size: .9rem; outline: none; 
+  }
+  .form-input:focus { border-color: var(--terracotta); }
+  .btn-submit { background: var(--terracotta); color: #fff; padding: .8rem 1.5rem; border-radius: 8px; font-weight: 600; transition: background 0.2s; border: none; cursor: pointer; }
+  .btn-submit:hover { background: var(--maroon); }
+</style>
+
+<div class="panel" style="padding: 2rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <h2 style="color: var(--maroon); margin:0;">Modifier : {{ accompaniment.name }}</h2>
+    <a href="{% url 'meal:accompaniment-list' %}" style="color: #8a7660; text-decoration:none; font-weight:600;">&larr; Retour à la liste</a>
+  </div>
+  
+  <form method="POST">
+    {% csrf_token %}
+    
+    <div class="form-group">
+      <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+      {{ form.name }}
+      {% if form.name.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.name.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+      {{ form.price }}
+      {% if form.price.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.price.errors }}</div>{% endif %}
+    </div>
+    
+    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+      <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+      <a href="{% url 'meal:accompaniment-list' %}" class="btn-outline" style="padding: .8rem 1.5rem; border: 1px solid rgba(107,42,31,.15); border-radius: 8px; font-weight: 600; color: var(--dark); text-decoration:none;">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
