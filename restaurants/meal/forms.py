@@ -1,5 +1,5 @@
 from django import forms
-from .models import Category, Meal, Accompaniment, DailyMenu
+from .models import Category, Meal, Accompaniment, DailyMenu, Boisson
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -89,4 +89,20 @@ class AccompanimentForm(forms.ModelForm):
         labels = {
             'name': 'Nom',
             'price': 'Prix (FCFA)'
+        }
+
+
+class BoissonForm(forms.ModelForm):
+    class Meta:
+        model = Boisson
+        fields = ['name', 'price', 'image', 'is_available']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Nom de la boisson'}),
+            'price': forms.NumberInput(attrs={'class': 'form-input', 'step': '0.01', 'placeholder': 'Prix (ex: 500)'}),
+        }
+        labels = {
+            'name': 'Nom',
+            'price': 'Prix (FCFA)',
+            'image': 'Photo',
+            'is_available': 'Disponible',
         }

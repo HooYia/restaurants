@@ -29,6 +29,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       Accompagnements
     </a>
+    <a href="{% url 'meal:boisson-list' %}" class="nav-link {% if 'boisson' in request.path %}active{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 10v10a2 2 0 01-2 2H9a2 2 0 01-2-2V10M12 2v4M8 6h8"/></svg>
+      Boissons
+    </a>
   </nav>
 
   <nav class="nav-group">

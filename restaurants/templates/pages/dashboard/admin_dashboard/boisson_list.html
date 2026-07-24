@@ -1,0 +1,188 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Boissons — Mam's Admin{% endblock %}
+{% block dashboard_title %}Boissons{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<style>
+  /* Styling for modal */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(35,22,16,0.6);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-content {
+    background: #fff; border-radius: var(--radius);
+    padding: 2rem; width: 90%; max-width: 500px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; font-size: 1.5rem; color: #8a7660; cursor: pointer;
+  }
+  .form-group { margin-bottom: 1.5rem; }
+  .form-label { display: block; font-size: .85rem; color: #8a7660; margin-bottom: .4rem; font-weight: 600; }
+  .form-input { 
+    width: 100%; padding: .8rem 1rem; 
+    border: 1px solid rgba(107,42,31,.15); border-radius: 8px; 
+    font-family: inherit; font-size: .9rem; outline: none; 
+  }
+  .form-input[type="checkbox"] { width: auto; margin-top: .5rem; }
+  .form-input:focus { border-color: var(--terracotta); }
+  .btn-submit {
+    background: var(--terracotta); color: #fff;
+    padding: .8rem 1.5rem; border-radius: 8px; font-weight: 600;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: var(--maroon); }
+  
+  /* Styling for DataTables to match our theme */
+  .dataTables_wrapper .dataTables_filter input {
+    border: 1px solid rgba(107,42,31,.15);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    outline: none;
+    margin-bottom: 1rem;
+  }
+  .dataTables_wrapper .dataTables_length select {
+    border: 1px solid rgba(107,42,31,.15);
+    border-radius: 8px;
+    padding: 0.2rem;
+    outline: none;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--terracotta);
+    color: white !important;
+    border: none;
+    border-radius: 5px;
+  }
+  table.dataTable.no-footer {
+    border-bottom: 1px solid rgba(107,42,31,.08);
+  }
+</style>
+
+<div class="panel" style="padding: 1.5rem;">
+  <div class="panel-head" style="border-bottom: none; padding-bottom: 1rem;">
+    <h2 style="font-size:1.3rem;">Gestion des Boissons</h2>
+    <button onclick="openModal()" class="btn-mini" style="background:var(--terracotta);color:#fff;padding:.5rem 1rem;border-radius:999px;font-weight:600;cursor:pointer;">+ Nouvelle Boisson</button>
+  </div>
+  
+  <table id="boissonsTable" style="width:100%; margin-top: 1rem;">
+    <thead>
+      <tr>
+        <th>Photo</th>
+        <th>Nom</th>
+        <th>Prix</th>
+        <th>Disponibilité</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for boisson in boissons %}
+      <tr>
+        <td>
+          {% if boisson.image %}
+            <img src="{{ boisson.image.url }}" alt="{{ boisson.name }}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+          {% else %}
+            <div style="width:40px;height:40px;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:#fff;">🥤</div>
+          {% endif %}
+        </td>
+        <td style="font-weight:600;">{{ boisson.name }}</td>
+        <td style="color:var(--terracotta);font-weight:700;">{{ boisson.price }} FCFA</td>
+        <td>
+          {% if boisson.is_available %}
+            <span style="color:var(--green);font-weight:600;font-size:.8rem;">Disponible</span>
+          {% else %}
+            <span style="color:var(--maroon);font-weight:600;font-size:.8rem;">Indisponible</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'meal:boisson-update' boisson.pk %}" class="btn-mini" style="background:var(--terracotta);color:#fff;border-radius:4px;padding:4px 8px;text-decoration:none;margin-right:5px;font-size:0.8rem;">Modifier</a>
+          <form action="{% url 'meal:boisson-delete' boisson.pk %}" method="POST" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette boisson ?');">
+            {% csrf_token %}
+            <button type="submit" class="btn-mini" style="background:var(--maroon);color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:0.8rem;">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="boissonModal" {% if show_modal %}style="display:flex;"{% endif %}>
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 style="color: var(--maroon); margin-bottom: 1.5rem; margin-top:0;">Créer une Boisson</h2>
+    
+    <form method="POST" action="{% url 'meal:boisson-list' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+        {{ form.name }}
+        {% if form.name.errors %}<div style="color: var(--maroon); font-size: .8rem; margin-top: .3rem;">{{ form.name.errors }}</div>{% endif %}
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+        {{ form.price }}
+        {% if form.price.errors %}<div style="color: var(--maroon); font-size: .8rem; margin-top: .3rem;">{{ form.price.errors }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+        {{ form.image }}
+        {% if form.image.errors %}<div style="color: var(--maroon); font-size: .8rem; margin-top: .3rem;">{{ form.image.errors }}</div>{% endif %}
+      </div>
+      
+      <div class="form-group" style="display:flex;align-items:center;gap:0.5rem;margin-top:1.5rem;">
+        {{ form.is_available }}
+        <label class="form-label" for="{{ form.is_available.id_for_label }}" style="margin:0;">{{ form.is_available.label }} (Affichée au client)</label>
+        {% if form.is_available.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.is_available.errors }}</div>{% endif %}
+      </div>
+
+      <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <button type="submit" class="btn-submit">Créer</button>
+        <button type="button" onclick="closeModal()" class="btn-outline" style="padding: .8rem 1.5rem; border: 1px solid rgba(107,42,31,.15); border-radius: 8px; font-weight: 600; color: var(--dark); cursor:pointer;">Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('#boissonsTable').DataTable({
+          language: {
+              url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+          },
+          order: [[1, 'asc']],
+          pageLength: 10,
+          columnDefs: [
+              { orderable: false, targets: [0, 4] } // Désactiver le tri pour la photo et les actions
+          ]
+      });
+  });
+
+  function openModal() {
+      document.getElementById('boissonModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+      document.getElementById('boissonModal').style.display = 'none';
+  }
+</script>
+{% endblock %}
