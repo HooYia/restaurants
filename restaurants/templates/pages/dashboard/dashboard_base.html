@@ -194,6 +194,22 @@
   .stat-icon.green{background:rgba(92,112,72,.14);color:var(--green);}
   .stat-icon.maroon{background:rgba(107,42,31,.12);color:var(--maroon);}
 
+  /* ---------- Mini stats (for list pages) ---------- */
+  .stats-mini {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: .8rem; margin-bottom: 1.4rem;
+  }
+  .mini-stat {
+    background: #fff; border: 1px solid rgba(107,42,31,.08);
+    border-radius: 12px; padding: .9rem 1.1rem;
+    box-shadow: 0 4px 12px rgba(35,22,16,.04);
+  }
+  .mini-stat .ms-label { font-size: .72rem; color: #9a8570; text-transform: uppercase; letter-spacing: .05em; }
+  .mini-stat .ms-value { font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-top: .15rem; }
+  .mini-stat .ms-sub { font-size: .72rem; margin-top: .1rem; font-weight: 600; }
+
+
   /* ---------- Panels ---------- */
   .panels-grid{
     display:grid;

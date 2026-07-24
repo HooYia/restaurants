@@ -9,6 +9,14 @@
 {% endblock %}
 
 {% block dashboard_content %}
+<div class="stats-mini">
+  <div class="mini-stat">
+    <div class="ms-label">Total Accomp.</div>
+    <div class="ms-value">{{ accompaniments|length }}</div>
+    <div class="ms-sub" style="color:var(--terracotta);">Disponibles</div>
+  </div>
+</div>
+
 <!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <style>
