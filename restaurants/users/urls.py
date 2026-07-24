@@ -10,6 +10,7 @@ from restaurants.users.views.checkout_views import CheckoutView, OrderSuccessVie
 from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, AdminDashboardView
 from .views.order_tracking_view import OrderTrackingView
 from .views.admin_messages_view import AdminMessagesView
+from .views.client_messages_view import ClientMessagesView
 from .views.address_views import (
     AddressListView, AddressCreateView, AddressUpdateView,
     AddressDeleteView, AddressSetDefaultView,
@@ -87,6 +88,11 @@ urlpatterns = [
         "client/commandes/<uuid:order_id>/suivi/",
         OrderTrackingView.as_view(),
         name="order-tracking"
+    ),
+    path(
+        "client/messages/",
+        ClientMessagesView.as_view(),
+        name="client-messages"
     ),
     # Adresses
     path(
