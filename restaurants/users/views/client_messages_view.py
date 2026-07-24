@@ -29,16 +29,18 @@ class ClientMessagesView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        content = request.POST.get('content')
+        content = request.POST.get('content', '').strip()
+        attachment = request.FILES.get('attachment')
         
-        if content and content.strip():
+        if content or attachment:
             conversation, created = Conversation.objects.get_or_create(user=request.user)
             
             # Create message
             Message.objects.create(
                 conversation=conversation,
                 sender=request.user,
-                content=content.strip(),
+                content=content,
+                attachment=attachment,
                 is_read=False
             )
             

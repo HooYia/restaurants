@@ -198,7 +198,8 @@ class Message(OngBaseModel):
         on_delete=models.CASCADE,
         related_name="sent_messages",
     )
-    content = models.TextField()
+    content = models.TextField(blank=True)
+    attachment = models.FileField(upload_to="messages/attachments/", null=True, blank=True)
     is_read = models.BooleanField(default=False)
     read_at = models.DateTimeField(null=True, blank=True)
 

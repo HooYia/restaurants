@@ -37,15 +37,17 @@ class AdminMessagesView(AdminRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         conversation_id = request.POST.get('conversation_id')
-        content = request.POST.get('content')
+        content = request.POST.get('content', '').strip()
+        attachment = request.FILES.get('attachment')
         
-        if conversation_id and content and content.strip():
+        if conversation_id and (content or attachment):
             conversation = get_object_or_404(Conversation, id=conversation_id)
             
             Message.objects.create(
                 conversation=conversation,
                 sender=request.user,
-                content=content.strip(),
+                content=content,
+                attachment=attachment,
                 is_read=False
             )
             
