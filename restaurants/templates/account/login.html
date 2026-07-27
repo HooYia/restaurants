@@ -214,7 +214,7 @@
             <input type="checkbox" name="remember_me" id="remember_me">
             Se souvenir de moi
           </label>
-          <a href="{% url 'users:password_reset' %}" class="forgot-link">Mot de passe oublié ?</a>
+          <a href="{% url 'account_reset_password' %}" class="forgot-link">Mot de passe oublié ?</a>
         </div>
 
         <button type="submit" class="btn-submit">Se connecter</button>
@@ -224,7 +224,7 @@
     </div>
   </div>
 
-  <a href="{% url 'index' %}" class="back-home">← Retour à l'accueil</a>
+  <a href="{% url 'users:home' %}" class="back-home">← Retour à l'accueil</a>
 </div>
 
 </body>
