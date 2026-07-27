@@ -88,7 +88,7 @@ class Cart:
             yield item
 
     def __len__(self):
-        return sum(item['quantity'] for item in self.cart.values())
+        return len(self.cart.keys())
 
     def get_total_price(self):
         return sum(Decimal(item['total_unit_price']) * item['quantity'] for item in self.cart.values())
