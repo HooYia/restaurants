@@ -24,6 +24,8 @@ class Category(OngBaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.name:
+            self.name = self.name[:1].upper() + self.name[1:]
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
@@ -47,6 +49,8 @@ class Accompaniment(OngBaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.name:
+            self.name = self.name[:1].upper() + self.name[1:]
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
@@ -68,6 +72,8 @@ class Boisson(OngBaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.name:
+            self.name = self.name[:1].upper() + self.name[1:]
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
@@ -114,6 +120,8 @@ class Meal(OngBaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.name:
+            self.name = self.name[:1].upper() + self.name[1:]
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)

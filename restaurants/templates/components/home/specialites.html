@@ -37,11 +37,11 @@
           {% endif %}
         </div>
         <div class="dish-body">
-          <h3>{{ meal.name }}</h3>
+          <h3>{{ meal.name|capfirst }}</h3>
           <p>{{ meal.description|truncatewords:15 }}</p>
           <div class="dish-footer">
             <span class="dish-price">{{ meal.price }} FCFA</span>
-            <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}', this)">+</button>
+            <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|capfirst|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}', this)">+</button>
           </div>
           <div class="meal-accompaniments-data" style="display:none;">
             {% for acc in meal.accompaniments.all %}
@@ -65,7 +65,7 @@
           <span class="dish-badge">Boisson</span>
         </div>
         <div class="dish-body">
-          <h3>{{ boisson.name }}</h3>
+          <h3>{{ boisson.name|capfirst }}</h3>
           <p>Rafraîchissez-vous avec cette boisson.</p>
           <div class="dish-footer">
             <span class="dish-price">{{ boisson.price }} FCFA</span>
@@ -102,7 +102,7 @@
       <div id="modal_boisson_container" style="display:flex; flex-direction:column; gap:0.5rem; max-height:200px; overflow-y:auto; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px;">
         {% for boisson in boissons %}
           <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span>{{ boisson.name }} <strong style="color:var(--terracotta);">+{{ boisson.price }} FCFA</strong></span>
+            <span>{{ boisson.name|capfirst }} <strong style="color:var(--terracotta);">+{{ boisson.price }} FCFA</strong></span>
             <div style="display:flex; align-items:center; border:1.5px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
               <button type="button" onclick="updateQty(this, -1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
               <input type="number" name="modal_boissons" data-id="{{ boisson.id }}" data-price="{{ boisson.price|stringformat:'f' }}" value="0" min="0" readonly style="width:30px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
