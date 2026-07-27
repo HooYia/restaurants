@@ -31,8 +31,11 @@
             <tr>
                 <td>
                     {{ item.meal.name }}
-                    {% if item.boisson %}
-                        <br><small>+ Boisson: {{ item.boisson.name }}</small>
+                    {% if item.order_item_accompaniments.exists %}
+                        <br><small>+ Acc: {% for acc in item.order_item_accompaniments.all %}{{ acc.quantity }}x {{ acc.accompaniment.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
+                    {% endif %}
+                    {% if item.order_item_boissons.exists %}
+                        <br><small>+ Boisson(s): {% for boi in item.order_item_boissons.all %}{{ boi.quantity }}x {{ boi.boisson.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
                     {% endif %}
                 </td>
                 <td>x{{ item.quantity }}</td>

@@ -205,16 +205,17 @@ class OrderItem(OngBaseModel):
     )
     accompaniments = models.ManyToManyField(
         Accompaniment,
+        through='OrderItemAccompaniment',
         blank=True,
         related_name="order_items",
-        help_text="Accompagnements choisis par le client, parmi ceux du plat",
+        help_text="Accompagnements choisis par le client avec leur quantité",
     )
-    boisson = models.ForeignKey(
+    boissons = models.ManyToManyField(
         Boisson,
-        on_delete=models.SET_NULL,
-        related_name="order_items",
-        null=True,
+        through='OrderItemBoisson',
         blank=True,
+        related_name="order_items",
+        help_text="Boissons choisies par le client avec leur quantité",
     )
     extra_accompaniments_fee = models.DecimalField(
         max_digits=8, decimal_places=2, default=0
@@ -230,23 +231,29 @@ class OrderItem(OngBaseModel):
 
     def recalculate(self, save=True):
         """
-        À appeler après avoir défini les accompagnements (M2M) et la
-        boisson : calcule le supplément d'accompagnements et le
+        À appeler après avoir défini les accompagnements (M2M) et les
+        boissons : calcule le supplément d'accompagnements et le
         sous-total de la ligne.
-
-        Règle : les accompagnements choisis au-delà de
-        meal.max_included_accompaniments sont facturés (les moins
-        chers sont considérés inclus en priorité, pour rester
-        favorable au client).
         """
-        chosen = list(self.accompaniments.all().order_by("price"))
+        # Collect chosen accompaniments expanded by their quantity
+        chosen = []
+        for oia in self.order_item_accompaniments.select_related('accompaniment').all():
+            for _ in range(oia.quantity):
+                chosen.append(oia.accompaniment)
+        
+        # Sort by price to give the cheapest ones for free
+        chosen.sort(key=lambda a: a.price)
+        
         included = self.meal.max_included_accompaniments
         extra = chosen[included:]
         self.extra_accompaniments_fee = sum(
             (a.price for a in extra), start=0
         )
 
-        boisson_price = self.boisson.price if self.boisson else 0
+        boisson_price = sum(
+            (oib.boisson.price * oib.quantity for oib in self.order_item_boissons.select_related('boisson').all()),
+            start=0
+        )
         self.subtotal = (
             self.unit_price * self.quantity
             + self.extra_accompaniments_fee
@@ -255,6 +262,32 @@ class OrderItem(OngBaseModel):
         if save:
             self.save(update_fields=["extra_accompaniments_fee", "subtotal"])
         return self.subtotal
+
+class OrderItemAccompaniment(OngBaseModel):
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name='order_item_accompaniments')
+    accompaniment = models.ForeignKey(Accompaniment, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        verbose_name = "Accompagnement de commande"
+        verbose_name_plural = "Accompagnements de commande"
+        unique_together = ('order_item', 'accompaniment')
+
+    def __str__(self):
+        return f"{self.quantity} x {self.accompaniment.name}"
+
+class OrderItemBoisson(OngBaseModel):
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name='order_item_boissons')
+    boisson = models.ForeignKey(Boisson, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        verbose_name = "Boisson de commande"
+        verbose_name_plural = "Boissons de commande"
+        unique_together = ('order_item', 'boisson')
+
+    def __str__(self):
+        return f"{self.quantity} x {self.boisson.name}"
 
 
 class Payment(OngBaseModel):

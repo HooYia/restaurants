@@ -92,19 +92,25 @@
     <div style="margin-top:1.5rem;" id="modal_acc_section">
       <h3 style="font-size:1.1rem; margin-bottom:0.5rem;">Accompagnements</h3>
       <p style="font-size:0.85rem; color:#8a7660; margin-bottom:1rem;" id="modal_acc_text">Choisissez vos accompagnements.</p>
-      <div id="modal_acc_container" style="display:flex; flex-direction:column; gap:0.5rem; max-height:150px; overflow-y:auto; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px;">
+      <div id="modal_acc_container" style="display:flex; flex-direction:column; gap:0.5rem; max-height:200px; overflow-y:auto; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px;">
         <!-- Filled by JS -->
       </div>
     </div>
     
     <div style="margin-top:1.5rem;">
-      <h3 style="font-size:1.1rem; margin-bottom:0.5rem;">Boisson (Optionnelle)</h3>
-      <select id="modal_boisson" style="width:100%; padding:0.8rem; border:1px solid rgba(107,42,31,.15); border-radius:8px; font-family:inherit; outline:none;">
-        <option value="">-- Aucune boisson --</option>
+      <h3 style="font-size:1.1rem; margin-bottom:0.5rem;">Boissons (Optionnel)</h3>
+      <div id="modal_boisson_container" style="display:flex; flex-direction:column; gap:0.5rem; max-height:200px; overflow-y:auto; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px;">
         {% for boisson in boissons %}
-        <option value="{{ boisson.id }}" data-price="{{ boisson.price|stringformat:"f" }}">{{ boisson.name }} (+{{ boisson.price }} FCFA)</option>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span>{{ boisson.name }} <strong style="color:var(--terracotta);">+{{ boisson.price }} FCFA</strong></span>
+            <div style="display:flex; align-items:center; border:1.5px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
+              <button type="button" onclick="updateQty(this, -1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
+              <input type="number" name="modal_boissons" data-id="{{ boisson.id }}" data-price="{{ boisson.price|stringformat:'f' }}" value="0" min="0" readonly style="width:30px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
+              <button type="button" onclick="updateQty(this, 1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">+</button>
+            </div>
+          </div>
         {% endfor %}
-      </select>
+      </div>
     </div>
     
     <div style="margin-top:1.5rem; display:flex; align-items:center; justify-content:space-between;">
@@ -159,19 +165,28 @@ function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
       label.style.cursor = 'pointer';
       
       label.innerHTML = `
-        <input type="checkbox" name="modal_accompaniments" value="${accId}" data-price="${accPrice}" onchange="updateModalPrice()">
-        <span>${accName} <strong style="color:var(--terracotta);">+${accPrice} FCFA</strong></span>
+        <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+          <span>${accName} <strong style="color:var(--terracotta);">+${accPrice} FCFA</strong></span>
+          <div style="display:flex; align-items:center; border:1.5px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
+            <button type="button" onclick="updateQty(this, -1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
+            <input type="number" name="modal_accompaniments" data-id="${accId}" data-price="${accPrice}" value="0" min="0" readonly style="width:30px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
+            <button type="button" onclick="updateQty(this, 1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">+</button>
+          </div>
+        </div>
       `;
       accContainer.appendChild(label);
     });
   }
   
-  document.getElementById('modal_boisson').value = '';
-  document.getElementById('modal_boisson').addEventListener('change', updateModalPrice);
+  // Reset all drink quantities to 0
+  document.querySelectorAll('input[name="modal_boissons"]').forEach(inp => {
+    inp.value = 0;
+  });
+  
   document.getElementById('modal_quantity').addEventListener('input', updateModalPrice);
   
   const text = maxIncluded > 0 
-    ? `Vous avez droit à ${maxIncluded} accompagnement(s) inclus. Les suivants seront facturés en supplément.`
+    ? `Vous avez droit à ${maxIncluded} portion(s) incluse(s). Les suivantes seront facturées en supplément.`
     : `Les accompagnements sont en supplément.`;
   document.getElementById('modal_acc_text').innerText = text;
   
@@ -180,13 +195,26 @@ function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
   document.getElementById('addToCartModal').style.display = 'flex';
 }
 
+function updateQty(btn, delta) {
+  const input = btn.parentElement.querySelector('input[type="number"]');
+  let val = parseInt(input.value) || 0;
+  val += delta;
+  if (val < parseInt(input.min)) val = parseInt(input.min);
+  input.value = val;
+  updateModalPrice();
+}
+
 function updateModalPrice() {
   let extraFee = 0;
-  const checkboxes = document.querySelectorAll('input[name="modal_accompaniments"]:checked');
+  const accInputs = document.querySelectorAll('input[name="modal_accompaniments"]');
   let selectedAccs = [];
   
-  checkboxes.forEach(cb => {
-    selectedAccs.push(parseFloat(cb.dataset.price.replace(',', '.')));
+  accInputs.forEach(inp => {
+    let qty = parseInt(inp.value) || 0;
+    let price = parseFloat(inp.dataset.price.replace(',', '.'));
+    for (let i = 0; i < qty; i++) {
+      selectedAccs.push(price);
+    }
   });
   
   if (selectedAccs.length > currentMaxIncluded) {
@@ -195,12 +223,13 @@ function updateModalPrice() {
     extraFee = extraAccs.reduce((a,b) => a + b, 0);
   }
   
-  const boissonSelect = document.getElementById('modal_boisson');
+  const boissonInputs = document.querySelectorAll('input[name="modal_boissons"]');
   let boissonPrice = 0;
-  if (boissonSelect.value) {
-    const selectedOption = boissonSelect.options[boissonSelect.selectedIndex];
-    boissonPrice = parseFloat(selectedOption.dataset.price.replace(',', '.'));
-  }
+  boissonInputs.forEach(inp => {
+    let qty = parseInt(inp.value) || 0;
+    let price = parseFloat(inp.dataset.price.replace(',', '.'));
+    boissonPrice += price * qty;
+  });
   
   let quantity = parseInt(document.getElementById('modal_quantity').value) || 1;
   let totalUnitPrice = currentBasePrice + extraFee + boissonPrice;
@@ -217,11 +246,20 @@ function closeAddToCartModal() {
 function submitAddToCart() {
   const mealId = document.getElementById('modal_meal_id').value;
   const quantity = document.getElementById('modal_quantity').value;
-  const boissonId = document.getElementById('modal_boisson').value;
-  
-  const accIds = [];
-  document.querySelectorAll('input[name="modal_accompaniments"]:checked').forEach(cb => {
-    accIds.push(cb.value);
+  const accs = [];
+  document.querySelectorAll('input[name="modal_accompaniments"]').forEach(inp => {
+    let qty = parseInt(inp.value) || 0;
+    if (qty > 0) {
+      accs.push({ id: inp.dataset.id, quantity: qty });
+    }
+  });
+
+  const boissons = [];
+  document.querySelectorAll('input[name="modal_boissons"]').forEach(inp => {
+    let qty = parseInt(inp.value) || 0;
+    if (qty > 0) {
+      boissons.push({ id: inp.dataset.id, quantity: qty });
+    }
   });
   
   fetch("{% url 'users:cart-add' %}", {
@@ -233,8 +271,8 @@ function submitAddToCart() {
     body: JSON.stringify({
       meal_id: mealId,
       quantity: quantity,
-      accompaniments: accIds,
-      boisson_id: boissonId
+      accompaniments: accs,
+      boissons: boissons
     })
   })
   .then(res => res.json())

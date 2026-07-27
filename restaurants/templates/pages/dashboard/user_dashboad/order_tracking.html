@@ -271,13 +271,13 @@
     {% endif %}
     <div class="item-info">
       <div class="item-name">{{ item.meal.name }}</div>
-      {% if item.accompaniments.exists %}
+      {% if item.order_item_accompaniments.exists %}
         <div class="item-extras">
-          + {% for acc in item.accompaniments.all %}{{ acc.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          + Acc: {% for acc in item.order_item_accompaniments.all %}{{ acc.quantity }}x {{ acc.accompaniment.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
         </div>
       {% endif %}
-      {% if item.boisson %}
-        <div class="item-extras">🥤 {{ item.boisson.name }}</div>
+      {% if item.order_item_boissons.exists %}
+        <div class="item-extras">🥤 {% for boi in item.order_item_boissons.all %}{{ boi.quantity }}x {{ boi.boisson.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
       {% endif %}
     </div>
     <span class="item-qty">× {{ item.quantity }}</span>

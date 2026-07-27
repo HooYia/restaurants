@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from restaurants.users.cart import Cart
 from restaurants.users.models import Address, Client
-from restaurants.meal.models import Order, OrderItem, Payment, Meal, Accompaniment, Boisson
+from restaurants.meal.models import Order, OrderItem, Payment, Meal, Accompaniment, Boisson, OrderItemAccompaniment, OrderItemBoisson
 from restaurants.meal.enum import OrderStatus, PaymentMethod, PaymentStatus
 
 class CheckoutView(LoginRequiredMixin, View):
@@ -70,22 +70,33 @@ class CheckoutView(LoginRequiredMixin, View):
         # Create Order Items
         for item in cart:
             meal = Meal.objects.get(id=item['meal_id'])
-            boisson = None
-            if item.get('boisson'):
-                boisson = Boisson.objects.filter(id=item['boisson']['id']).first()
 
             order_item = OrderItem.objects.create(
                 order=order,
                 meal=meal,
                 quantity=item['quantity'],
-                unit_price=meal.price,
-                boisson=boisson
+                unit_price=meal.price
             )
             
+            if item.get('boissons'):
+                for b_data in item['boissons']:
+                    boisson = Boisson.objects.filter(id=b_data['id']).first()
+                    if boisson:
+                        OrderItemBoisson.objects.create(
+                            order_item=order_item,
+                            boisson=boisson,
+                            quantity=int(b_data['quantity'])
+                        )
+            
             if item.get('accompaniments'):
-                acc_ids = [a['id'] for a in item['accompaniments']]
-                accompaniments = Accompaniment.objects.filter(id__in=acc_ids)
-                order_item.accompaniments.set(accompaniments)
+                for a_data in item['accompaniments']:
+                    acc = Accompaniment.objects.filter(id=a_data['id']).first()
+                    if acc:
+                        OrderItemAccompaniment.objects.create(
+                            order_item=order_item,
+                            accompaniment=acc,
+                            quantity=int(a_data['quantity'])
+                        )
             
             order_item.recalculate(save=True)
 

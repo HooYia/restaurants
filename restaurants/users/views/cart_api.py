@@ -12,20 +12,22 @@ class CartAddView(View):
             data = json.loads(request.body)
             meal_id = data.get('meal_id')
             quantity = int(data.get('quantity', 1))
-            accompaniment_ids = data.get('accompaniments', [])
-            boisson_id = data.get('boisson_id')
-            
+            accompaniments_data = []
             meal = get_object_or_404(Meal, id=meal_id, is_available=True)
-            
-            accompaniments = []
-            if accompaniment_ids:
-                accompaniments = list(Accompaniment.objects.filter(id__in=accompaniment_ids))
+            if accompaniments_list := data.get('accompaniments', []):
+                acc_dict = {str(a['id']): int(a.get('quantity', 1)) for a in accompaniments_list}
+                acc_objs = Accompaniment.objects.filter(id__in=acc_dict.keys())
+                for obj in acc_objs:
+                    accompaniments_data.append({'accompaniment': obj, 'quantity': acc_dict[str(obj.id)]})
                 
-            boisson = None
-            if boisson_id:
-                boisson = Boisson.objects.filter(id=boisson_id, is_available=True).first()
+            boissons_data = []
+            if boissons_list := data.get('boissons', []):
+                boisson_dict = {str(b['id']): int(b.get('quantity', 1)) for b in boissons_list}
+                boisson_objs = Boisson.objects.filter(id__in=boisson_dict.keys(), is_available=True)
+                for obj in boisson_objs:
+                    boissons_data.append({'boisson': obj, 'quantity': boisson_dict[str(obj.id)]})
                 
-            cart.add(meal=meal, quantity=quantity, accompaniments=accompaniments, boisson=boisson)
+            cart.add(meal=meal, quantity=quantity, accompaniments_data=accompaniments_data, boissons_data=boissons_data)
             
             return JsonResponse({'status': 'success', 'cart_count': len(cart)})
         except Exception as e:

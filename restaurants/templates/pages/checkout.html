@@ -100,12 +100,12 @@
             </div>
             {% if item.accompaniments %}
               <div style="font-size:0.8rem; color:rgba(239,224,196,.6);">
-                Avec: {% for acc in item.accompaniments %}{{ acc.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                Avec: {% for acc in item.accompaniments %}{{ acc.quantity }}x {{ acc.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
               </div>
             {% endif %}
-            {% if item.boisson %}
+            {% if item.boissons %}
               <div style="font-size:0.8rem; color:rgba(239,224,196,.6);">
-                Boisson: {{ item.boisson.name }}
+                Boissons: {% for b in item.boissons %}{{ b.quantity }}x {{ b.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
               </div>
             {% endif %}
           </div>

@@ -267,12 +267,16 @@
             {% if item.accompaniments %}
               <p class="item-extras"><strong>Accompagnements :</strong> 
                 {% for acc in item.accompaniments %}
-                  {{ acc.name }}{% if not forloop.last %}, {% endif %}
+                  {{ acc.quantity }}x {{ acc.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
               </p>
             {% endif %}
-            {% if item.boisson %}
-              <p class="item-extras"><strong>Boisson :</strong> {{ item.boisson.name }}</p>
+            {% if item.boissons %}
+              <p class="item-extras"><strong>Boissons :</strong> 
+                {% for b in item.boissons %}
+                  {{ b.quantity }}x {{ b.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </p>
             {% endif %}
             {% if item.extra_fee != '0.00' %}
               <p class="item-extras">+ {{ item.extra_fee }} FCFA de supplément accompagnements</p>
