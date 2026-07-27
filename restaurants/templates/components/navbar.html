@@ -30,21 +30,27 @@
       </ul>
     </nav>
     <div class="header-actions">
-{% if request.user.is_authenticated %}
-  {% if request.user.is_staff or request.user.is_superuser %}
-    <a href="{% url 'users:admin-dashboard' %}" class="btn btn-outline">Mon Espace</a>
-  {% else %}
-    <a href="{% url 'users:client-dashboard' %}" class="btn btn-outline">Mon Espace</a>
-  {% endif %}
-  <a href="{% url 'users:logout' %}" class="btn btn-outline" style="border-color:#c0392b; color:#c0392b; margin-left:0.5rem;">Déconnexion</a>
-{% else %}
-  <a href="{% url 'users:register' %}" class="btn btn-outline">
-    Créer un compte
-  </a>
-  <a href="{% url 'users:login' %}" class="btn btn-outline">
-    Se connecter
-  </a>
-{% endif %}
+<div class="user-dropdown">
+  <button class="user-btn" aria-label="Compte utilisateur">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+  </button>
+  <div class="user-dropdown-content">
+    {% if request.user.is_authenticated %}
+      {% if request.user.is_staff or request.user.is_superuser %}
+        <a href="{% url 'users:admin-dashboard' %}">Mon Espace</a>
+      {% else %}
+        <a href="{% url 'users:client-dashboard' %}">Mon Espace</a>
+      {% endif %}
+      <a href="{% url 'users:logout' %}" style="color:#c0392b; border-top:1px solid rgba(107,42,31,.1);">Déconnexion</a>
+    {% else %}
+      <a href="{% url 'users:login' %}">Se connecter</a>
+      <a href="{% url 'users:register' %}">Créer un compte</a>
+    {% endif %}
+  </div>
+</div>
       <a href="{% url 'users:cart' %}" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:var(--amber, #e0a85c); color:#fff; position:relative; margin-left:0.5rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;">
           <circle cx="9" cy="21" r="1"></circle>
