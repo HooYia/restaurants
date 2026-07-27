@@ -8,7 +8,7 @@
       <p>Ce que disent ceux qui ont déjà goûté la cuisine de Mam's.</p>
     </div>
 
-    <div class="testimonial-grid">
+    <div class="testimonial-grid {% if testimonials|length == 1 %}single-testimonial{% endif %}">
       {% for testimonial in testimonials %}
         <div class="testimonial-card {% if forloop.first %}active{% endif %} reveal" style="transition-delay: .{{ forloop.counter0 }}s;">
           <div class="testimonial-top">
@@ -55,6 +55,7 @@
       {% endfor %}
     </div>
 
+    {% if testimonials|length > 1 or not testimonials %}
     <div class="carousel-dots" role="tablist" aria-label="Témoignages">
       {% for testimonial in testimonials %}
         <button class="dot {% if forloop.first %}active{% endif %}" aria-label="Témoignage {{ forloop.counter }}"></button>
@@ -63,6 +64,7 @@
         <button class="dot" aria-label="Témoignage 2"></button>
       {% endfor %}
     </div>
+    {% endif %}
   </div>
 </section>
 
