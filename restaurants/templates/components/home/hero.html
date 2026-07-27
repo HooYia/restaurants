@@ -1,4 +1,5 @@
 <!-- HERO -->
+{% load static %}
 <section class="hero" id="top">
   <div class="container hero-grid">
     <div>
@@ -25,16 +26,16 @@
           </div>
         </div>
         <div class="img-wrap">
-          <img src="https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=600&q=80" alt="Un plat délicieux préparé avec soin" fetchpriority="high" loading="eager">
+          <img src="{% static 'images/bouillon.jpg' %}" alt="Un plat délicieux préparé avec soin" fetchpriority="high" loading="eager">
         </div>
         <div class="img-wrap">
-          <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80" alt="Spécialité maison avec ingrédients frais" fetchpriority="high" loading="eager">
+          <img src="{% static 'images/couscous.jpg' %}" alt="Spécialité maison avec ingrédients frais" fetchpriority="high" loading="eager">
         </div>
         <div class="img-wrap">
-          <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80" alt="Viande grillée et épices traditionnelles" fetchpriority="high" loading="eager">
+          <img src="{% static 'images/porc_braisee.jpg' %}" alt="Viande grillée et épices traditionnelles" fetchpriority="high" loading="eager">
         </div>
         <div class="img-wrap">
-          <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80" alt="Sélection d'épices et d'ingrédients locaux" fetchpriority="high" loading="eager">
+          <img src="{% static 'images/riz.png' %}" alt="Sélection d'épices et d'ingrédients locaux" fetchpriority="high" loading="eager">
         </div>
       </div>
     </div>
