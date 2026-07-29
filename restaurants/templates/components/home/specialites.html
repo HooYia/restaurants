@@ -27,6 +27,11 @@
       </div>
     </div>
 
+    <div class="no-results reveal" id="no-results" hidden style="text-align: center; margin-bottom: 2rem; padding: 2rem; background: rgba(224, 168, 92, 0.1); border-radius: 12px;">
+      <h3 style="color: var(--maroon); font-size: 1.5rem; margin-bottom: 0.5rem; font-family: var(--font-brush);">Oups ! Aucun résultat trouvé</h3>
+      <p style="color: #8a7660;">Nous n'avons pas trouvé de plat correspondant exactement à votre recherche. Voici quelques suggestions gourmandes :</p>
+    </div>
+
     <div class="dish-grid" id="dish-grid">
 
       <!-- Meals -->
@@ -83,8 +88,6 @@
       {% endfor %}
 
     </div>
-
-    <p class="no-results reveal" id="no-results" hidden>Aucun plat ne correspond à votre recherche.</p>
   </div>
 </section>
 
@@ -335,6 +338,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (visibleCount === 0) {
       noResults.removeAttribute('hidden');
+      
+      let cardsArray = Array.from(dishCards).filter(c => c.dataset.category !== 'cat_boissons');
+      cardsArray.sort(() => 0.5 - Math.random());
+      
+      let suggestionCount = 0;
+      cardsArray.forEach(card => {
+        if (suggestionCount < 3) {
+          card.style.display = 'block';
+          suggestionCount++;
+        }
+      });
     } else {
       noResults.setAttribute('hidden', '');
     }
