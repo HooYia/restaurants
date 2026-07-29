@@ -1,13 +1,8 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Votre panier — Les délices de Mam's</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Yesteryear&family=Pacifico&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
   :root{
     --dark:#231610;
@@ -24,32 +19,15 @@
     --font-body:'DM Sans', sans-serif;
     --radius:18px;
   }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:var(--font-body);color:var(--dark);background:var(--paper);}
-  a{text-decoration:none;color:inherit;}
-  button{font-family:inherit;cursor:pointer;border:none;}
-  .container{width:min(1100px, 92%);margin-inline:auto;}
-
-  /* ---------- Header ---------- */
-  .cart-header{
-    background:var(--dark);
-    padding:1.1rem 0;
-  }
-  .cart-header .container{
-    display:flex;align-items:center;justify-content:space-between;
-  }
-  .brand{display:flex;align-items:center;gap:.6rem;}
-  .brand img{width:38px;height:38px;border-radius:50%;border:2px solid var(--amber);object-fit:cover;}
-  .brand span{font-family:var(--font-script);font-size:1.5rem;color:var(--amber);}
-  .continue-shopping{
-    display:flex;align-items:center;gap:.5rem;
-    font-size:.85rem;color:var(--cream2);
-  }
-  .continue-shopping svg{width:16px;height:16px;}
-  .continue-shopping:hover{color:var(--amber);}
+  
+  .cart-container{width:min(1100px, 92%);margin-inline:auto;}
 
   /* ---------- Page ---------- */
-  .cart-page{padding:3rem 0 5rem;}
+  .cart-page{
+    padding:3rem 0 5rem;
+    background:var(--paper);
+    min-height: calc(100vh - 80px);
+  }
   .page-title{
     font-family:var(--font-brush);
     color:var(--maroon);
@@ -223,24 +201,14 @@
     .item-img{width:64px;height:64px;}
   }
 </style>
-</head>
-<body>
-
-<header class="cart-header">
-  <div class="container">
-    <a href="{% url 'users:home' %}" class="brand">
-      <img src="{% static 'images/logo-mams.png' %}" alt="Logo Mam's">
-      <span>Mam's</span>
-    </a>
-    <a href="{% url 'users:home' %}#menu" class="continue-shopping">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-      Continuer mes achats
-    </a>
-  </div>
-</header>
+</style>
 
 <div class="cart-page">
-  <div class="container">
+  <div class="cart-container">
+    <a href="{% url 'users:home' %}#menu" class="continue-shopping" style="color:var(--maroon); margin-bottom: 2rem; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; font-weight: 500;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M15 18l-6-6 6-6"/></svg>
+      Continuer mes achats
+    </a>
     <h1 class="page-title">Votre panier</h1>
     <p class="page-subtitle">
       {% if cart %}
@@ -451,6 +419,4 @@
     });
   });
 </script>
-
-</body>
-</html>
+{% endblock %}
