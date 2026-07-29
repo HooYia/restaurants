@@ -57,3 +57,16 @@ class CartUpdateView(View):
             return JsonResponse({'status': 'success', 'cart_count': len(cart)})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+class CartAddBoissonView(View):
+    def post(self, request, *args, **kwargs):
+        cart = Cart(request)
+        try:
+            data = json.loads(request.body)
+            boisson_id = data.get('boisson_id')
+            quantity = int(data.get('quantity', 1))
+            boisson = get_object_or_404(Boisson, id=boisson_id, is_available=True)
+            cart.add_standalone_boisson(boisson=boisson, quantity=quantity)
+            return JsonResponse({'status': 'success', 'cart_count': len(cart)})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)

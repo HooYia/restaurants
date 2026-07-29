@@ -65,6 +65,30 @@ class Cart:
         self.cart[item_id]['quantity'] += quantity
         self.save()
 
+    def add_standalone_boisson(self, boisson, quantity=1):
+        item_id = f"boisson_{boisson.id}"
+        
+        unit_price = boisson.price
+        total_unit_price = unit_price
+        
+        if item_id not in self.cart:
+            self.cart[item_id] = {
+                'quantity': 0,
+                'is_standalone_boisson': True,
+                'boisson_id': str(boisson.id),
+                'meal_name': boisson.name,
+                'meal_price': str(boisson.price),
+                'meal_image_url': boisson.image.url if boisson.image else "",
+                'accompaniments': [],
+                'boissons': [],
+                'extra_fee': '0.00',
+                'boisson_price': str(boisson.price),
+                'total_unit_price': str(total_unit_price)
+            }
+            
+        self.cart[item_id]['quantity'] += quantity
+        self.save()
+
     def save(self):
         self.session.modified = True
 

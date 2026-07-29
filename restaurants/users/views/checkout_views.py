@@ -69,6 +69,23 @@ class CheckoutView(LoginRequiredMixin, View):
 
         # Create Order Items
         for item in cart:
+            if item.get('is_standalone_boisson'):
+                order_item = OrderItem.objects.create(
+                    order=order,
+                    meal=None,
+                    quantity=item['quantity'],
+                    unit_price=0
+                )
+                boisson = Boisson.objects.filter(id=item['boisson_id']).first()
+                if boisson:
+                    OrderItemBoisson.objects.create(
+                        order_item=order_item,
+                        boisson=boisson,
+                        quantity=item['quantity']
+                    )
+                order_item.recalculate(save=True)
+                continue
+                
             meal = Meal.objects.get(id=item['meal_id'])
 
             order_item = OrderItem.objects.create(

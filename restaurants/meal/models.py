@@ -203,7 +203,7 @@ class OrderItem(OngBaseModel):
     """
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     meal = models.ForeignKey(
-        Meal, on_delete=models.PROTECT, related_name="order_items"
+        Meal, on_delete=models.PROTECT, related_name="order_items", null=True, blank=True
     )
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.DecimalField(
@@ -252,7 +252,7 @@ class OrderItem(OngBaseModel):
         # Sort by price to give the cheapest ones for free
         chosen.sort(key=lambda a: a.price)
         
-        included = self.meal.max_included_accompaniments
+        included = self.meal.max_included_accompaniments if self.meal else 0
         extra = chosen[included:]
         self.extra_accompaniments_fee = sum(
             (a.price for a in extra), start=0

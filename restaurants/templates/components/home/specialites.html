@@ -82,6 +82,7 @@
           <p>Rafraîchissez-vous avec cette boisson.</p>
           <div class="dish-footer">
             <span class="dish-price">{{ boisson.price }} FCFA</span>
+            <button class="dish-add" aria-label="Ajouter {{ boisson.name }} à la commande" onclick="addStandaloneBoisson('{{ boisson.id }}', this)">+</button>
           </div>
         </div>
       </div>
@@ -376,4 +377,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+function addStandaloneBoisson(boissonId, buttonElement) {
+    const originalText = buttonElement.innerHTML;
+    buttonElement.innerHTML = '...';
+    buttonElement.disabled = true;
+    
+    fetch('/api/cart/add-boisson/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            boisson_id: boissonId,
+            quantity: 1
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            updateCartCount(data.cart_count);
+            showToast('Boisson ajoutée au panier !', 'success');
+        } else {
+            showToast('Erreur: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Une erreur est survenue.', 'error');
+    })
+    .finally(() => {
+        buttonElement.innerHTML = originalText;
+        buttonElement.disabled = false;
+    });
+}
 </script>
