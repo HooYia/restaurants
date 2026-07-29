@@ -54,7 +54,7 @@
           <p>{{ meal.description|truncatewords:15 }}</p>
           <div class="dish-footer">
             <span class="dish-price">{{ meal.price }} FCFA</span>
-            <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|capfirst|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}', this)">+</button>
+            <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|capfirst|escapejs }}', '{{ meal.description|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}', this)">+</button>
           </div>
           <div class="meal-accompaniments-data" style="display:none;">
             {% for acc in meal.accompaniments.all %}
@@ -92,45 +92,55 @@
   </div>
 </section>
 
-<!-- Add to Cart Modal -->
-<div class="modal-overlay" id="addToCartModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(35,22,16,0.6); z-index:2000; align-items:center; justify-content:center;">
-  <div class="modal-content" style="background:#fff; border-radius:12px; padding:2rem; width:90%; max-width:500px; position:relative; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
-    <button onclick="closeAddToCartModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.5rem; color:#8a7660; cursor:pointer;">&times;</button>
-    <h2 id="modal_meal_name" style="color:var(--maroon); margin-top:0; font-size:1.5rem;">Nom du plat</h2>
-    <p style="color:#8a7660; font-weight:600;">Prix de base : <span id="modal_meal_price">0</span> FCFA</p>
+<!-- Add to Cart Offcanvas -->
+<div class="offcanvas-overlay" id="addToCartModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(35,22,16,0.6); z-index:2000; justify-content:flex-end;">
+  <div class="offcanvas-content" id="addToCartContent" style="background:#fff; width:100%; max-width:450px; height:100%; position:relative; box-shadow:-5px 0 25px rgba(0,0,0,0.2); display:flex; flex-direction:column; padding:2rem; overflow-y:auto; transform: translateX(100%); transition: transform 0.3s ease-in-out;">
+    <button onclick="closeAddToCartModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:2rem; line-height: 1; color:#8a7660; cursor:pointer;">&times;</button>
+    <h2 id="modal_meal_name" style="color:var(--maroon); margin-top:0; font-size:1.8rem; font-family: var(--font-brush);">Nom du plat</h2>
+    
+    <!-- New Description Element -->
+    <p id="modal_meal_desc" style="color:#8a7660; font-size:0.95rem; line-height: 1.5; margin-bottom:1rem;"></p>
+
+    <p style="color:var(--terracotta); font-weight:700; font-size: 1.1rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(107,42,31,.1); padding-bottom: 1rem;">Prix de base : <span id="modal_meal_price">0</span> FCFA</p>
     
     <input type="hidden" id="modal_meal_id">
     
-    <div style="margin-top:1.5rem;" id="modal_acc_section">
-      <h3 style="font-size:1.1rem; margin-bottom:0.5rem;">Accompagnements</h3>
-      <p style="font-size:0.85rem; color:#8a7660; margin-bottom:1rem;" id="modal_acc_text">Choisissez vos accompagnements.</p>
-      <div id="modal_acc_container" style="display:flex; flex-direction:column; gap:0.5rem; max-height:200px; overflow-y:auto; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px;">
-        <!-- Filled by JS -->
+    <div style="flex-grow: 1;">
+      <div style="margin-top:0.5rem;" id="modal_acc_section">
+        <h3 style="font-size:1.1rem; margin-bottom:0.5rem; color: var(--dark);">Accompagnements</h3>
+        <p style="font-size:0.85rem; color:#8a7660; margin-bottom:1rem;" id="modal_acc_text">Choisissez vos accompagnements.</p>
+        <div id="modal_acc_container" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px; background: rgba(239,224,196, 0.1);">
+          <!-- Filled by JS -->
+        </div>
       </div>
-    </div>
-    
-    <div style="margin-top:1.5rem;">
-      <h3 style="font-size:1.1rem; margin-bottom:0.5rem;">Boissons (Optionnel)</h3>
-      <div id="modal_boisson_container" style="display:flex; flex-direction:column; gap:0.5rem; max-height:200px; overflow-y:auto; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px;">
-        {% for boisson in boissons %}
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span>{{ boisson.name|capfirst }} <strong style="color:var(--terracotta);">+{{ boisson.price }} FCFA</strong></span>
-            <div style="display:flex; align-items:center; border:1.5px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
-              <button type="button" onclick="updateQty(this, -1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
-              <input type="number" name="modal_boissons" data-id="{{ boisson.id }}" data-price="{{ boisson.price|stringformat:'f' }}" value="0" min="0" readonly style="width:30px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
-              <button type="button" onclick="updateQty(this, 1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">+</button>
+      
+      <div style="margin-top:2rem;">
+        <h3 style="font-size:1.1rem; margin-bottom:0.5rem; color: var(--dark);">Boissons (Optionnel)</h3>
+        <div id="modal_boisson_container" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px; background: rgba(239,224,196, 0.1);">
+          {% for boisson in boissons %}
+            <div style="display:flex; align-items:center; justify-content:space-between; padding: 0.5rem 0;">
+              <span style="font-size: 0.95rem; font-weight: 500;">{{ boisson.name|capfirst }} <strong style="color:var(--terracotta); margin-left: 0.5rem;">+{{ boisson.price }} FCFA</strong></span>
+              <div style="display:flex; align-items:center; border:1px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
+                <button type="button" onclick="updateQty(this, -1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
+                <input type="number" name="modal_boissons" data-id="{{ boisson.id }}" data-price="{{ boisson.price|stringformat:'f' }}" value="0" min="0" readonly style="width:28px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
+                <button type="button" onclick="updateQty(this, 1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">+</button>
+              </div>
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+        </div>
       </div>
     </div>
     
-    <div style="margin-top:1.5rem; display:flex; align-items:center; justify-content:space-between;">
-      <div>
-        <label style="display:block; font-size:0.85rem; color:#8a7660; font-weight:600;">Quantité</label>
-        <input type="number" id="modal_quantity" value="1" min="1" style="width:80px; padding:0.5rem; border:1px solid rgba(107,42,31,.15); border-radius:8px; font-family:inherit; text-align:center;">
+    <div style="margin-top:2rem; padding-top: 1.5rem; border-top: 1px solid rgba(107,42,31,.1); display:flex; flex-direction: column; gap: 1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label style="font-size:0.95rem; color:var(--dark); font-weight:600;">Quantité</label>
+        <div style="display:flex; align-items:center; border:1px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
+            <button type="button" onclick="updateModalQuantity(-1)" style="width:36px; height:36px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold; font-size: 1.2rem;">-</button>
+            <input type="number" id="modal_quantity" value="1" min="1" readonly style="width:40px; height:36px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent; font-weight: bold;">
+            <button type="button" onclick="updateModalQuantity(1)" style="width:36px; height:36px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold; font-size: 1.2rem;">+</button>
+        </div>
       </div>
-      <button onclick="submitAddToCart()" style="background:var(--terracotta); color:#fff; padding:0.8rem 1.5rem; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:1rem; transition:background 0.2s;">
+      <button onclick="submitAddToCart()" style="width: 100%; background:var(--maroon); color:#fff; padding:1rem; border:none; border-radius:99px; font-weight:600; cursor:pointer; font-size:1.1rem; transition:background 0.2s;">
         Ajouter au panier
       </button>
     </div>
@@ -143,9 +153,10 @@
 let currentBasePrice = 0;
 let currentMaxIncluded = 0;
 
-function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
+function openAddToCartModal(id, name, desc, price, maxIncluded, btnElem) {
   document.getElementById('modal_meal_id').value = id;
   document.getElementById('modal_meal_name').innerText = name;
+  document.getElementById('modal_meal_desc').innerText = desc || "Aucune description disponible pour ce plat.";
   document.getElementById('modal_meal_price').innerText = price;
   document.getElementById('modal_quantity').value = 1;
   
@@ -177,12 +188,12 @@ function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
       label.style.cursor = 'pointer';
       
       label.innerHTML = `
-        <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-          <span>${accName} <strong style="color:var(--terracotta);">+${accPrice} FCFA</strong></span>
-          <div style="display:flex; align-items:center; border:1.5px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
-            <button type="button" onclick="updateQty(this, -1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
-            <input type="number" name="modal_accompaniments" data-id="${accId}" data-price="${accPrice}" value="0" min="0" readonly style="width:30px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
-            <button type="button" onclick="updateQty(this, 1)" style="width:30px; height:30px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">+</button>
+        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; padding: 0.5rem 0;">
+          <span style="font-size: 0.95rem; font-weight: 500;">${accName} <strong style="color:var(--terracotta); margin-left: 0.5rem;">+${accPrice} FCFA</strong></span>
+          <div style="display:flex; align-items:center; border:1px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
+            <button type="button" onclick="updateQty(this, -1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
+            <input type="number" name="modal_accompaniments" data-id="${accId}" data-price="${accPrice}" value="0" min="0" readonly style="width:28px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
+            <button type="button" onclick="updateQty(this, 1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">+</button>
           </div>
         </div>
       `;
@@ -195,7 +206,7 @@ function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
     inp.value = 0;
   });
   
-  document.getElementById('modal_quantity').addEventListener('input', updateModalPrice);
+  // Remove the old updateModalPrice listener if exists to prevent duplicates (not strictly needed but clean)
   
   const text = maxIncluded > 0 
     ? `Vous avez droit à ${maxIncluded} portion(s) incluse(s). Les suivantes seront facturées en supplément.`
@@ -204,7 +215,21 @@ function openAddToCartModal(id, name, price, maxIncluded, btnElem) {
   
   updateModalPrice();
   
-  document.getElementById('addToCartModal').style.display = 'flex';
+  const modal = document.getElementById('addToCartModal');
+  const content = document.getElementById('addToCartContent');
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    content.style.transform = 'translateX(0)';
+  }, 10);
+}
+
+function updateModalQuantity(delta) {
+    const input = document.getElementById('modal_quantity');
+    let val = parseInt(input.value) || 1;
+    val += delta;
+    if (val < 1) val = 1;
+    input.value = val;
+    updateModalPrice();
 }
 
 function updateQty(btn, delta) {
@@ -252,7 +277,12 @@ function updateModalPrice() {
 }
 
 function closeAddToCartModal() {
-  document.getElementById('addToCartModal').style.display = 'none';
+  const modal = document.getElementById('addToCartModal');
+  const content = document.getElementById('addToCartContent');
+  content.style.transform = 'translateX(100%)';
+  setTimeout(() => {
+    modal.style.display = 'none';
+  }, 300);
 }
 
 function submitAddToCart() {
