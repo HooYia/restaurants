@@ -13,9 +13,17 @@
         <input type="search" id="dish-search" placeholder="Rechercher un plat (ex : ndolé, jus...)" aria-label="Rechercher un plat">
       </div>
       <div class="filter-pills" id="filter-pills">
-        <button class="filter-pill active" data-filter="all">Tout</button>
-        <button class="filter-pill" data-filter="plats">Plats principaux</button>
-        <button class="filter-pill" data-filter="boissons">Boissons</button>
+        <button class="filter-pill cat-filter-pill active" data-filter="all">Toutes les catégories</button>
+        {% for category in categories %}
+          <button class="filter-pill cat-filter-pill" data-filter="cat_{{ category.slug }}">{{ category.name }}</button>
+        {% endfor %}
+        <button class="filter-pill cat-filter-pill" data-filter="cat_boissons">Boissons</button>
+      </div>
+      <div class="filter-pills" id="day-filter-pills" style="margin-top: 1rem;">
+        <button class="filter-pill day-filter-pill active" data-day="all">Tous les jours</button>
+        {% for menu in daily_menus %}
+          <button class="filter-pill day-filter-pill" data-day="day_{{ menu.day }}">{{ menu.get_day_display }}</button>
+        {% endfor %}
       </div>
     </div>
 
@@ -23,7 +31,7 @@
 
       <!-- Meals -->
       {% for meal in meals %}
-      <div class="dish-card reveal" data-category="plats" data-name="{{ meal.name|lower }}">
+      <div class="dish-card reveal" data-category="cat_{{ meal.category.slug }}" data-days="{% for dm in meal.daily_menus.all %}day_{{ dm.day }} {% endfor %}" data-name="{{ meal.name|lower }}">
         <div class="dish-img-wrap {% if not meal.image %}dish-img-placeholder{% endif %}">
           {% if meal.image %}
             <img src="{{ meal.image.url }}" alt="{{ meal.name }}" loading="lazy">
@@ -55,7 +63,7 @@
 
       <!-- Boissons -->
       {% for boisson in boissons %}
-      <div class="dish-card reveal" data-category="boissons" data-name="{{ boisson.name|lower }}">
+      <div class="dish-card reveal" data-category="cat_boissons" data-days="all" data-name="{{ boisson.name|lower }}">
         <div class="dish-img-wrap {% if not boisson.image %}dish-img-placeholder{% endif %}">
           {% if boisson.image %}
             <img src="{{ boisson.image.url }}" alt="{{ boisson.name }}" loading="lazy">
@@ -296,23 +304,28 @@ function submitAddToCart() {
 // Search and Filter Logic
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('dish-search');
-  const filterPills = document.querySelectorAll('.filter-pill');
+  const catPills = document.querySelectorAll('.cat-filter-pill');
+  const dayPills = document.querySelectorAll('.day-filter-pill');
   const dishCards = document.querySelectorAll('.dish-card');
   const noResults = document.getElementById('no-results');
-  let currentFilter = 'all';
+  
+  let currentCatFilter = 'all';
+  let currentDayFilter = 'all';
 
   function filterDishes() {
     const searchTerm = searchInput.value.toLowerCase().trim();
     let visibleCount = 0;
 
     dishCards.forEach(card => {
-      const category = card.dataset.category;
-      const name = card.dataset.name;
+      const category = card.dataset.category || '';
+      const days = card.dataset.days || '';
+      const name = card.dataset.name || '';
       
-      const matchesFilter = currentFilter === 'all' || category === currentFilter;
+      const matchesCat = currentCatFilter === 'all' || category === currentCatFilter;
+      const matchesDay = currentDayFilter === 'all' || days === 'all' || days.includes(currentDayFilter);
       const matchesSearch = name.includes(searchTerm);
 
-      if (matchesFilter && matchesSearch) {
+      if (matchesCat && matchesDay && matchesSearch) {
         card.style.display = 'block';
         visibleCount++;
       } else {
@@ -331,11 +344,20 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', filterDishes);
   }
 
-  filterPills.forEach(pill => {
+  catPills.forEach(pill => {
     pill.addEventListener('click', () => {
-      filterPills.forEach(p => p.classList.remove('active'));
+      catPills.forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
-      currentFilter = pill.dataset.filter;
+      currentCatFilter = pill.dataset.filter;
+      filterDishes();
+    });
+  });
+
+  dayPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      dayPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentDayFilter = pill.dataset.day;
       filterDishes();
     });
   });
