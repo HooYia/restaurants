@@ -263,10 +263,8 @@ class OrderItem(OngBaseModel):
             start=0
         )
         self.subtotal = (
-            self.unit_price * self.quantity
-            + self.extra_accompaniments_fee
-            + boisson_price
-        )
+            self.unit_price + self.extra_accompaniments_fee + boisson_price
+        ) * self.quantity
         if save:
             self.save(update_fields=["extra_accompaniments_fee", "subtotal"])
         return self.subtotal

@@ -428,7 +428,7 @@ function addStandaloneBoisson(boissonId, buttonElement) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
         },
         body: JSON.stringify({
             boisson_id: boissonId,
@@ -438,15 +438,16 @@ function addStandaloneBoisson(boissonId, buttonElement) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            updateCartCount(data.cart_count);
-            showToast('Boisson ajoutée au panier !', 'success');
+            const badge = document.getElementById('cart-count-badge');
+            if(badge) badge.innerText = data.cart_count;
+            toastManager.create().setMessage('Boisson ajoutée au panier !').setType('success').show();
         } else {
-            showToast('Erreur: ' + data.message, 'error');
+            toastManager.create().setMessage('Erreur : ' + data.message).setType('error').show();
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showToast('Une erreur est survenue.', 'error');
+        toastManager.create().setMessage('Une erreur est survenue.').setType('error').show();
     })
     .finally(() => {
         buttonElement.innerHTML = originalText;
