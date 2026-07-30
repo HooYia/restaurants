@@ -8,14 +8,17 @@ from restaurants.users.views import (
     testimonial_views,
     admin_user_views,
 )
+from restaurants.users.views.hero_views import AdminHeroView
 from restaurants.users.views.auth_views import CustomLogoutView
-
+from restaurants.users.views.hero_views import AdminHeroView
 from restaurants.users.views.auth_views import RegisterView, VerifyOtpView
 from restaurants.users.views.home_view import HomeView
 from restaurants.users.views.cart_view import CartView
 from restaurants.users.views.cart_api import CartAddView, CartRemoveView, CartUpdateView, CartAddBoissonView, CartUpdateComponentView
 from restaurants.users.views.checkout_views import CheckoutView, OrderSuccessView
-
+from restaurants.users.views.company_setting_views import (
+    CompanySettingView,
+)
 from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, AdminDashboardView
 from .views.order_tracking_view import OrderTrackingView
 from .views.admin_messages_view import AdminMessagesView
@@ -194,5 +197,16 @@ path(
     "logout/",
     CustomLogoutView.as_view(),
     name="logout"
-)
+),
+ path(
+        "admin-hero/",
+        AdminHeroView.as_view(),
+        name="admin-hero"
+    ),
+
+path(
+    "company-settings/",
+    CompanySettingView.as_view(),
+    name="company-settings"
+),    
 ]

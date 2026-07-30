@@ -265,3 +265,126 @@ class NewsletterSubscriber(OngBaseModel):
 
     def __str__(self):
         return self.email
+    
+
+class HeroSection(OngBaseModel):
+    """
+    Gestion dynamique de la section Hero.
+    Les images sont optionnelles :
+    si l'admin ne fournit pas une image,
+    l'image par défaut du site est utilisée.
+    """
+
+    image_1 = models.ImageField(
+        upload_to="hero/",
+        null=True,
+        blank=True
+    )
+
+    image_2 = models.ImageField(
+        upload_to="hero/",
+        null=True,
+        blank=True
+    )
+
+    image_3 = models.ImageField(
+        upload_to="hero/",
+        null=True,
+        blank=True
+    )
+
+    image_4 = models.ImageField(
+        upload_to="hero/",
+        null=True,
+        blank=True
+    )
+
+
+    class Meta:
+        verbose_name = "Hero Section"
+        verbose_name_plural = "Hero Section"
+
+
+    def __str__(self):
+
+        return "Hero Section"    
+    
+class CompanySetting(OngBaseModel):
+
+    restaurant_name = models.CharField(
+        max_length=20,
+        default="Mam's",
+        help_text="20 caractères maximum"
+    )
+
+    logo = models.ImageField(
+        upload_to="company/logo/",
+        blank=True,
+        null=True
+    )
+
+    navbar_image = models.ImageField(
+        upload_to="company/navbar/",
+        blank=True,
+        null=True
+    )
+
+    slogan = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text="80 caractères maximum"
+    )
+
+    address = models.CharField(
+        max_length=100,
+        default="Bafoussam, Cameroun"
+    )
+
+    phone = models.CharField(
+        max_length=20,
+        default="+237"
+    )
+
+    email = models.EmailField(
+        default="contact@mams.cm"
+    )
+
+    facebook_url = models.URLField(
+        blank=True
+    )
+
+    instagram_url = models.URLField(
+        blank=True
+    )
+
+    whatsapp_url = models.URLField(
+        blank=True
+    )
+
+    monday_friday = models.CharField(
+        max_length=30,
+        default="10h – 22h"
+    )
+
+    saturday = models.CharField(
+        max_length=30,
+        default="10h – 23h"
+    )
+
+    sunday = models.CharField(
+        max_length=30,
+        default="11h – 21h"
+    )
+
+    copyright_text = models.CharField(
+        max_length=120,
+        default="© 2026 Les délices de Mam's. Tous droits réservés."
+    )
+
+    footer_note = models.CharField(
+        max_length=80,
+        default="Fait avec ♥ à Bafoussam"
+    )
+
+    def __str__(self):
+        return self.restaurant_name

@@ -1,11 +1,19 @@
 {% load static %}
 <aside class="sidebar">
-  <div class="sidebar-brand">
+<div class="sidebar-brand">
     <a href="{% url 'users:home' %}" target="_blank" rel="noopener noreferrer">
-    <img src="{% static 'images/logo-mams.png' %}" alt="Mam's">
-    <span>Mam's</span>
+
+        <img
+            src="{% if company_setting and company_setting.logo %}{{ company_setting.logo.url }}{% else %}{% static 'images/logo-mams.png' %}{% endif %}"
+            alt="{{ company_setting.restaurant_name|default:'Mam''s' }}"
+        >
+
+        <span>
+            {{ company_setting.restaurant_name|default:"Mam's" }}
+        </span>
+
     </a>
-  </div>
+</div>
 
   <nav class="nav-group">
     <p class="nav-label">Mon espace</p>

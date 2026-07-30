@@ -1,70 +1,216 @@
 {% load static %}
+
 <header id="site-header">
   <div class="container nav-wrap">
+<<<<<<< Updated upstream
     <a href="{% url 'users:home' %}#top" class="brand">
       <img src="{% static 'images/logo-mams.png' %}" alt="Logo Les délices de Mam's" onerror="this.src='{% static 'images/restaurent.jpg' %}'">
       <span>Mam's</span>
+=======
+
+    <a href="#top" class="brand">
+
+   <img
+    src="{% if company_setting.logo %}{{ company_setting.logo.url }}{% else %}{% static 'images/logo-mams.png' %}{% endif %}"
+    alt="{{ company_setting.restaurant_name }}"
+    onerror="this.src='{% static 'images/restaurent.jpg' %}'"
+>
+
+      <span>{{ company_setting.restaurant_name|default:"Mam's" }}</span>
+
+>>>>>>> Stashed changes
     </a>
+
     <nav class="main-nav" id="main-nav">
       <ul>
+<<<<<<< Updated upstream
         <li><a href="{% url 'users:home' %}#top">Accueil</a></li>
         <li><a href="{% url 'users:home' %}#histoire">Notre histoire</a></li>
         <li><a href="{% url 'users:home' %}#menu">Spécialités</a></li>
         <li><a href="{% url 'users:home' %}#contact">Contact</a></li>
         <li class="mobile-only-item"><a href="{% url 'users:home' %}#contact" class="btn btn-primary" style="width:100%; padding:1rem; text-align:center;">Réserver une table</a></li>
+=======
+        <li><a href="#top">Accueil</a></li>
+        <li><a href="#histoire">Notre histoire</a></li>
+        <li><a href="#menu">Spécialités</a></li>
+        <li><a href="#contact">Contact</a></li>
+
+        <li class="mobile-only-item">
+          <a href="#contact" class="btn btn-primary" style="width:100%; padding:1rem; text-align:center;">
+            Réserver une table
+          </a>
+        </li>
+
+>>>>>>> Stashed changes
         {% if request.user.is_authenticated %}
+
           <li class="mobile-only-item">
+
             {% if request.user.is_staff or request.user.is_superuser %}
-              <a href="{% url 'users:admin-dashboard' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Mon Espace</a>
+
+              <a
+                href="{% url 'users:admin-dashboard' %}"
+                class="btn btn-outline"
+                style="width:100%; text-align:center; margin-top:0.5rem;"
+              >
+                Mon Espace
+              </a>
+
             {% else %}
-              <a href="{% url 'users:client-dashboard' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Mon Espace</a>
+
+              <a
+                href="{% url 'users:client-dashboard' %}"
+                class="btn btn-outline"
+                style="width:100%; text-align:center; margin-top:0.5rem;"
+              >
+                Mon Espace
+              </a>
+
             {% endif %}
+
           </li>
+
           <li class="mobile-only-item">
-             <a href="{% url 'users:logout' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem; border-color:#c0392b; color:#c0392b;">Déconnexion</a>
+             <a
+                href="{% url 'users:logout' %}"
+                class="btn btn-outline"
+                style="width:100%; text-align:center; margin-top:0.5rem; border-color:#c0392b; color:#c0392b;"
+             >
+                Déconnexion
+             </a>
           </li>
+
         {% else %}
-          <li class="mobile-only-item"><a href="{% url 'users:register' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Créer un compte</a></li>
-          <li class="mobile-only-item"><a href="{% url 'users:login' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Se connecter</a></li>
+
+          <li class="mobile-only-item">
+            <a
+              href="{% url 'users:register' %}"
+              class="btn btn-outline"
+              style="width:100%; text-align:center; margin-top:0.5rem;"
+            >
+              Créer un compte
+            </a>
+          </li>
+
+          <li class="mobile-only-item">
+            <a
+              href="{% url 'users:login' %}"
+              class="btn btn-outline"
+              style="width:100%; text-align:center; margin-top:0.5rem;"
+            >
+              Se connecter
+            </a>
+          </li>
+
         {% endif %}
       </ul>
     </nav>
+
     <div class="header-actions">
-<div class="user-dropdown">
-  <button class="user-btn" aria-label="Compte utilisateur">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-      <circle cx="12" cy="7" r="4"></circle>
-    </svg>
-  </button>
-  <div class="user-dropdown-content">
-    {% if request.user.is_authenticated %}
-      {% if request.user.is_staff or request.user.is_superuser %}
-        <a href="{% url 'users:admin-dashboard' %}">Mon Espace</a>
-      {% else %}
-        <a href="{% url 'users:client-dashboard' %}">Mon Espace</a>
-      {% endif %}
-      <a href="{% url 'users:logout' %}" style="color:#c0392b; border-top:1px solid rgba(107,42,31,.1);">Déconnexion</a>
-    {% else %}
-      <a href="{% url 'users:login' %}">Se connecter</a>
-      <a href="{% url 'users:register' %}">Créer un compte</a>
-    {% endif %}
-  </div>
-</div>
-      <a href="{% url 'users:cart' %}" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:var(--amber, #e0a85c); color:#fff; position:relative; margin-left:0.5rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;">
+
+      <div class="user-dropdown">
+
+        <button class="user-btn" aria-label="Compte utilisateur">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            style="width:20px;height:20px;"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+
+        </button>
+
+        <div class="user-dropdown-content">
+
+          {% if request.user.is_authenticated %}
+
+            {% if request.user.is_staff or request.user.is_superuser %}
+
+              <a href="{% url 'users:admin-dashboard' %}">
+                Mon Espace
+              </a>
+
+            {% else %}
+
+              <a href="{% url 'users:client-dashboard' %}">
+                Mon Espace
+              </a>
+
+            {% endif %}
+
+            <a
+              href="{% url 'users:logout' %}"
+              style="color:#c0392b; border-top:1px solid rgba(107,42,31,.1);"
+            >
+              Déconnexion
+            </a>
+
+          {% else %}
+
+            <a href="{% url 'users:login' %}">
+              Se connecter
+            </a>
+
+            <a href="{% url 'users:register' %}">
+              Créer un compte
+            </a>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+      <a
+        href="{% url 'users:cart' %}"
+        style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:var(--amber, #e0a85c); color:#fff; position:relative; margin-left:0.5rem; transition:transform 0.2s;"
+        onmouseover="this.style.transform='scale(1.05)'"
+        onmouseout="this.style.transform='scale(1)'"
+      >
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width:20px; height:20px;"
+        >
           <circle cx="9" cy="21" r="1"></circle>
           <circle cx="20" cy="21" r="1"></circle>
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
         </svg>
-        <span id="cart-count-badge" style="position:absolute; top:-4px; right:-4px; background:var(--maroon, #6b2a1f); color:#fff; font-size:11px; font-weight:bold; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center;">{{ cart|length|default:"0" }}</span>
+
+        <span
+          id="cart-count-badge"
+          style="position:absolute; top:-4px; right:-4px; background:var(--maroon, #6b2a1f); color:#fff; font-size:11px; font-weight:bold; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center;"
+        >
+          {{ cart|length|default:"0" }}
+        </span>
+
       </a>
-      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
-        <span></span><span></span><span></span>
+
+      <button
+        class="burger"
+        id="burger"
+        aria-label="Ouvrir le menu"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
       </button>
+
     </div>
+
   </div>
 </header>
+
 <div class="menu-overlay" id="menu-overlay"></div>
 
 <div class="wax-divider" style="margin-top:0;"></div>

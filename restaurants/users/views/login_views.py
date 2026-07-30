@@ -5,6 +5,10 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
+from restaurants.users.models import (
+    HeroSection,
+)
+
 
 User = get_user_model()
 
@@ -154,6 +158,8 @@ class AdminDashboardView(LoginRequiredMixin, View):
 
         today = timezone.now().date()
 
+        
+
         # Stats
         today_orders = Order.objects.filter(created__date=today).count()
         pending_orders = Order.objects.filter(status=OrderStatus.PENDING).count()
@@ -173,6 +179,8 @@ class AdminDashboardView(LoginRequiredMixin, View):
             status=TestimonialStatus.PENDING
         ).count()
 
+
+
         recent_orders = Order.objects.select_related(
             "client__user"
         ).prefetch_related("items").order_by("-created")[:8]
@@ -190,3 +198,20 @@ class AdminDashboardView(LoginRequiredMixin, View):
             "recent_orders": recent_orders,
             "pending_testimonials": pending_testimonials_qs,
         })
+    
+
+
+    def get_context_data(
+        self,
+        **kwargs
+    ):
+        
+
+        context = super().get_context_data(
+            **kwargs
+        )
+
+
+        context["hero"] = (
+            HeroSection.objects.first()
+        )

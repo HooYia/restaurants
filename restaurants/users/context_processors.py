@@ -29,3 +29,12 @@ def dashboard_stats(request):
         except Exception:
             return {}
     return {}
+
+
+from .models import CompanySetting
+
+
+def company_setting(request):
+    return {
+        "company_setting": CompanySetting.objects.first()
+    }

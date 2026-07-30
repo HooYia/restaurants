@@ -203,6 +203,7 @@ TEMPLATES = [
                 "restaurants.users.context_processors.allauth_settings",
                 "restaurants.users.context_processors.cart_processor",
                 "restaurants.users.context_processors.dashboard_stats",
+                "restaurants.users.context_processors.company_setting",
             ],
         },
     },

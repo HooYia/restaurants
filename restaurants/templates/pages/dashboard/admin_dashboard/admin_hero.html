@@ -1,0 +1,427 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Hero Section — Mam's Admin{% endblock %}
+{% block dashboard_title %}Hero Section{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="stats-mini">
+  <div class="mini-stat">
+    <div class="ms-label">Images Hero</div>
+    <div class="ms-value">{{ hero_count|default:4 }}</div>
+    <div class="ms-sub" style="color:var(--terracotta);">Bannière principale</div>
+  </div>
+  <div class="mini-stat">
+    <div class="ms-label">Statut</div>
+    <div class="ms-value" style="color:var(--green);">✓</div>
+    <div class="ms-sub" style="color:var(--green);">Active</div>
+  </div>
+</div>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<style>
+  /* Styling for modal */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(35,22,16,0.6);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-content {
+    background: #fff; border-radius: var(--radius);
+    padding: 2rem; width: 95%; max-width: 800px; max-height: 90vh;
+    overflow-y: auto; position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; font-size: 1.5rem; color: #8a7660; cursor: pointer;
+  }
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-label { display: block; font-size: .85rem; color: #8a7660; margin-bottom: .4rem; font-weight: 600; }
+  .form-input { 
+    width: 100%; padding: .8rem 1rem; 
+    border: 1px solid rgba(107,42,31,.15); border-radius: 8px; 
+    font-family: inherit; font-size: .9rem; outline: none; 
+  }
+  .form-input[type="file"] {
+    padding: .6rem;
+    background: #faf8f7;
+    cursor: pointer;
+  }
+  .form-input[type="file"]::file-selector-button {
+    padding: .4rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background: var(--terracotta);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-right: 1rem;
+  }
+  .form-input[type="file"]::file-selector-button:hover {
+    opacity: 0.8;
+  }
+  .form-input:focus { border-color: var(--terracotta); }
+  .btn-submit {
+    background: var(--terracotta); color: #fff;
+    padding: .8rem 1.5rem; border-radius: 8px; font-weight: 600;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: var(--maroon); }
+  
+  .image-preview {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .image-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(107,42,31,.1);
+  }
+  
+  /* Styling for DataTables to match our theme */
+  .dataTables_wrapper .dataTables_filter input {
+    border: 1px solid rgba(107,42,31,.15);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    outline: none;
+    margin-bottom: 1rem;
+  }
+  .dataTables_wrapper .dataTables_length select {
+    border: 1px solid rgba(107,42,31,.15);
+    border-radius: 8px;
+    padding: 0.2rem;
+    outline: none;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--terracotta);
+    color: white !important;
+    border: none;
+    border-radius: 5px;
+  }
+  table.dataTable.no-footer {
+    border-bottom: 1px solid rgba(107,42,31,.08);
+  }
+  
+  .hero-preview {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .badge-status {
+    padding: .25rem .6rem;
+    border-radius: 99px;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .badge-active {
+    background: rgba(92,112,72,.14);
+    color: var(--green);
+  }
+  .badge-inactive {
+    background: #fbe4de;
+    color: #c0392b;
+  }
+  
+  .btn-mini {
+    padding: .4rem .8rem;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .2s;
+    text-decoration: none;
+  }
+  .btn-mini:hover { opacity: .8; }
+  .btn-edit {
+    background: var(--terracotta);
+    color: #fff;
+  }
+  .btn-delete {
+    background: var(--maroon);
+    color: #fff;
+  }
+  
+  @media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; gap: 0; }
+  }
+</style>
+
+<div class="panel" style="padding: 1.5rem;">
+  <div class="panel-head" style="border-bottom: none; padding-bottom: 1rem;">
+    <h2 style="font-size:1.3rem;">Gestion de la Hero Section</h2>
+    <button onclick="openModal()" class="btn-mini" style="background:var(--terracotta);color:#fff;padding:.5rem 1rem;border-radius:999px;font-weight:600;cursor:pointer;">
+      <i class="fas fa-plus"></i> Modifier les images
+    </button>
+  </div>
+  
+  <table id="heroTable" style="width:100%; margin-top: 1rem;">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Image</th>
+        <th>Nom du fichier</th>
+        <th>Taille</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if hero %}
+        <tr>
+          <td>1</td>
+          <td>
+            {% if hero.image_1 %}
+              <img src="{{ hero.image_1.url }}" alt="Image 1" class="hero-preview">
+            {% else %}
+              <div style="width:60px;height:60px;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:#fff;">🖼️</div>
+            {% endif %}
+          </td>
+          <td>{% if hero.image_1 %}{{ hero.image_1.name|cut:"hero_images/" }}{% else %}Aucune image{% endif %}</td>
+          <td>{% if hero.image_1 %}{{ hero.image_1.size|filesizeformat }}{% else %}-{% endif %}</td>
+          <td><span class="badge-status badge-active">Active</span></td>
+          <td>
+            <button onclick="editImage(1)" class="btn-mini btn-edit">
+              <i class="fas fa-edit"></i> Modifier
+            </button>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>2</td>
+          <td>
+            {% if hero.image_2 %}
+              <img src="{{ hero.image_2.url }}" alt="Image 2" class="hero-preview">
+            {% else %}
+              <div style="width:60px;height:60px;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:#fff;">🖼️</div>
+            {% endif %}
+          </td>
+          <td>{% if hero.image_2 %}{{ hero.image_2.name|cut:"hero_images/" }}{% else %}Aucune image{% endif %}</td>
+          <td>{% if hero.image_2 %}{{ hero.image_2.size|filesizeformat }}{% else %}-{% endif %}</td>
+          <td><span class="badge-status badge-active">Active</span></td>
+          <td>
+            <button onclick="editImage(2)" class="btn-mini btn-edit">
+              <i class="fas fa-edit"></i> Modifier
+            </button>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>3</td>
+          <td>
+            {% if hero.image_3 %}
+              <img src="{{ hero.image_3.url }}" alt="Image 3" class="hero-preview">
+            {% else %}
+              <div style="width:60px;height:60px;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:#fff;">🖼️</div>
+            {% endif %}
+          </td>
+          <td>{% if hero.image_3 %}{{ hero.image_3.name|cut:"hero_images/" }}{% else %}Aucune image{% endif %}</td>
+          <td>{% if hero.image_3 %}{{ hero.image_3.size|filesizeformat }}{% else %}-{% endif %}</td>
+          <td><span class="badge-status badge-active">Active</span></td>
+          <td>
+            <button onclick="editImage(3)" class="btn-mini btn-edit">
+              <i class="fas fa-edit"></i> Modifier
+            </button>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>4</td>
+          <td>
+            {% if hero.image_4 %}
+              <img src="{{ hero.image_4.url }}" alt="Image 4" class="hero-preview">
+            {% else %}
+              <div style="width:60px;height:60px;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:#fff;">🖼️</div>
+            {% endif %}
+          </td>
+          <td>{% if hero.image_4 %}{{ hero.image_4.name|cut:"hero_images/" }}{% else %}Aucune image{% endif %}</td>
+          <td>{% if hero.image_4 %}{{ hero.image_4.size|filesizeformat }}{% else %}-{% endif %}</td>
+          <td><span class="badge-status badge-active">Active</span></td>
+          <td>
+            <button onclick="editImage(4)" class="btn-mini btn-edit">
+              <i class="fas fa-edit"></i> Modifier
+            </button>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 2rem; color: #8a7660;">
+            <i class="fas fa-image" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+            Aucune image trouvée. Créez une Hero Section.
+          </td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="heroModal" {% if show_modal %}style="display:flex;"{% endif %}>
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 style="color: var(--maroon); margin-bottom: 1.5rem; margin-top:0;">
+      <i class="fas fa-image" style="color: var(--terracotta); margin-right: 0.5rem;"></i>
+      Modifier les images Hero
+    </h2>
+    
+    <form method="POST" action="{% url 'users:admin-hero' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="form-grid">
+        <!-- Colonne 1 -->
+        <div>
+          <div class="form-group">
+            <label class="form-label" for="image_1">Image 1</label>
+            {% if hero and hero.image_1 %}
+              <div class="image-preview">
+                <img src="{{ hero.image_1.url }}" alt="Image 1">
+              </div>
+            {% endif %}
+            <input type="file" name="image_1" id="image_1" class="form-input" accept="image/*">
+            <div style="font-size: .75rem; color: #8a7660; margin-top: 0.3rem;">
+              Format: JPG, PNG, WEBP (max 5MB)
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="image_3">Image 3</label>
+            {% if hero and hero.image_3 %}
+              <div class="image-preview">
+                <img src="{{ hero.image_3.url }}" alt="Image 3">
+              </div>
+            {% endif %}
+            <input type="file" name="image_3" id="image_3" class="form-input" accept="image/*">
+            <div style="font-size: .75rem; color: #8a7660; margin-top: 0.3rem;">
+              Format: JPG, PNG, WEBP (max 5MB)
+            </div>
+          </div>
+        </div>
+        
+        <!-- Colonne 2 -->
+        <div>
+          <div class="form-group">
+            <label class="form-label" for="image_2">Image 2</label>
+            {% if hero and hero.image_2 %}
+              <div class="image-preview">
+                <img src="{{ hero.image_2.url }}" alt="Image 2">
+              </div>
+            {% endif %}
+            <input type="file" name="image_2" id="image_2" class="form-input" accept="image/*">
+            <div style="font-size: .75rem; color: #8a7660; margin-top: 0.3rem;">
+              Format: JPG, PNG, WEBP (max 5MB)
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="image_4">Image 4</label>
+            {% if hero and hero.image_4 %}
+              <div class="image-preview">
+                <img src="{{ hero.image_4.url }}" alt="Image 4">
+              </div>
+            {% endif %}
+            <input type="file" name="image_4" id="image_4" class="form-input" accept="image/*">
+            <div style="font-size: .75rem; color: #8a7660; margin-top: 0.3rem;">
+              Format: JPG, PNG, WEBP (max 5MB)
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 2rem; display: flex; gap: 1rem; border-top: 1px solid rgba(107,42,31,.1); padding-top: 1.5rem;">
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-save"></i> Enregistrer les modifications
+        </button>
+        <button type="button" onclick="closeModal()" class="btn-outline" style="padding: .8rem 1.5rem; border: 1px solid rgba(107,42,31,.15); border-radius: 8px; font-weight: 600; color: var(--dark); cursor:pointer;">
+          <i class="fas fa-times"></i> Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('#heroTable').DataTable({
+          language: {
+              url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+          },
+          order: [[0, 'asc']],
+          pageLength: 10,
+          columnDefs: [
+              { orderable: false, targets: [1, 5] } // Désactiver le tri pour la photo et les actions
+          ]
+      });
+  });
+
+  function openModal() {
+      document.getElementById('heroModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+      document.getElementById('heroModal').style.display = 'none';
+  }
+  
+  function editImage(index) {
+      openModal();
+      // Scroller vers le champ correspondant
+      const field = document.getElementById('image_' + index);
+      if (field) {
+          setTimeout(() => {
+              field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              field.focus();
+          }, 300);
+      }
+  }
+  
+  // Aperçu des images avant upload
+  document.querySelectorAll('input[type="file"]').forEach(input => {
+      input.addEventListener('change', function(e) {
+          const file = this.files[0];
+          if (file) {
+              const reader = new FileReader();
+              const preview = this.parentElement.querySelector('.image-preview');
+              
+              reader.onload = function(e) {
+                  if (preview) {
+                      preview.innerHTML = `<img src="${e.target.result}" alt="Aperçu">`;
+                  } else {
+                      const newPreview = document.createElement('div');
+                      newPreview.className = 'image-preview';
+                      newPreview.innerHTML = `<img src="${e.target.result}" alt="Aperçu">`;
+                      this.parentElement.insertBefore(newPreview, this);
+                  }
+              }.bind(this);
+              
+              reader.readAsDataURL(file);
+          }
+      });
+  });
+  
+  // Fermer le modal en cliquant à l'extérieur
+  document.getElementById('heroModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+          closeModal();
+      }
+  });
+</script>
+{% endblock %}

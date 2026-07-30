@@ -2,17 +2,29 @@ from django.views.generic import TemplateView
 from django.db.models import Exists, OuterRef
 from django.core.cache import cache
 import datetime
+<<<<<<< Updated upstream
 from restaurants.meal.models import Meal, Boisson, DailyMenu, Category
 from restaurants.users.models import Testimonial
+=======
+
+from restaurants.meal.models import Meal, Boisson, DailyMenu
+from restaurants.users.models import Testimonial, HeroSection
+>>>>>>> Stashed changes
 from restaurants.users.enum import TestimonialStatus
 
+
 class HomeView(TemplateView):
+
     template_name = "pages/home.html"
 
+
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
-        
+
+
         today_day = datetime.date.today().strftime('%A').lower()
+<<<<<<< Updated upstream
         
         meals_cache_key = f'home_meals_{today_day}'
         meals = cache.get(meals_cache_key)
@@ -48,4 +60,52 @@ class HomeView(TemplateView):
         context['categories'] = categories
         context['daily_menus'] = daily_menus
         context['testimonials'] = Testimonial.objects.filter(status=TestimonialStatus.APPROVED)[:5]
+=======
+
+
+        # Menus disponibles
+        context["meals"] = (
+            Meal.objects
+            .filter(is_available=True)
+            .annotate(
+                is_today=Exists(
+                    DailyMenu.objects.filter(
+                        day=today_day,
+                        is_active=True,
+                        meals=OuterRef("pk")
+                    )
+                )
+            )
+            .order_by(
+                "-is_today",
+                "category__display_order",
+                "name"
+            )
+            .select_related("category")
+        )
+
+
+        # Boissons
+        context["boissons"] = (
+            Boisson.objects
+            .filter(is_available=True)
+        )
+
+
+        # Témoignages validés
+        context["testimonials"] = (
+            Testimonial.objects
+            .filter(
+                status=TestimonialStatus.APPROVED
+            )[:5]
+        )
+
+
+        # Section Hero modifiable par admin
+        context["hero"] = (
+            HeroSection.objects.first()
+        )
+
+
+>>>>>>> Stashed changes
         return context

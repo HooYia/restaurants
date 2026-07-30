@@ -1,45 +1,182 @@
 <!-- HERO -->
 {% load static %}
+
 <section class="hero" id="top">
+
   <div class="container hero-grid">
+
     <div>
-      <p class="eyebrow">Cuisine camerounaise authentique · Bafoussam</p>
-      <h1>Les délices<em>de Mam's</em></h1>
-      <p class="lead">Des plats mijotés comme au village : ndolé, poulet DG, eru, achu... la cuisine de Mam's, préparée chaque jour avec des produits frais et beaucoup d'amour.</p>
+
+      <p class="eyebrow">
+        Cuisine camerounaise authentique · Bafoussam
+      </p>
+
+
+      <h1>
+        Les délices<em>de Mam's</em>
+      </h1>
+
+
+      <p class="lead">
+        Des plats mijotés comme au village : ndolé,
+        poulet DG, eru, achu... la cuisine de Mam's,
+        préparée chaque jour avec des produits frais
+        et beaucoup d'amour.
+      </p>
+
+
       <div class="hero-ctas">
-        <a href="#menu" class="btn btn-primary">Voir nos spécialités</a>
-        <a href="#contact" class="btn btn-outline">Réserver une table</a>
+
+        <a href="#menu" class="btn btn-primary">
+          Voir nos spécialités
+        </a>
+
+
+        <a href="#contact" class="btn btn-outline">
+          Réserver une table
+        </a>
+
       </div>
+
+
+
       <div class="hero-stats">
-        <div><strong>15+</strong><span>recettes traditionnelles</span></div>
-        <div><strong>100%</strong><span>fait maison</span></div>
-        <div><strong>7j/7</strong><span>ouvert midi &amp; soir</span></div>
+
+        <div>
+          <strong>15+</strong>
+          <span>recettes traditionnelles</span>
+        </div>
+
+
+        <div>
+          <strong>100%</strong>
+          <span>fait maison</span>
+        </div>
+
+
+        <div>
+          <strong>7j/7</strong>
+          <span>ouvert midi &amp; soir</span>
+        </div>
+
+
       </div>
+
+
     </div>
+
+
+
+
     <div class="hero-visual">
+
+
       <div class="hero-image-cluster">
+
+
+
         <div class="cluster-badge">
-          <span class="badge-icon">👩‍🍳</span>
+
+          <span class="badge-icon">
+            👩‍🍳
+          </span>
+
+
           <div class="badge-text">
-            <strong>Le Choix du Chef</strong>
-            <span>Plats authentiques</span>
+
+            <strong>
+              Le Choix du Chef
+            </strong>
+
+            <span>
+              Plats authentiques
+            </span>
+
           </div>
+
+
         </div>
+
+
+
+
+
+
+        <!-- IMAGE 1 -->
+
         <div class="img-wrap">
-          <img src="{% static 'images/bouillon.jpg' %}" alt="Un plat délicieux préparé avec soin" fetchpriority="high" loading="eager">
+
+          <img
+            src="{% if hero and hero.image_1 %}{{ hero.image_1.url }}{% else %}{% static 'images/bouillon.jpg' %}{% endif %}"
+            alt="Un plat délicieux préparé avec soin"
+            fetchpriority="high"
+            loading="eager">
+
         </div>
+
+
+
+
+
+
+        <!-- IMAGE 2 -->
+
         <div class="img-wrap">
-          <img src="{% static 'images/couscous.jpg' %}" alt="Spécialité maison avec ingrédients frais" fetchpriority="high" loading="eager">
+
+          <img
+            src="{% if hero and hero.image_2 %}{{ hero.image_2.url }}{% else %}{% static 'images/couscous.jpg' %}{% endif %}"
+            alt="Spécialité maison avec ingrédients frais"
+            fetchpriority="high"
+            loading="eager">
+
         </div>
+
+
+
+
+
+
+        <!-- IMAGE 3 -->
+
         <div class="img-wrap">
-          <img src="{% static 'images/porc_braisee.jpg' %}" alt="Viande grillée et épices traditionnelles" fetchpriority="high" loading="eager">
+
+          <img
+            src="{% if hero and hero.image_3 %}{{ hero.image_3.url }}{% else %}{% static 'images/porc_braisee.jpg' %}{% endif %}"
+            alt="Viande grillée et épices traditionnelles"
+            fetchpriority="high"
+            loading="eager">
+
         </div>
+
+
+
+
+
+
+        <!-- IMAGE 4 -->
+
         <div class="img-wrap">
-          <img src="{% static 'images/riz.png' %}" alt="Sélection d'épices et d'ingrédients locaux" fetchpriority="high" loading="eager">
+
+          <img
+            src="{% if hero and hero.image_4 %}{{ hero.image_4.url }}{% else %}{% static 'images/riz.png' %}{% endif %}"
+            alt="Sélection d'épices et d'ingrédients locaux"
+            fetchpriority="high"
+            loading="eager">
+
         </div>
+
+
+
       </div>
+
+
     </div>
+
+
   </div>
+
+
 </section>
+
 
 <div class="wax-divider"></div>
