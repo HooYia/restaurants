@@ -101,7 +101,10 @@
     <!-- New Description Element -->
     <p id="modal_meal_desc" style="color:#8a7660; font-size:0.95rem; line-height: 1.5; margin-bottom:1rem;"></p>
 
-    <p style="color:var(--terracotta); font-weight:700; font-size: 1.1rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(107,42,31,.1); padding-bottom: 1rem;">Prix de base : <span id="modal_meal_price">0</span> FCFA</p>
+    <p style="color:var(--dark); font-weight:700; font-size: 1.1rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(107,42,31,.1); padding-bottom: 1rem;">
+      Prix total : <span id="modal_meal_price">0</span> FCFA
+      <span id="modal_extra_fee_display" style="display:none; font-size:0.85rem; color:var(--terracotta); font-weight:normal; margin-left:1rem;">(dont <span id="modal_extra_fee_val">0</span> FCFA de supplément)</span>
+    </p>
     
     <input type="hidden" id="modal_meal_id">
     
@@ -189,7 +192,7 @@ function openAddToCartModal(id, name, desc, price, maxIncluded, btnElem) {
       
       label.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:space-between; width:100%; padding: 0.5rem 0;">
-          <span style="font-size: 0.95rem; font-weight: 500;">${accName} <strong style="color:var(--terracotta); margin-left: 0.5rem;">+${accPrice} FCFA</strong></span>
+          <span style="font-size: 0.95rem; font-weight: 500;">${accName} <span style="font-size: 0.8rem; color:#8a7660; margin-left: 0.5rem;">(Si supplément : +${accPrice} FCFA)</span></span>
           <div style="display:flex; align-items:center; border:1px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
             <button type="button" onclick="updateQty(this, -1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
             <input type="number" name="modal_accompaniments" data-id="${accId}" data-price="${accPrice}" value="0" min="0" readonly style="width:28px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
@@ -272,8 +275,16 @@ function updateModalPrice() {
   let totalUnitPrice = currentBasePrice + extraFee + boissonPrice;
   let totalPrice = totalUnitPrice * quantity;
   
-  // Format exactly like Django does (e.g., 2500.00 -> 2500)
   document.getElementById('modal_meal_price').innerText = totalPrice.toLocaleString('fr-FR');
+  
+  const extraFeeDisplay = document.getElementById('modal_extra_fee_display');
+  const extraFeeVal = document.getElementById('modal_extra_fee_val');
+  if (extraFee > 0) {
+    extraFeeDisplay.style.display = 'inline';
+    extraFeeVal.innerText = (extraFee * quantity).toLocaleString('fr-FR');
+  } else {
+    extraFeeDisplay.style.display = 'none';
+  }
 }
 
 function closeAddToCartModal() {

@@ -107,6 +107,16 @@
   .remove-item svg{width:14px;height:14px;}
   .remove-item:hover{color:#8a2c1f;}
 
+  /* ---------- Component Steppers ---------- */
+  .item-components { margin-bottom: 0.6rem; font-size: 0.85rem; color: #8a7660; }
+  .item-components strong { color: #6b5a48; display: block; margin-bottom: 0.3rem; }
+  .comp-stepper { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.4rem; background: rgba(239, 224, 196, 0.25); padding: 0.3rem 0.6rem; border-radius: 8px; }
+  .comp-stepper .comp-name { font-weight: 500; flex: 1; }
+  .mini-stepper { display: flex; align-items: center; border: 1px solid rgba(107, 42, 31, 0.15); border-radius: 999px; overflow: hidden; background: #fff; }
+  .mini-stepper button { width: 24px; height: 24px; background: var(--cream2); color: var(--maroon); font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s; border: none; cursor: pointer; }
+  .mini-stepper button:hover { background: var(--amber); color: #fff; }
+  .mini-stepper span { width: 26px; text-align: center; font-size: 0.85rem; font-weight: 600; }
+
   /* ---------- Empty state ---------- */
   .empty-cart{
     background:#fff;
@@ -233,18 +243,32 @@
           <div class="item-info">
             <h3>{{ item.meal_name }}</h3>
             {% if item.accompaniments %}
-              <p class="item-extras"><strong>Accompagnements :</strong> 
+              <div class="item-components"><strong>Accompagnements :</strong> 
                 {% for acc in item.accompaniments %}
-                  {{ acc.quantity }}x {{ acc.name }}{% if not forloop.last %}, {% endif %}
+                  <div class="comp-stepper" data-item-id="{{ item.id }}" data-comp-type="accompaniment" data-comp-id="{{ acc.id }}">
+                    <span class="comp-name">{{ acc.name }}</span>
+                    <div class="mini-stepper">
+                      <button type="button" class="comp-decrease">−</button>
+                      <span class="comp-value">{{ acc.quantity }}</span>
+                      <button type="button" class="comp-increase">+</button>
+                    </div>
+                  </div>
                 {% endfor %}
-              </p>
+              </div>
             {% endif %}
             {% if item.boissons %}
-              <p class="item-extras"><strong>Boissons :</strong> 
+              <div class="item-components"><strong>Boissons :</strong> 
                 {% for b in item.boissons %}
-                  {{ b.quantity }}x {{ b.name }}{% if not forloop.last %}, {% endif %}
+                  <div class="comp-stepper" data-item-id="{{ item.id }}" data-comp-type="boisson" data-comp-id="{{ b.id }}">
+                    <span class="comp-name">{{ b.name }}</span>
+                    <div class="mini-stepper">
+                      <button type="button" class="comp-decrease">−</button>
+                      <span class="comp-value">{{ b.quantity }}</span>
+                      <button type="button" class="comp-increase">+</button>
+                    </div>
+                  </div>
                 {% endfor %}
-              </p>
+              </div>
             {% endif %}
             {% if item.extra_fee != '0.00' %}
               <p class="item-extras">+ {{ item.extra_fee }} FCFA de supplément accompagnements</p>
@@ -363,6 +387,33 @@
           'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
         },
         body: JSON.stringify({ item_id: itemId, quantity: newQty })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === 'success') {
+          window.location.reload();
+        }
+      });
+    });
+  });
+
+  document.querySelectorAll('.comp-increase, .comp-decrease').forEach(btn => {
+    btn.addEventListener('click', function(){
+      const stepper = this.closest('.comp-stepper');
+      const itemId = stepper.dataset.itemId;
+      const compType = stepper.dataset.compType;
+      const compId = stepper.dataset.compId;
+      const isIncrease = this.classList.contains('comp-increase');
+      let currentQty = parseInt(stepper.querySelector('.comp-value').innerText);
+      let newQty = isIncrease ? currentQty + 1 : currentQty - 1;
+      
+      fetch("{% url 'users:cart-update-component' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ item_id: itemId, component_type: compType, component_id: compId, quantity: newQty })
       })
       .then(res => res.json())
       .then(data => {

@@ -105,6 +105,71 @@ class Cart:
                 self.cart[item_id]['quantity'] = quantity
                 self.save()
 
+    def update_component(self, item_id, component_type, component_id, new_quantity):
+        if item_id not in self.cart:
+            return
+            
+        item = self.cart[item_id]
+        if item.get('is_standalone_boisson'):
+            return
+
+        item = self.cart.pop(item_id)
+        
+        target_list = item.get(component_type + 's', [])
+        
+        new_list = []
+        for comp in target_list:
+            if comp['id'] == str(component_id):
+                if new_quantity > 0:
+                    comp['quantity'] = int(new_quantity)
+                    new_list.append(comp)
+            else:
+                new_list.append(comp)
+                
+        item[component_type + 's'] = new_list
+        
+        try:
+            meal = Meal.objects.get(id=item['meal_id'])
+        except Meal.DoesNotExist:
+            self.save()
+            return
+            
+        extra_fee = Decimal('0.00')
+        included = meal.max_included_accompaniments
+        
+        flat_accs = []
+        for a in item['accompaniments']:
+            for _ in range(a['quantity']):
+                flat_accs.append(Decimal(a['price']))
+                
+        if len(flat_accs) > included:
+            sorted_accs = sorted(flat_accs)
+            extra_accs = sorted_accs[included:]
+            extra_fee = sum(extra_accs)
+            
+        boisson_price = sum([Decimal(b['price']) * b['quantity'] for b in item['boissons']], Decimal('0.00'))
+        unit_price = meal.price
+        
+        total_unit_price = unit_price + extra_fee + boisson_price
+        
+        item['extra_fee'] = str(extra_fee)
+        item['boisson_price'] = str(boisson_price)
+        item['total_unit_price'] = str(total_unit_price)
+        
+        acc_str = "_".join([f"{a['id']}x{a['quantity']}" for a in sorted(item['accompaniments'], key=lambda x: str(x['id']))])
+        boisson_str = "_".join([f"{b['id']}x{b['quantity']}" for b in sorted(item['boissons'], key=lambda x: str(x['id']))])
+        if not acc_str: acc_str = "no_acc"
+        if not boisson_str: boisson_str = "no_boi"
+        
+        new_item_id = f"{meal.id}_{acc_str}_{boisson_str}"
+        
+        if new_item_id in self.cart:
+            self.cart[new_item_id]['quantity'] += item['quantity']
+        else:
+            self.cart[new_item_id] = item
+            
+        self.save()
+
     def __iter__(self):
         for item_id, item in self.cart.items():
             item['id'] = item_id

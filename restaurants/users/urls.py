@@ -13,7 +13,7 @@ from restaurants.users.views.auth_views import CustomLogoutView
 from restaurants.users.views.auth_views import RegisterView, VerifyOtpView
 from restaurants.users.views.home_view import HomeView
 from restaurants.users.views.cart_view import CartView
-from restaurants.users.views.cart_api import CartAddView, CartRemoveView, CartUpdateView, CartAddBoissonView
+from restaurants.users.views.cart_api import CartAddView, CartRemoveView, CartUpdateView, CartAddBoissonView, CartUpdateComponentView
 from restaurants.users.views.checkout_views import CheckoutView, OrderSuccessView
 
 from .views.login_views import LoginChoiceView, LoginView, ClientDashboardView, AdminDashboardView
@@ -53,6 +53,11 @@ urlpatterns = [
         "api/cart/update/",
         CartUpdateView.as_view(),
         name="cart-update"
+    ),
+    path(
+        "api/cart/update-component/",
+        CartUpdateComponentView.as_view(),
+        name="cart-update-component"
     ),
     path(
         "api/newsletter/subscribe/",
