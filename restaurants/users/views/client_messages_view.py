@@ -26,19 +26,32 @@ class ClientMessagesView(LoginRequiredMixin, TemplateView):
         if unread_admin_messages.exists():
             unread_admin_messages.update(is_read=True, read_at=timezone.now())
             
+        # Fetch user's recent orders to display in the select dropdown
+        if hasattr(self.request.user, 'client'):
+            context['recent_orders'] = self.request.user.client.orders.order_by('-created')[:10]
+        else:
+            context['recent_orders'] = []
+            
         return context
 
     def post(self, request, *args, **kwargs):
         content = request.POST.get('content', '').strip()
         attachment = request.FILES.get('attachment')
+        order_id = request.POST.get('order_id')
         
         if content or attachment:
             conversation, created = Conversation.objects.get_or_create(user=request.user)
             
+            order = None
+            if order_id and hasattr(request.user, 'client'):
+                from restaurants.meal.models import Order
+                order = Order.objects.filter(id=order_id, client=request.user.client).first()
+                
             # Create message
             Message.objects.create(
                 conversation=conversation,
                 sender=request.user,
+                order=order,
                 content=content,
                 attachment=attachment,
                 is_read=False

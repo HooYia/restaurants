@@ -290,6 +290,11 @@
       {% for message in chat_messages %}
         <div class="msg-row {% if message.sender == request.user %}from-me{% else %}from-support{% endif %}">
           <div class="msg-bubble">
+            {% if message.order %}
+              <div style="background: rgba(107,42,31,.08); color: var(--maroon); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; margin-bottom: 0.5rem; display: inline-block; font-weight: 600;">
+                Concerne la commande #{{ message.order.id|stringformat:"s"|slice:":8" }}
+              </div>
+            {% endif %}
             {% if message.attachment %}
               <div class="msg-attachment" style="margin-bottom: 0.5rem;">
                 {% if message.attachment.url|lower|slice:"-4:" == ".jpg" or message.attachment.url|lower|slice:"-4:" == ".png" or message.attachment.url|lower|slice:"-5:" == ".jpeg" or message.attachment.url|lower|slice:"-4:" == ".gif" %}
@@ -329,8 +334,19 @@
     </div>
     {% endif %}
 
-    <form class="conv-input" method="post" action="{% url 'users:client-messages' %}" enctype="multipart/form-data">
+    <form class="conv-input" method="post" action="{% url 'users:client-messages' %}" enctype="multipart/form-data" style="flex-wrap: wrap;">
       {% csrf_token %}
+      
+      {% if recent_orders %}
+      <div style="width: 100%; margin-bottom: 0.5rem;">
+        <select name="order_id" style="width: 100%; padding: 0.6rem 1rem; border-radius: 8px; border: 1.5px solid rgba(107,42,31,.15); font-size: 0.85rem; background: #fafafa; color: #555; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--terracotta)'" onblur="this.style.borderColor='rgba(107,42,31,.15)'">
+          <option value="">Sélectionner une commande concernée (optionnel)</option>
+          {% for order in recent_orders %}
+            <option value="{{ order.id }}">Commande #{{ order.id|stringformat:"s"|slice:":8" }} - {{ order.created|date:"d/m/Y" }} ({{ order.total_amount }} FCFA)</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
       <div class="attachment-preview" id="attachmentPreview">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
         <span id="attachmentName">Fichier.pdf</span>

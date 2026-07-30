@@ -322,6 +322,11 @@
         {% for msg in chat_messages %}
           <div class="message-wrapper {% if msg.sender.is_staff %}admin{% else %}client{% endif %}">
             <div class="message-bubble">
+              {% if msg.order %}
+                <div style="background: rgba(255,255,255,0.2); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; margin-bottom: 0.5rem; display: inline-block; font-weight: 600; border: 1px solid rgba(0,0,0,0.1);">
+                  <span style="opacity:0.9;">Concerne la commande</span> #{{ msg.order.id|stringformat:"s"|slice:":8" }}
+                </div>
+              {% endif %}
               {% if msg.attachment %}
                 <div class="msg-attachment" style="margin-bottom: 0.5rem;">
                   {% if msg.attachment.url|lower|slice:"-4:" == ".jpg" or msg.attachment.url|lower|slice:"-4:" == ".png" or msg.attachment.url|lower|slice:"-5:" == ".jpeg" or msg.attachment.url|lower|slice:"-4:" == ".gif" %}

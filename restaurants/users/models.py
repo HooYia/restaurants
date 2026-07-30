@@ -198,6 +198,14 @@ class Message(OngBaseModel):
         on_delete=models.CASCADE,
         related_name="sent_messages",
     )
+    order = models.ForeignKey(
+        'meal.Order',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="messages",
+        help_text="Commande concernée par ce message (optionnel)"
+    )
     content = models.TextField(blank=True)
     attachment = models.FileField(upload_to="messages/attachments/", null=True, blank=True)
     is_read = models.BooleanField(default=False)
