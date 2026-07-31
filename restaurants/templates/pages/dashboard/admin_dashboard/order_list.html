@@ -209,7 +209,7 @@
     <div>Plats</div>
     <div>Montant</div>
     <div>Statut</div>
-    <div></div>
+    <div>Actions</div>
   </div>
 
   {% for order in orders %}
@@ -240,20 +240,25 @@
     <!-- Montant -->
     <div class="order-amount">{{ order.total_amount|floatformat:0 }} FCFA</div>
 
-    <!-- Statut — select inline -->
-    <form method="post" action="{% url 'meal:order-update-status' order.pk %}" class="status-select-wrap">
-      {% csrf_token %}
-      <select name="status" class="status-select {{ order.status }}"
-              onchange="this.form.submit()"
-              {% if order.status == 'cancelled' %}disabled{% endif %}>
-        {% for value, label in status_choices %}
-        <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </select>
-    </form>
+    <!-- Statut — select inline avec bouton -->
+    <div>
+      <form id="status-form-{{ order.id }}" method="post" action="{% url 'meal:order-update-status' order.pk %}" class="status-select-wrap">
+        {% csrf_token %}
+        <select name="status" class="status-select {{ order.status }}"
+                {% if order.status == 'cancelled' %}disabled{% endif %}>
+          {% for value, label in status_choices %}
+          <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
 
     <!-- Actions -->
-    <div></div>
+    <div>
+      {% if order.status != 'cancelled' %}
+      <button type="submit" form="status-form-{{ order.id }}" class="btn-mini" style="background:var(--terracotta);color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:0.8rem;transition:background 0.2s;" onmouseover="this.style.background='var(--maroon)'" onmouseout="this.style.background='var(--terracotta)'">Valider</button>
+      {% endif %}
+    </div>
 
   </div>
   {% endfor %}
