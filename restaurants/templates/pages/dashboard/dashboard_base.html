@@ -29,6 +29,9 @@
     font-family:var(--font-body);
     background:var(--paper);
     color:var(--dark);
+    min-height:100vh;
+  }
+  #app-root {
     display:flex;
     min-height:100vh;
   }
@@ -300,7 +303,7 @@
   /* ---------- Responsive — Mobile First ---------- */
 
   @media (max-width: 820px) {
-    body { flex-direction: column; padding-bottom: 64px; }
+    #app-root { flex-direction: column; padding-bottom: 64px; }
 
     /* Transform sidebar into an off-canvas drawer */
     .sidebar {
@@ -400,6 +403,7 @@
 </head>
 <body>
 
+<div id="app-root">
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
 
 {% block sidebar %}{% endblock %}
@@ -434,6 +438,7 @@
   <div class="content">
     {% block dashboard_content %}{% endblock %}
   </div>
+</div>
 </div>
 
 <script src="{% static 'js/toast_manager.js' %}"></script>
