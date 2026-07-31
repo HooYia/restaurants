@@ -168,6 +168,18 @@ urlpatterns = [
         name="testimonial-create"
     ),
 
+    # Demandes sur mesure
+    path(
+        "client/sur-mesure/demander/",
+        __import__('restaurants.users.views.client_custom_request_views', fromlist=['ClientCustomRequestCreateView']).ClientCustomRequestCreateView.as_view(),
+        name="custom-request-create"
+    ),
+    path(
+        "client/sur-mesure/",
+        __import__('restaurants.users.views.client_custom_request_views', fromlist=['ClientCustomRequestListView']).ClientCustomRequestListView.as_view(),
+        name="custom-request-list"
+    ),
+
 path(
     "admin-dashboard/",
     AdminDashboardView.as_view(),

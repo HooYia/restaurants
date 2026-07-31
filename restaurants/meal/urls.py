@@ -27,4 +27,8 @@ urlpatterns = [
     # Commandes
     path("admin-dashboard/commandes/", AdminOrderListView.as_view(), name="order-list"),
     path("admin-dashboard/commandes/<uuid:pk>/statut/", AdminOrderUpdateStatusView.as_view(), name="order-update-status"),
+
+    # Demandes sur mesure
+    path("admin-dashboard/sur-mesure/", __import__('restaurants.meal.views.admin_custom_request_views', fromlist=['AdminCustomRequestListView']).AdminCustomRequestListView.as_view(), name="admin-custom-request-list"),
+    path("admin-dashboard/sur-mesure/<uuid:pk>/prix/", __import__('restaurants.meal.views.admin_custom_request_views', fromlist=['AdminCustomRequestPriceView']).AdminCustomRequestPriceView.as_view(), name="admin-custom-request-price"),
 ]

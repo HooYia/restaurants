@@ -13,7 +13,7 @@ class CartAddView(View):
             meal_id = data.get('meal_id')
             quantity = int(data.get('quantity', 1))
             accompaniments_data = []
-            meal = get_object_or_404(Meal, id=meal_id, is_available=True)
+            meal = get_object_or_404(Meal, id=meal_id)
             if accompaniments_list := data.get('accompaniments', []):
                 acc_dict = {str(a['id']): int(a.get('quantity', 1)) for a in accompaniments_list}
                 acc_objs = Accompaniment.objects.filter(id__in=acc_dict.keys())

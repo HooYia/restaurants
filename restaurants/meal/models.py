@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.utils.text import slugify
 
-from .enum import AvailabilityMode, DayOfWeek, OrderStatus, PaymentMethod, PaymentStatus
+from .enum import AvailabilityMode, CustomRequestStatus, DayOfWeek, OrderStatus, PaymentMethod, PaymentStatus
 from restaurants.users.models import Address, Client
 from restaurants.core.models import OngBaseModel
 
@@ -313,3 +313,34 @@ class Payment(OngBaseModel):
 
     def __str__(self):
         return f"Paiement {self.get_status_display()} — {self.order}"
+
+
+class CustomOrderRequest(OngBaseModel):
+    """Demande de plat sur mesure (hors menu) par un client."""
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="custom_requests")
+    description = models.TextField(help_text="Description du plat souhaité, allergies, etc.")
+    quantity = models.PositiveIntegerField(default=1, help_text="Nombre de portions")
+    target_date = models.DateField(null=True, blank=True, help_text="Date souhaitée")
+    
+    status = models.CharField(
+        max_length=20, 
+        choices=CustomRequestStatus.choices, 
+        default=CustomRequestStatus.PENDING
+    )
+    proposed_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True,
+        help_text="Prix proposé par l'administrateur"
+    )
+    rejection_reason = models.TextField(blank=True, help_text="Raison du refus éventuel")
+    linked_meal = models.ForeignKey(
+        Meal, on_delete=models.SET_NULL, null=True, blank=True, related_name="custom_requests",
+        help_text="Plat généré automatiquement une fois le tarif validé"
+    )
+
+    class Meta:
+        verbose_name = "Demande sur mesure"
+        verbose_name_plural = "Demandes sur mesure"
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"Demande #{self.id} — {self.client}"

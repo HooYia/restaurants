@@ -1,0 +1,111 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Demandes sur Mesure — Mam's Admin{% endblock %}
+{% block dashboard_title %}Demandes sur Mesure{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="stats-mini">
+  <div class="mini-stat">
+    <div class="ms-label">Total Demandes</div>
+    <div class="ms-value">{{ total }}</div>
+  </div>
+  {% for v, l, c in status_choices_with_counts %}
+  <div class="mini-stat">
+    <div class="ms-label">{{ l }}</div>
+    <div class="ms-value">{{ c }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="order-toolbar" style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+  <a href="{% url 'meal:admin-custom-request-list' %}"
+     class="chip {% if not status_filter %}active{% endif %}" style="padding: .4rem .9rem; border-radius: 999px; font-size: .78rem; font-weight: 600; background: {% if not status_filter %}var(--maroon){% else %}#fff{% endif %}; color: {% if not status_filter %}#fff{% else %}#6b5a48{% endif %}; border: 1.5px solid rgba(107,42,31,.14); text-decoration: none;">
+    Toutes ({{ total }})
+  </a>
+  {% for value, label, count in status_choices_with_counts %}
+  <a href="?status={{ value }}"
+     class="chip {% if status_filter == value %}active{% endif %}" style="padding: .4rem .9rem; border-radius: 999px; font-size: .78rem; font-weight: 600; background: {% if status_filter == value %}var(--maroon){% else %}#fff{% endif %}; color: {% if status_filter == value %}#fff{% else %}#6b5a48{% endif %}; border: 1.5px solid rgba(107,42,31,.14); text-decoration: none;">
+    {{ label }} ({{ count }})
+  </a>
+  {% endfor %}
+</div>
+
+<div class="orders-panel" style="background:#fff; border-radius:12px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); overflow:hidden;">
+  <div class="orders-panel-head" style="padding: 1.1rem 1.6rem; border-bottom: 1px solid rgba(107,42,31,.07); display:flex; justify-content:space-between; align-items:center;">
+    <h2 style="font-size: 1rem; font-weight: 700; color: var(--maroon); margin:0;">
+      Demandes Spéciales
+    </h2>
+    <span class="orders-count">{{ requests|length }} demande{{ requests|length|pluralize }}</span>
+  </div>
+
+  {% if requests %}
+  <div class="order-row header-row" style="display: grid; grid-template-columns: 1.5fr 3fr 1fr 2fr; gap: 1rem; padding: .95rem 1.6rem; background: rgba(239,224,196,.35); border-bottom: 1px solid rgba(107,42,31,.08); font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #9a8570; font-weight: 700;">
+    <div>Client & ID</div>
+    <div>Description</div>
+    <div>Statut</div>
+    <div>Action</div>
+  </div>
+
+  {% for req in requests %}
+  <div style="display: grid; grid-template-columns: 1.5fr 3fr 1fr 2fr; gap: 1rem; padding: 1.2rem 1.6rem; border-bottom: 1px solid rgba(107,42,31,.05); align-items:center;">
+    <div>
+      <div style="font-weight:600; color:var(--dark);">{{ req.client.user.get_full_name|default:req.client.user.email }}</div>
+      <div style="font-size:0.75rem; color:#8a7660;">Req #{{ req.id|stringformat:"s"|slice:":8"|upper }}</div>
+      <div style="font-size:0.75rem; color:#8a7660;">Le {{ req.created|date:"d M Y" }}</div>
+    </div>
+    
+    <div>
+      <p style="margin:0 0 0.5rem 0; font-size:0.9rem; color:#4b5563;">{{ req.description }}</p>
+      <div style="font-size:0.8rem; color:#6b7280; display:flex; gap:1rem;">
+        <span><strong>Qté :</strong> {{ req.quantity }} pers.</span>
+        {% if req.target_date %}<span><strong>Date :</strong> {{ req.target_date|date:"d M Y" }}</span>{% endif %}
+      </div>
+    </div>
+
+    <div>
+      {% if req.status == 'pending' %}
+        <span style="background: #fef3c7; color: #92400e; padding: .2rem .6rem; border-radius: 999px; font-size: .7rem; font-weight: 700;">En attente</span>
+      {% elif req.status == 'priced' %}
+        <span style="background: rgba(92,112,72,.14); color: var(--green); padding: .2rem .6rem; border-radius: 999px; font-size: .7rem; font-weight: 700;">Tarif proposé : {{ req.proposed_price|floatformat:0 }} FCFA</span>
+      {% elif req.status == 'accepted' %}
+        <span style="background: rgba(52,152,219,.12); color: #2980b9; padding: .2rem .6rem; border-radius: 999px; font-size: .7rem; font-weight: 700;">Acceptée</span>
+      {% elif req.status == 'rejected' %}
+        <span style="background: #fbe4de; color: #c0392b; padding: .2rem .6rem; border-radius: 999px; font-size: .7rem; font-weight: 700;">Refusée</span>
+      {% endif %}
+    </div>
+
+    <div>
+      {% if req.status == 'pending' %}
+      <form method="post" action="{% url 'meal:admin-custom-request-price' req.pk %}" style="display:flex; flex-direction:column; gap:0.5rem;">
+        {% csrf_token %}
+        <div style="display:flex; gap:0.3rem;">
+          <input type="number" name="price" placeholder="Prix (FCFA)" required style="width:100px; padding:0.3rem; border:1px solid rgba(0,0,0,0.1); border-radius:4px; font-size:0.8rem;">
+          <button type="submit" name="action" value="price" style="background:var(--green); color:#fff; border:none; padding:0.3rem 0.6rem; border-radius:4px; font-size:0.8rem; cursor:pointer;">Proposer</button>
+        </div>
+        <div style="display:flex; gap:0.3rem; align-items:flex-start;">
+          <input type="text" name="rejection_reason" placeholder="Motif de refus" style="width:100px; padding:0.3rem; border:1px solid rgba(0,0,0,0.1); border-radius:4px; font-size:0.8rem;">
+          <button type="submit" name="action" value="reject" formnovalidate style="background:var(--maroon); color:#fff; border:none; padding:0.3rem 0.6rem; border-radius:4px; font-size:0.8rem; cursor:pointer;">Refuser</button>
+        </div>
+      </form>
+      {% elif req.status == 'priced' or req.status == 'accepted' %}
+        {% if req.linked_meal %}
+          <span style="font-size:0.8rem; color:#8a7660;">Plat généré: <strong>{{ req.linked_meal.name }}</strong> ({{ req.linked_meal.price }} FCFA)</span>
+        {% endif %}
+      {% elif req.status == 'rejected' %}
+        <span style="font-size:0.8rem; color:#8a7660;">Motif: {{ req.rejection_reason }}</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div style="padding: 4rem 2rem; text-align: center; color: #9a8570;">
+    <p style="font-weight:600; color:var(--dark);">Aucune demande sur mesure.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

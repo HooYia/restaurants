@@ -12,6 +12,7 @@
         <li><a href="{% url 'users:home' %}#top">Accueil</a></li>
         <li><a href="{% url 'users:home' %}#histoire">Notre histoire</a></li>
         <li><a href="{% url 'users:home' %}#menu">Spécialités</a></li>
+        <li><a href="{% url 'users:custom-request-create' %}">Sur Mesure</a></li>
         <li><a href="{% url 'users:home' %}#contact">Contact</a></li>
         <li class="mobile-only-item"><a href="{% url 'users:home' %}#contact" class="btn btn-primary" style="width:100%; padding:1rem; text-align:center;">Réserver une table</a></li>
         {% if request.user.is_authenticated %}

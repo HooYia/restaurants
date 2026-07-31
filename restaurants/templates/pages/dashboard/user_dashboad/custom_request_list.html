@@ -1,0 +1,96 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Mes Demandes sur Mesure - Mam's{% endblock %}
+{% block dashboard_title %}Demandes sur Mesure{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/user_dashboad/client_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-header" style="display:flex; justify-content:space-between; align-items:center;">
+  <div class="header-info">
+    <h1>Mes Demandes Spéciales</h1>
+    <p>Suivez l'état de vos demandes de plats hors-menu.</p>
+  </div>
+  <div>
+    <a href="{% url 'users:custom-request-create' %}" style="background-color: var(--terracotta); color: white; text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 999px; font-weight: 600; transition: background 0.2s;">+ Nouvelle demande</a>
+  </div>
+</div>
+
+<div class="content-card" style="width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-top: 1rem; overflow:hidden;">
+  {% if requests %}
+    {% for req in requests %}
+    <div style="padding: 1.5rem; border-bottom: 1px solid rgba(107,42,31,.08);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 1rem;">
+        <div>
+          <h3 style="margin:0; font-size:1.1rem; color:var(--dark);">Demande #{{ req.id|stringformat:"s"|slice:":8"|upper }}</h3>
+          <span style="font-size:0.8rem; color:#8a7660;">Soumise le {{ req.created|date:"d M Y" }}</span>
+        </div>
+        <div>
+          {% if req.status == 'pending' %}
+            <span style="background: #fef3c7; color: #92400e; padding: .3rem .8rem; border-radius: 999px; font-size: .75rem; font-weight: 700;">En attente de devis</span>
+          {% elif req.status == 'priced' %}
+            <span style="background: rgba(92,112,72,.14); color: var(--green); padding: .3rem .8rem; border-radius: 999px; font-size: .75rem; font-weight: 700;">Tarif proposé : {{ req.proposed_price|floatformat:0 }} FCFA</span>
+          {% elif req.status == 'accepted' %}
+            <span style="background: rgba(52,152,219,.12); color: #2980b9; padding: .3rem .8rem; border-radius: 999px; font-size: .75rem; font-weight: 700;">Acceptée et ajoutée au panier</span>
+          {% elif req.status == 'rejected' %}
+            <span style="background: #fbe4de; color: #c0392b; padding: .3rem .8rem; border-radius: 999px; font-size: .75rem; font-weight: 700;">Refusée</span>
+          {% endif %}
+        </div>
+      </div>
+      
+      <p style="margin:0 0 1rem 0; font-size:0.95rem; color:#4b5563;">{{ req.description }}</p>
+      
+      <div style="display:flex; gap:1.5rem; font-size:0.85rem; color:#6b7280; margin-bottom: 1rem;">
+        <span><strong style="color:var(--dark);">Quantité :</strong> {{ req.quantity }} personne{{ req.quantity|pluralize }}</span>
+        {% if req.target_date %}
+        <span><strong style="color:var(--dark);">Date :</strong> {{ req.target_date|date:"d M Y" }}</span>
+        {% endif %}
+      </div>
+
+      {% if req.status == 'priced' and req.linked_meal %}
+      <div style="background:#f9fafb; padding:1rem; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="color:var(--maroon); display:block; margin-bottom:0.2rem;">Proposition de Mam's</strong>
+          <span style="font-size:0.9rem; color:#4b5563;">Nous pouvons préparer cela pour <strong>{{ req.proposed_price|floatformat:0 }} FCFA</strong>.</span>
+        </div>
+        <button onclick="
+          fetch('{% url 'users:cart-add' %}', {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              meal_id: '{{ req.linked_meal.id }}',
+              quantity: 1
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if(data.status === 'success') {
+              window.location.href = '{% url 'users:cart' %}';
+            } else {
+              alert(data.message);
+            }
+          });
+        " style="background-color: var(--terracotta); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='var(--maroon)'" onmouseout="this.style.background='var(--terracotta)'">Ajouter au panier</button>
+      </div>
+      {% elif req.status == 'rejected' %}
+      <div style="background:#fef2f2; padding:1rem; border-radius:8px;">
+        <strong style="color:#b91c1c; display:block; margin-bottom:0.2rem;">Motif du refus</strong>
+        <span style="font-size:0.9rem; color:#7f1d1d;">{{ req.rejection_reason }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div style="padding: 4rem 2rem; text-align: center;">
+      <p style="font-weight:600; color:var(--dark); margin-bottom:.5rem;">Vous n'avez aucune demande sur mesure.</p>
+      <a href="{% url 'users:custom-request-create' %}" style="color:var(--terracotta); font-weight:600; text-decoration:none;">Faire votre première demande →</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

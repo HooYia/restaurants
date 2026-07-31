@@ -106,3 +106,30 @@ class BoissonForm(forms.ModelForm):
             'image': 'Photo',
             'is_available': 'Disponible',
         }
+
+
+class CustomOrderRequestForm(forms.ModelForm):
+    class Meta:
+        model = __import__('restaurants.meal.models', fromlist=['CustomOrderRequest']).CustomOrderRequest
+        fields = ['description', 'quantity', 'target_date']
+        widgets = {
+            'description': forms.Textarea(attrs={
+                'class': 'form-input', 
+                'rows': 4,
+                'placeholder': 'Décrivez le plat que vous souhaitez, vos préférences, allergies...'
+            }),
+            'quantity': forms.NumberInput(attrs={
+                'class': 'form-input', 
+                'min': '1',
+                'placeholder': 'Nombre de personnes'
+            }),
+            'target_date': forms.DateInput(attrs={
+                'class': 'form-input', 
+                'type': 'date'
+            }),
+        }
+        labels = {
+            'description': 'Description de votre demande',
+            'quantity': 'Pour combien de personnes ?',
+            'target_date': 'Date souhaitée (Optionnel)',
+        }

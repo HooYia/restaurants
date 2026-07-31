@@ -42,3 +42,11 @@ class PaymentStatus(models.TextChoices):
     PAID = "paid", "Payé"
     FAILED = "failed", "Échoué"
     REFUNDED = "refunded", "Remboursé"
+
+
+class CustomRequestStatus(models.TextChoices):
+    """Statut d'une demande de plat sur mesure."""
+    PENDING = "pending", "En attente"
+    PRICED = "priced", "Tarif proposé"
+    ACCEPTED = "accepted", "Acceptée et ajoutée au panier"
+    REJECTED = "rejected", "Refusée"
