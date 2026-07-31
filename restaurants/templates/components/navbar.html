@@ -2,46 +2,18 @@
 
 <header id="site-header">
   <div class="container nav-wrap">
-<<<<<<< Updated upstream
     <a href="{% url 'users:home' %}#top" class="brand">
       <img src="{% static 'images/logo-mams.png' %}" alt="Logo Les délices de Mam's" onerror="this.src='{% static 'images/restaurent.jpg' %}'">
       <span>Mam's</span>
-=======
-
-    <a href="#top" class="brand">
-
-   <img
-    src="{% if company_setting.logo %}{{ company_setting.logo.url }}{% else %}{% static 'images/logo-mams.png' %}{% endif %}"
-    alt="{{ company_setting.restaurant_name }}"
-    onerror="this.src='{% static 'images/restaurent.jpg' %}'"
->
-
-      <span>{{ company_setting.restaurant_name|default:"Mam's" }}</span>
-
->>>>>>> Stashed changes
     </a>
 
     <nav class="main-nav" id="main-nav">
       <ul>
-<<<<<<< Updated upstream
         <li><a href="{% url 'users:home' %}#top">Accueil</a></li>
         <li><a href="{% url 'users:home' %}#histoire">Notre histoire</a></li>
         <li><a href="{% url 'users:home' %}#menu">Spécialités</a></li>
         <li><a href="{% url 'users:home' %}#contact">Contact</a></li>
         <li class="mobile-only-item"><a href="{% url 'users:home' %}#contact" class="btn btn-primary" style="width:100%; padding:1rem; text-align:center;">Réserver une table</a></li>
-=======
-        <li><a href="#top">Accueil</a></li>
-        <li><a href="#histoire">Notre histoire</a></li>
-        <li><a href="#menu">Spécialités</a></li>
-        <li><a href="#contact">Contact</a></li>
-
-        <li class="mobile-only-item">
-          <a href="#contact" class="btn btn-primary" style="width:100%; padding:1rem; text-align:center;">
-            Réserver une table
-          </a>
-        </li>
-
->>>>>>> Stashed changes
         {% if request.user.is_authenticated %}
 
           <li class="mobile-only-item">

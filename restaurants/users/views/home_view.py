@@ -2,14 +2,11 @@ from django.views.generic import TemplateView
 from django.db.models import Exists, OuterRef
 from django.core.cache import cache
 import datetime
-<<<<<<< Updated upstream
 from restaurants.meal.models import Meal, Boisson, DailyMenu, Category
 from restaurants.users.models import Testimonial
-=======
 
 from restaurants.meal.models import Meal, Boisson, DailyMenu
 from restaurants.users.models import Testimonial, HeroSection
->>>>>>> Stashed changes
 from restaurants.users.enum import TestimonialStatus
 
 
@@ -24,7 +21,6 @@ class HomeView(TemplateView):
 
 
         today_day = datetime.date.today().strftime('%A').lower()
-<<<<<<< Updated upstream
         
         meals_cache_key = f'home_meals_{today_day}'
         meals = cache.get(meals_cache_key)
@@ -60,7 +56,6 @@ class HomeView(TemplateView):
         context['categories'] = categories
         context['daily_menus'] = daily_menus
         context['testimonials'] = Testimonial.objects.filter(status=TestimonialStatus.APPROVED)[:5]
-=======
 
 
         # Menus disponibles
@@ -107,5 +102,4 @@ class HomeView(TemplateView):
         )
 
 
->>>>>>> Stashed changes
         return context

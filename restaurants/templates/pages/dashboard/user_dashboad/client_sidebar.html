@@ -5,7 +5,7 @@
 
         <img
             src="{% if company_setting and company_setting.logo %}{{ company_setting.logo.url }}{% else %}{% static 'images/logo-mams.png' %}{% endif %}"
-            alt="{{ company_setting.restaurant_name|default:'Mam''s' }}"
+            alt="{{ company_setting.restaurant_name|default:"Mam's" }}"
         >
 
         <span>

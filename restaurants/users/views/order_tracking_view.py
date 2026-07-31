@@ -30,7 +30,7 @@ class OrderTrackingView(LoginRequiredMixin, View):
             return redirect('users:home')
 
         order = get_object_or_404(
-            Order.objects.prefetch_related("items__meal", "items__accompaniments", "items__boisson"),
+            Order.objects.prefetch_related("items__meal", "items__accompaniments", "items__boissons"),
             id=order_id,
             client=client,
         )
