@@ -228,7 +228,12 @@
 
     <!-- ID + date -->
     <div>
-      <div class="order-id-cell">#{{ order.id|stringformat:"s"|slice:":8"|upper }}</div>
+      <div class="order-id-cell">
+        #{{ order.id|stringformat:"s"|slice:":8"|upper }}
+        {% if order.has_loyalty_gift %}
+          <span style="font-size:1.1rem; margin-left: 0.3rem;" title="Cadeau de fidélité à inclure !">🎁</span>
+        {% endif %}
+      </div>
       <div class="order-date-cell">{{ order.created|date:"d M Y à H:i" }}</div>
     </div>
 

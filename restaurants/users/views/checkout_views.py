@@ -122,6 +122,14 @@ class CheckoutView(LoginRequiredMixin, View):
         order.total_amount = order_total + 1000 # delivery fee
         order.save()
 
+        # Loyalty Points Logic
+        client.loyalty_points += 10
+        if client.loyalty_points >= 100:
+            order.has_loyalty_gift = True
+            order.save(update_fields=['has_loyalty_gift'])
+            client.loyalty_points -= 100
+        client.save(update_fields=['loyalty_points'])
+
         # Create Payment intent
         Payment.objects.create(
             order=order,

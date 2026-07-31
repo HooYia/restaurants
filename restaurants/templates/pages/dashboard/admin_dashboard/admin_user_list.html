@@ -56,6 +56,7 @@
           <th>Nom & Prénom</th>
           <th>Email</th>
           <th>Téléphone</th>
+          <th>Fidélité</th>
           <th>Type</th>
           <th>Date d'inscription</th>
         </tr>
@@ -71,6 +72,13 @@
           </td>
           <td style="color: #6b7280;">{{ user_obj.email }}</td>
           <td>{{ user_obj.phone|default:"-" }}</td>
+          <td>
+            {% if user_obj.client_profile %}
+              {{ user_obj.client_profile.loyalty_points }} pts
+            {% else %}
+              -
+            {% endif %}
+          </td>
           <td>
             {% if user_obj.is_staff or user_obj.is_superuser %}
               <span class="badge badge-admin">Admin</span>

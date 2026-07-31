@@ -97,7 +97,11 @@
     <div>
       <p class="label">Points fidélité</p>
       <p class="value">{{ stats.loyalty_points|default:"0" }} pts</p>
-      <p class="delta up">Bientôt une récompense !</p>
+      {% if stats.points_to_gift == 0 %}
+        <p class="delta up" style="color:var(--terracotta); font-weight: 700;">🎁 Cadeau à la prochaine commande !</p>
+      {% else %}
+        <p class="delta up">Plus que {{ stats.points_to_gift }} pts avant votre cadeau !</p>
+      {% endif %}
     </div>
     <div class="stat-icon amber">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>

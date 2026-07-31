@@ -133,7 +133,8 @@ class ClientDashboardView(LoginRequiredMixin, View):
         if client:
             client_orders = Order.objects.filter(client=client).prefetch_related("items")[:10]
             stats["total_orders"] = Order.objects.filter(client=client).count()
-            stats["loyalty_points"] = stats["total_orders"] * 10
+            stats["loyalty_points"] = client.loyalty_points
+            stats["points_to_gift"] = max(100 - client.loyalty_points, 0)
             stats["total_testimonials"] = client.testimonials.count()
 
         popular_meals = Meal.objects.filter(is_available=True)[:3]

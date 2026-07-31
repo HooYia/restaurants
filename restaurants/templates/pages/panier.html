@@ -307,10 +307,7 @@
           <span>{{ cart.get_total_price|add:"1000" }} FCFA</span>
         </div>
 
-        <form class="promo-form">
-          <input type="text" placeholder="Code promo">
-          <button type="submit">Appliquer</button>
-        </form>
+
 
         <a href="{% url 'users:checkout' %}" class="btn-checkout">Passer la commande</a>
         <p class="summary-note">Paiement à la livraison ou par Mobile Money.</p>

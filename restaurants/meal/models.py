@@ -176,6 +176,10 @@ class Order(OngBaseModel):
         max_length=20, choices=PaymentMethod.choices, default=PaymentMethod.CASH
     )
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    has_loyalty_gift = models.BooleanField(
+        default=False,
+        help_text="Indique si cette commande inclut un cadeau de fidélité à livrer."
+    )
 
     class Meta:
         verbose_name = "Commande"

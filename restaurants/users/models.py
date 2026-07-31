@@ -127,6 +127,10 @@ class Client(OngBaseModel):
         on_delete=models.CASCADE,
         related_name="client_profile",
     )
+    loyalty_points = models.PositiveIntegerField(
+        default=0,
+        help_text="Points de fidélité (1 commande = 10 pts)"
+    )
 
     def __str__(self):
         return f"Client: {self.user}"
