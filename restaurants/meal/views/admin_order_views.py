@@ -28,12 +28,15 @@ class AdminOrderListView(AdminRequiredMixin, View):
             orders = orders.filter(status=status_filter)
 
         if search:
-            orders = orders.filter(
-                client__user__first_name__icontains=search
-            ) | orders.filter(
-                client__user__last_name__icontains=search
-            ) | orders.filter(
-                client__user__email__icontains=search
+            from django.db.models import Q
+            from django.db.models.functions import Cast
+            from django.db.models import CharField
+
+            orders = orders.annotate(id_str=Cast("id", CharField())).filter(
+                Q(client__user__first_name__icontains=search) |
+                Q(client__user__last_name__icontains=search) |
+                Q(client__user__email__icontains=search) |
+                Q(id_str__icontains=search)
             )
 
         # Liste (value, label, count) pour les filtres

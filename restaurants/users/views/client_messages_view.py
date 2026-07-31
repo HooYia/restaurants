@@ -27,8 +27,8 @@ class ClientMessagesView(LoginRequiredMixin, TemplateView):
             unread_admin_messages.update(is_read=True, read_at=timezone.now())
             
         # Fetch user's recent orders to display in the select dropdown
-        if hasattr(self.request.user, 'client'):
-            context['recent_orders'] = self.request.user.client.orders.order_by('-created')[:10]
+        if hasattr(self.request.user, 'client_profile'):
+            context['recent_orders'] = self.request.user.client_profile.orders.order_by('-created')[:10]
         else:
             context['recent_orders'] = []
             
@@ -43,9 +43,9 @@ class ClientMessagesView(LoginRequiredMixin, TemplateView):
             conversation, created = Conversation.objects.get_or_create(user=request.user)
             
             order = None
-            if order_id and hasattr(request.user, 'client'):
+            if order_id and hasattr(request.user, 'client_profile'):
                 from restaurants.meal.models import Order
-                order = Order.objects.filter(id=order_id, client=request.user.client).first()
+                order = Order.objects.filter(id=order_id, client=request.user.client_profile).first()
                 
             # Create message
             Message.objects.create(
