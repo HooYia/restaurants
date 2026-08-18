@@ -6,6 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.base_user import BaseUserManager
+from django.utils import timezone
 
 from .enum import TestimonialStatus
 from restaurants.core.models import OngBaseModel
@@ -104,8 +105,49 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    @property
+    def name(self):
+        """Nom complet conservé pour la compatibilité de l'ancienne API."""
+        return self.get_full_name() or self.email
+
+    @name.setter
+    def name(self, value):
+        first_name, _, last_name = (value or "").strip().partition(" ")
+        self.first_name = first_name
+        self.last_name = last_name
+
     def __str__(self):
         return self.email
+
+
+class RegistrationOtp(models.Model):
+    id = models.UUIDField(
+        default=uuid.uuid4,
+        primary_key=True,
+        editable=False,
+        unique=True,
+        help_text="Identifiant UUID unique pour la vérification OTP.",
+    )
+    email = models.EmailField()
+    data = models.JSONField()
+    otp_code = models.CharField(max_length=6)
+    purpose = models.CharField(max_length=50, default="register")
+    expires_at = models.DateTimeField()
+    is_verified = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created"]
+        indexes = [
+            models.Index(fields=["email", "purpose"]),
+            models.Index(fields=["expires_at"]),
+        ]
+
+    def __str__(self):
+        return f"OTP {self.otp_code} for {self.email}"
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at
 
 
 class Admin(OngBaseModel):

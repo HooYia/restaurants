@@ -172,9 +172,12 @@ class Cart:
 
     def __iter__(self):
         for item_id, item in self.cart.items():
-            item['id'] = item_id
-            item['subtotal'] = Decimal(item['total_unit_price']) * item['quantity']
-            yield item
+            # Ne jamais enrichir ``self.cart`` ici : il est sauvegardé dans la
+            # session Django (JSON) et un Decimal n'y est pas sérialisable.
+            serialized_item = dict(item)
+            serialized_item['id'] = item_id
+            serialized_item['subtotal'] = Decimal(item['total_unit_price']) * item['quantity']
+            yield serialized_item
 
     def __len__(self):
         return len(self.cart.keys())

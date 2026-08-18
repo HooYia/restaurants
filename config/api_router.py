@@ -1,13 +1,21 @@
-from django.conf import settings
-from rest_framework.routers import DefaultRouter
-from rest_framework.routers import SimpleRouter
-
-from restaurants.users.api.views import UserViewSet
-
-router = DefaultRouter() if settings.DEBUG else SimpleRouter()
-
-router.register("users", UserViewSet)
-
+from django.urls import include, path
 
 app_name = "api"
-urlpatterns = router.urls
+
+urlpatterns = [
+    path(
+        "v1/",
+        include(
+            ("restaurants.users.api.urls", "users_api"),
+            namespace="users_api_v1",
+        ),
+    ),
+
+    path(
+        "v1/",
+        include(
+            ("restaurants.meal.api.urls", "meal_api"),
+            namespace="meal_api_v1",
+        ),
+    ),
+]

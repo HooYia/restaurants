@@ -146,69 +146,74 @@
       {% csrf_token %}
       
       <div class="form-grid">
-        <!-- Colonne 1 -->
         <div>
           <div class="form-group">
-            <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-            {{ form.name }}
-            {% if form.name.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.name.errors }}</div>{% endif %}
+            <label class="form-label" for="name">Nom</label>
+            <input id="name" name="name" class="form-input" type="text" required>
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label" for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
-            {{ form.category }}
-            {% if form.category.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.category.errors }}</div>{% endif %}
+            <label class="form-label" for="category">Catégorie</label>
+            <select id="category" name="category" class="form-input" required>
+              <option value="">-- Choisir --</option>
+              {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+              {% endfor %}
+            </select>
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
-            {{ form.price }}
-            {% if form.price.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.price.errors }}</div>{% endif %}
+            <label class="form-label" for="price">Prix</label>
+            <input id="price" name="price" class="form-input" type="number" min="0" step="0.01" required>
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label" for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
-            {{ form.image }}
-            {% if form.image.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.image.errors }}</div>{% endif %}
+            <label class="form-label" for="image">Photo</label>
+            <input id="image" name="image" class="form-input" type="file" accept="image/*">
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-            {{ form.description }}
-            {% if form.description.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.description.errors }}</div>{% endif %}
+            <label class="form-label" for="description">Description</label>
+            <textarea id="description" name="description" class="form-input" rows="3"></textarea>
           </div>
         </div>
         
-        <!-- Colonne 2 -->
         <div>
           <div class="form-group">
-            <label class="form-label" for="{{ form.accompaniments.id_for_label }}">{{ form.accompaniments.label }}</label>
-            {{ form.accompaniments }}
-            {% if form.accompaniments.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.accompaniments.errors }}</div>{% endif %}
+            <label class="form-label" for="accompaniments">Accompagnements (optionnel)</label>
+            <select id="accompaniments" name="accompaniments" class="form-input" multiple size="6">
+              {% for accompaniment in accompaniments %}
+                <option value="{{ accompaniment.id }}">{{ accompaniment.name }}</option>
+              {% endfor %}
+            </select>
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label" for="{{ form.max_included_accompaniments.id_for_label }}">{{ form.max_included_accompaniments.label }}</label>
-            {{ form.max_included_accompaniments }}
-            {% if form.max_included_accompaniments.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.max_included_accompaniments.errors }}</div>{% endif %}
+            <label class="form-label" for="max_included_accompaniments">Accompagnements inclus</label>
+            <input id="max_included_accompaniments" name="max_included_accompaniments" class="form-input" type="number" min="0" value="0">
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label" for="{{ form.availability_mode.id_for_label }}">{{ form.availability_mode.label }}</label>
-            {{ form.availability_mode }}
-            {% if form.availability_mode.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.availability_mode.errors }}</div>{% endif %}
+            <label class="form-label" for="availability_mode">Mode de disponibilité</label>
+            <select id="availability_mode" name="availability_mode" class="form-input">
+              {% for value, label in available_modes %}
+                <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label" for="{{ form.daily_menus.id_for_label }}">{{ form.daily_menus.label }}</label>
-            {{ form.daily_menus }}
-            {% if form.daily_menus.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.daily_menus.errors }}</div>{% endif %}
+            <label class="form-label" for="daily_menus">Jours disponibles</label>
+            <select id="daily_menus" name="daily_menus" class="form-input" multiple size="7">
+              {% for menu in daily_menus %}
+                <option value="{{ menu.id }}">{{ menu.get_day_display }}</option>
+              {% endfor %}
+            </select>
           </div>
           
           <div class="form-group" style="display:flex;align-items:center;gap:0.5rem;margin-top:1.5rem;">
-            {{ form.is_available }}
-            <label class="form-label" for="{{ form.is_available.id_for_label }}" style="margin:0;">{{ form.is_available.label }} (Affiché au client)</label>
-            {% if form.is_available.errors %}<div style="color: var(--maroon); font-size: .8rem;">{{ form.is_available.errors }}</div>{% endif %}
+            <input id="is_available" name="is_available" type="checkbox" checked>
+            <label class="form-label" for="is_available" style="margin:0;">Disponible (Affiché au client)</label>
           </div>
         </div>
       </div>

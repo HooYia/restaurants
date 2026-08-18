@@ -1,60 +1,108 @@
-<!-- SPÉCIALITÉS -->
-<section class="dark-bg" id="menu">
-  <div class="container">
-    <div class="section-head reveal">
-      <p class="eyebrow">Nos spécialités</p>
-      <h2>Des classiques camerounais, faits maison</h2>
-      <p>Une sélection de plats emblématiques, préparés à la commande avec des ingrédients frais.</p>
+<!-- SPÉCIALITÉS AVEC STYLE HISTOIRE - VERSION AMÉLIORÉE -->
+<section class="light-bg" id="menu">
+  <div class="container" style="max-width: 1280px;">
+    <!-- Section texte améliorée -->
+    <div class="reveal" style="display: grid; grid-template-columns: 1fr; gap: 2rem; max-width: 900px; margin: 0 auto; text-align: center;">
+      <div class="story-text">
+        <p class="eyebrow" style="color:var(--terracotta); font-weight: 700; text-transform: uppercase; letter-spacing: 4px; font-size: 0.8rem; margin-bottom: 0.5rem; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;">✦ Nos spécialités ✦</p>
+        <h2 style="font-family: 'Playfair Display', 'Georgia', serif; font-size: clamp(2.8rem, 5vw, 3.8rem); color: var(--maroon); margin-bottom: 1.2rem; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2;">Des classiques camerounais, <span style="color: var(--terracotta);">faits maison</span></h2>
+        <p style="font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-size: 1.1rem; line-height: 1.9; color: #5a4a3a; margin-bottom: 1.5rem; font-weight: 400; max-width: 700px; margin-left: auto; margin-right: auto;">Une sélection de plats emblématiques, préparés à la commande avec des ingrédients frais.</p>
+        <div style="max-width: 800px; margin: 0 auto 1.5rem; padding: 1.5rem 2rem; background: linear-gradient(135deg, rgba(224, 168, 92, 0.08) 0%, rgba(224, 168, 92, 0.02) 100%); border-left: 5px solid var(--terracotta); border-right: 5px solid var(--terracotta); border-radius: 16px; position: relative;">
+          <span style="position: absolute; top: -12px; left: 2rem; background: var(--terracotta); color: white; padding: 0.2rem 0.8rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-family: 'Inter', sans-serif;">Héritage</span>
+          <p style="font-family: 'Playfair Display', 'Georgia', serif; font-size: 1.3rem; line-height: 1.9; color: #3a2a1a; margin: 0; font-weight: 600; font-style: italic;">"Chaque recette est transmise de génération en génération, avec le même soin et la même passion qui font la renommée de Mam's."</p>
+        </div>
+        <p style="font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-size: 1.05rem; line-height: 1.8; color: #6b5a4a; font-weight: 400;">— Toute l'équipe de Mam's</p>
+      </div>
     </div>
 
-    <div class="menu-controls reveal">
-      <div class="search-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="search" id="dish-search" placeholder="Rechercher un plat (ex : ndolé, jus...)" aria-label="Rechercher un plat">
+    <!-- Menu Controls - Recherche, catégories et jours -->
+    <div class="menu-controls reveal" style="margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; background: linear-gradient(135deg, #1b100d 0%, #2a1713 45%, #150d0a 100%); padding: 1.25rem 1.4rem; border-radius: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(2px);">
+      <div class="menu-row" style="display: flex; flex-wrap: nowrap; align-items: center; gap: 1rem; width: 100%; min-height: 58px;">
+        <div class="search-wrap" style="flex: 1 1 260px; min-width: 220px; position: relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #4d2d26;">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="M21 21l-4.3-4.3"/>
+          </svg>
+          <input type="search" id="dish-search" placeholder="Rechercher un plat..." aria-label="Rechercher un plat" style="width: 100%; padding: 0.7rem 1rem 0.7rem 2.8rem; border: 2px solid rgba(255,255,255,0.2); border-radius: 99px; font-size: 0.9rem; outline: none; background: #f5ece8; transition: all 0.3s; font-family: 'Inter', sans-serif; color: #2d1b17;">
+        </div>
+
+        <div style="width: 1px; height: 34px; background: rgba(255,255,255,0.2); flex-shrink: 0;"></div>
+
+        <div class="category-filter-group" style="display: flex; flex-wrap: nowrap; align-items: center; gap: 0.5rem; flex: 5; min-width: 0; overflow: hidden;">
+          <button class="filter-pill cat-filter-pill active" data-filter="all" style="padding: 0.5rem 1rem; border: 2px solid #ffffff; border-radius: 99px; background: #ffffff; color: #3f231d; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 0.8rem; font-family: 'Inter', sans-serif; white-space: nowrap;">
+            Tous
+          </button>
+
+          {% for category in categories|slice:':3' %}
+            <button class="filter-pill cat-filter-pill" data-filter="cat_{{ category.slug }}" style="padding: 0.5rem 1rem; border: 2px solid #ffffff; border-radius: 99px; background: #ffffff; color: #3f231d; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 0.8rem; font-family: 'Inter', sans-serif; white-space: nowrap;">
+              {{ category.name }}
+            </button>
+          {% endfor %}
+
+          {% if categories|length > 3 %}
+            <select id="category-dropdown" class="category-dropdown" aria-label="Autres catégories" style="padding: 0.55rem 2.2rem 0.55rem 0.9rem; border: 2px solid #ffffff; border-radius: 99px; background: #ffffff; color: #3f231d; font-size: 0.8rem; font-weight: 700; font-family: 'Inter', sans-serif; outline: none; cursor: pointer; min-width: 190px; appearance: none; background-image: linear-gradient(45deg, transparent 50%, #3f231d 50%), linear-gradient(135deg, #3f231d 50%, transparent 50%); background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px); background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;">
+              <option value="all">Autres catégories</option>
+              {% for category in categories|slice:'3:' %}
+                <option value="cat_{{ category.slug }}">{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          {% endif %}
+
+          <button class="filter-pill cat-filter-pill" data-filter="cat_boissons" style="padding: 0.5rem 1rem; border: 2px solid #ffffff; border-radius: 99px; background: #ffffff; color: #3f231d; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 0.8rem; font-family: 'Inter', sans-serif; white-space: nowrap;">
+            Boissons
+          </button>
+        </div>
       </div>
-      <div class="filter-pills" id="filter-pills">
-        <button class="filter-pill cat-filter-pill active" data-filter="all">Toutes les catégories</button>
-        {% for category in categories %}
-          <button class="filter-pill cat-filter-pill" data-filter="cat_{{ category.slug }}">{{ category.name }}</button>
-        {% endfor %}
-        <button class="filter-pill cat-filter-pill" data-filter="cat_boissons">Boissons</button>
-      </div>
-      <div class="filter-pills" id="day-filter-pills" style="margin-top: 1rem;">
-        <button class="filter-pill day-filter-pill active" data-day="all">Tous les jours</button>
+
+      <div class="filter-pills day-row" id="day-filter-pills" style="display: flex; flex-wrap: nowrap; gap: 0.5rem; align-items: center; justify-content: flex-start; overflow-x: auto; padding-bottom: 0.2rem;">
+        <a href="{% url 'users:home' %}" class="filter-pill day-filter-pill {% if not selected_day %}active{% endif %}" data-day="all" style="display:inline-block; padding: 0.5rem 1rem; border: 2px solid #ffffff; border-radius: 99px; background: #ffffff; color: #3f231d; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 0.8rem; font-family: 'Inter', sans-serif; white-space: nowrap; text-decoration:none;">
+          Tous les jours
+        </a>
         {% for menu in daily_menus %}
-          <button class="filter-pill day-filter-pill" data-day="day_{{ menu.day }}">{{ menu.get_day_display }}</button>
+          <a href="{% url 'users:home' %}?day={{ menu.day }}" class="filter-pill day-filter-pill {% if selected_day == menu.day %}active{% endif %}" data-day="day_{{ menu.day }}" style="display:inline-block; padding: 0.5rem 1rem; border: 2px solid #ffffff; border-radius: 99px; background: #ffffff; color: #3f231d; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 0.8rem; font-family: 'Inter', sans-serif; white-space: nowrap; text-decoration:none;">
+            {{ menu.get_day_display }}
+          </a>
         {% endfor %}
       </div>
     </div>
 
-    <div class="no-results reveal" id="no-results" hidden style="text-align: center; margin-bottom: 2rem; padding: 2rem; background: rgba(224, 168, 92, 0.1); border-radius: 12px;">
-      <h3 style="color: var(--maroon); font-size: 1.5rem; margin-bottom: 0.5rem; font-family: var(--font-brush);">Oups ! Aucun résultat trouvé</h3>
-      <p style="color: #8a7660;">Nous n'avons pas trouvé de plat correspondant exactement à votre recherche. Voici quelques suggestions gourmandes :</p>
+    <div class="no-results reveal" id="no-results" hidden style="text-align: center; margin-top: 2rem; padding: 2rem; background: rgba(224, 168, 92, 0.1); border-radius: 12px;">
+      <h3 style="color: var(--maroon); font-size: 1.5rem; margin-bottom: 0.5rem; font-family: 'Playfair Display', serif;">Oups ! Aucun résultat trouvé</h3>
+      <p style="color: #8a7660; font-family: 'Inter', sans-serif;">Nous n'avons pas trouvé de plat correspondant exactement à votre recherche.</p>
     </div>
 
-    <div class="dish-grid" id="dish-grid">
+    {% if selected_day %}
+      <div style="margin-top: 1.5rem; text-align: center; color: var(--maroon); font-weight: 700; font-family: 'Inter', sans-serif;">
+        Affichage des plats disponibles le {% for menu in daily_menus %}{% if menu.day == selected_day %}{{ menu.get_day_display }}{% endif %}{% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Grille des plats -->
+    <div class="dish-grid" id="dish-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem;">
 
       <!-- Meals -->
       {% for meal in meals %}
-      <div class="dish-card reveal" data-category="cat_{{ meal.category.slug }}" data-days="{% for dm in meal.daily_menus.all %}day_{{ dm.day }} {% endfor %}" data-name="{{ meal.name|lower }}">
-        <div class="dish-img-wrap {% if not meal.image %}dish-img-placeholder{% endif %}">
+      <div class="dish-card reveal" data-category="cat_{{ meal.category.slug }}" data-days="{% for dm in meal.daily_menus.all %}day_{{ dm.day }} {% endfor %}" data-name="{{ meal.name|lower }}" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.4s ease; border: 1px solid #f0ebe8;">
+        <div class="dish-img-wrap {% if not meal.image %}dish-img-placeholder{% endif %}" style="position: relative; aspect-ratio: 16/10; overflow: hidden; background: #f5f0ed;">
           {% if meal.image %}
-            <img src="{{ meal.image.url }}" alt="{{ meal.name }}" loading="lazy">
+            <img src="{{ meal.image.url }}" alt="{{ meal.name }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease;">
           {% else %}
-            <span aria-hidden="true">🍲</span>
+            <span aria-hidden="true" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem;">🍲</span>
           {% endif %}
           {% if meal.is_today %}
-            <span class="dish-badge" style="background:var(--maroon);color:#fff;">Repas du jour</span>
+            <span class="dish-badge" style="position: absolute; top: 1rem; right: 1rem; background:var(--maroon);color:#fff; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'Inter', sans-serif;">Repas du jour</span>
           {% else %}
-            <span class="dish-badge">Plat principal</span>
+            <span class="dish-badge" style="position: absolute; top: 1rem; right: 1rem; background: var(--terracotta); color:#fff; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'Inter', sans-serif;">Plat principal</span>
           {% endif %}
         </div>
-        <div class="dish-body">
-          <h3>{{ meal.name|capfirst }}</h3>
-          <p>{{ meal.description|truncatewords:15 }}</p>
-          <div class="dish-footer">
-            <span class="dish-price">{{ meal.price }} FCFA</span>
-            <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|capfirst|escapejs }}', '{{ meal.description|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}', this)">+</button>
+        <div class="dish-body" style="padding: 1.5rem;">
+          <h3 style="font-family: 'Playfair Display', 'Georgia', serif; font-size: 1.15rem; font-weight: 700; color: var(--maroon); margin-bottom: 0.4rem; letter-spacing: 0.3px;">{{ meal.name|capfirst }}</h3>
+          <p style="font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-size: 0.9rem; color: #6b5a4a; line-height: 1.6; margin-bottom: 1rem; font-weight: 400;">{{ meal.description|truncatewords:15 }}</p>
+          <div class="dish-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.8rem; border-top: 1px solid #f0ebe8;">
+            <span class="dish-price" style="font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--maroon); letter-spacing: -0.5px;">{{ meal.price }} <span style="font-size: 0.75rem; font-weight: 400; color: #8a7660;">FCFA</span></span>
+            <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|capfirst|escapejs }}', '{{ meal.description|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}', this)" style="width: 44px; height: 44px; border-radius: 50%; background: var(--maroon); color: #fff; border: none; font-size: 1.3rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-weight: 300; box-shadow: 0 4px 12px rgba(74, 44, 42, 0.2); font-family: 'Inter', sans-serif;">
+              +
+            </button>
           </div>
           <div class="meal-accompaniments-data" style="display:none;">
             {% for acc in meal.accompaniments.all %}
@@ -65,24 +113,25 @@
       </div>
       {% endfor %}
 
-
       <!-- Boissons -->
       {% for boisson in boissons %}
-      <div class="dish-card reveal" data-category="cat_boissons" data-days="all" data-name="{{ boisson.name|lower }}">
-        <div class="dish-img-wrap {% if not boisson.image %}dish-img-placeholder{% endif %}">
+      <div class="dish-card reveal" data-category="cat_boissons" data-days="all" data-name="{{ boisson.name|lower }}" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.4s ease; border: 1px solid #f0ebe8;">
+        <div class="dish-img-wrap {% if not boisson.image %}dish-img-placeholder{% endif %}" style="position: relative; aspect-ratio: 16/10; overflow: hidden; background: #f5f0ed;">
           {% if boisson.image %}
-            <img src="{{ boisson.image.url }}" alt="{{ boisson.name }}" loading="lazy">
+            <img src="{{ boisson.image.url }}" alt="{{ boisson.name }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease;">
           {% else %}
-            <span aria-hidden="true">🥤</span>
+            <span aria-hidden="true" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem;">🥤</span>
           {% endif %}
-          <span class="dish-badge">Boisson</span>
+          <span class="dish-badge" style="position: absolute; top: 1rem; right: 1rem; background: #4facfe; color:#fff; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'Inter', sans-serif;">Boisson</span>
         </div>
-        <div class="dish-body">
-          <h3>{{ boisson.name|capfirst }}</h3>
-          <p>Rafraîchissez-vous avec cette boisson.</p>
-          <div class="dish-footer">
-            <span class="dish-price">{{ boisson.price }} FCFA</span>
-            <button class="dish-add" aria-label="Ajouter {{ boisson.name }} à la commande" onclick="addStandaloneBoisson('{{ boisson.id }}', this)">+</button>
+        <div class="dish-body" style="padding: 1.5rem;">
+          <h3 style="font-family: 'Playfair Display', 'Georgia', serif; font-size: 1.15rem; font-weight: 700; color: var(--maroon); margin-bottom: 0.4rem; letter-spacing: 0.3px;">{{ boisson.name|capfirst }}</h3>
+          <p style="font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-size: 0.9rem; color: #6b5a4a; line-height: 1.6; margin-bottom: 1rem; font-weight: 400;">Rafraîchissez-vous avec cette boisson.</p>
+          <div class="dish-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.8rem; border-top: 1px solid #f0ebe8;">
+            <span class="dish-price" style="font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--maroon); letter-spacing: -0.5px;">{{ boisson.price }} <span style="font-size: 0.75rem; font-weight: 400; color: #8a7660;">FCFA</span></span>
+            <button class="dish-add" aria-label="Ajouter {{ boisson.name }} à la commande" onclick="addStandaloneBoisson('{{ boisson.id }}', this)" style="width: 44px; height: 44px; border-radius: 50%; background: var(--maroon); color: #fff; border: none; font-size: 1.3rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-weight: 300; box-shadow: 0 4px 12px rgba(74, 44, 42, 0.2); font-family: 'Inter', sans-serif;">
+              +
+            </button>
           </div>
         </div>
       </div>
@@ -92,41 +141,39 @@
   </div>
 </section>
 
-<!-- Add to Cart Offcanvas -->
-<div class="offcanvas-overlay" id="addToCartModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(35,22,16,0.6); z-index:2000; justify-content:flex-end;">
-  <div class="offcanvas-content" id="addToCartContent" style="background:#fff; width:100%; max-width:450px; height:100%; position:relative; box-shadow:-5px 0 25px rgba(0,0,0,0.2); display:flex; flex-direction:column; padding:2rem; overflow-y:auto; transform: translateX(100%); transition: transform 0.3s ease-in-out;">
-    <button onclick="closeAddToCartModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:2rem; line-height: 1; color:#8a7660; cursor:pointer;">&times;</button>
-    <h2 id="modal_meal_name" style="color:var(--maroon); margin-top:0; font-size:1.8rem; font-family: var(--font-brush);">Nom du plat</h2>
+<!-- Add to Cart Offcanvas - FOND MARRON FONCÉ - SANS FLOU -->
+<div class="offcanvas-overlay" id="addToCartModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(26,14,10,0.85); z-index:2000; justify-content:flex-end;">
+  <div class="offcanvas-content" id="addToCartContent" style="background: linear-gradient(135deg, #1a0e0a 0%, #2d1a14 50%, #1a0e0a 100%); width:100%; max-width:450px; height:100%; position:relative; box-shadow:-5px 0 25px rgba(0,0,0,0.5); display:flex; flex-direction:column; padding:2rem; overflow-y:auto; transform: translateX(100%); transition: transform 0.3s ease-in-out; color: #e8ddd0;">
     
-    <!-- New Description Element -->
-    <p id="modal_meal_desc" style="color:#8a7660; font-size:0.95rem; line-height: 1.5; margin-bottom:1rem;"></p>
+    <button onclick="closeAddToCartModal()" style="position:absolute; top:1rem; right:1rem; background:rgba(255,255,255,0.1); border:none; font-size:2rem; line-height: 1; color:#e8ddd0; cursor:pointer; font-family: 'Inter', sans-serif; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">&times;</button>
+    
+    <h2 id="modal_meal_name" style="color: #e8ddd0; margin-top:0; font-size:1.8rem; font-family: 'Playfair Display', 'Georgia', serif;">Nom du plat</h2>
+    
+    <!-- Description -->
+    <p id="modal_meal_desc" style="color: rgba(232,221,208,0.7); font-size:0.95rem; line-height: 1.5; margin-bottom:1rem; font-family: 'Inter', sans-serif;"></p>
 
-    <p style="color:var(--dark); font-weight:700; font-size: 1.1rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(107,42,31,.1); padding-bottom: 1rem;">
-      Prix total : <span id="modal_meal_price">0</span> FCFA
-      <span id="modal_extra_fee_display" style="display:none; font-size:0.85rem; color:var(--terracotta); font-weight:normal; margin-left:1rem;">(dont <span id="modal_extra_fee_val">0</span> FCFA de supplément)</span>
-    </p>
-    
     <input type="hidden" id="modal_meal_id">
     
     <div style="flex-grow: 1;">
       <div style="margin-top:0.5rem;" id="modal_acc_section">
-        <h3 style="font-size:1.1rem; margin-bottom:0.5rem; color: var(--dark);">Accompagnements</h3>
-        <p style="font-size:0.85rem; color:#8a7660; margin-bottom:1rem;" id="modal_acc_text">Choisissez vos accompagnements.</p>
-        <div id="modal_acc_container" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px; background: rgba(239,224,196, 0.1);">
+        <h3 style="font-size:1.1rem; margin-bottom:0.5rem; color: #e8ddd0; font-family: 'Playfair Display', serif;">Accompagnements</h3>
+        <p style="font-size:0.85rem; color:rgba(232,221,208,0.6); margin-bottom:1rem; font-family: 'Inter', sans-serif;" id="modal_acc_text">Choisissez vos accompagnements.</p>
+        <div id="modal_acc_container" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.5rem; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background: rgba(255,255,255,0.05);">
           <!-- Filled by JS -->
         </div>
       </div>
       
       <div style="margin-top:2rem;">
-        <h3 style="font-size:1.1rem; margin-bottom:0.5rem; color: var(--dark);">Boissons (Optionnel)</h3>
-        <div id="modal_boisson_container" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.5rem; border:1px solid rgba(107,42,31,.1); border-radius:8px; background: rgba(239,224,196, 0.1);">
+        <h3 style="font-size:1.1rem; margin-bottom:0.5rem; color: #e8ddd0; font-family: 'Playfair Display', serif;">Boissons (Optionnel)</h3>
+        <div id="modal_boisson_container" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.5rem; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background: rgba(255,255,255,0.05);">
           {% for boisson in boissons %}
-            <div style="display:flex; align-items:center; justify-content:space-between; padding: 0.5rem 0;">
-              <span style="font-size: 0.95rem; font-weight: 500;">{{ boisson.name|capfirst }} <strong style="color:var(--terracotta); margin-left: 0.5rem;">+{{ boisson.price }} FCFA</strong></span>
-              <div style="display:flex; align-items:center; border:1px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
-                <button type="button" onclick="updateQty(this, -1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
-                <input type="number" name="modal_boissons" data-id="{{ boisson.id }}" data-price="{{ boisson.price|stringformat:'f' }}" value="0" min="0" readonly style="width:28px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
-                <button type="button" onclick="updateQty(this, 1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">+</button>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding: 0.5rem 0; font-family: 'Inter', sans-serif; border-bottom:1px solid rgba(255,255,255,0.05);">
+              <span style="font-size: 0.95rem; font-weight: 500; color:#e8ddd0;">{{ boisson.name|capfirst }} <strong style="color:var(--terracotta); margin-left: 0.5rem;">+{{ boisson.price }} FCFA</strong></span>
+              <!-- BOUTONS SIMPLES - SANS CHAPEAU -->
+              <div style="display:flex; align-items:center; border:1px solid rgba(255,255,255,0.15); border-radius:999px; overflow:hidden;">
+                <button type="button" onclick="updateQty(this, -1)" style="width:32px; height:32px; background:rgba(255,255,255,0.1); border:none; cursor:pointer; color:#e8ddd0; font-weight:bold; font-size:1.2rem; font-family: 'Inter', sans-serif; transition:background 0.2s;">−</button>
+                <input type="number" name="modal_boissons" data-id="{{ boisson.id }}" data-price="{{ boisson.price|stringformat:'f' }}" value="0" min="0" readonly style="width:36px; text-align:center; border:none; outline:none; font-family: 'Inter', sans-serif; background:transparent; font-weight:600; font-size:0.95rem; color:#e8ddd0;">
+                <button type="button" onclick="updateQty(this, 1)" style="width:32px; height:32px; background:rgba(255,255,255,0.1); border:none; cursor:pointer; color:#e8ddd0; font-weight:bold; font-size:1.2rem; font-family: 'Inter', sans-serif; transition:background 0.2s;">+</button>
               </div>
             </div>
           {% endfor %}
@@ -134,324 +181,717 @@
       </div>
     </div>
     
-    <div style="margin-top:2rem; padding-top: 1.5rem; border-top: 1px solid rgba(107,42,31,.1); display:flex; flex-direction: column; gap: 1rem;">
+    <!-- ===== QUANTITÉ ET PRIX INVERSÉS ===== -->
+    <div style="margin-top:2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); display:flex; flex-direction: column; gap: 1rem;">
+      
+      <!-- 1. QUANTITÉ en haut (boutons simples) -->
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label style="font-size:0.95rem; color:var(--dark); font-weight:600;">Quantité</label>
-        <div style="display:flex; align-items:center; border:1px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
-            <button type="button" onclick="updateModalQuantity(-1)" style="width:36px; height:36px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold; font-size: 1.2rem;">-</button>
-            <input type="number" id="modal_quantity" value="1" min="1" readonly style="width:40px; height:36px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent; font-weight: bold;">
-            <button type="button" onclick="updateModalQuantity(1)" style="width:36px; height:36px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold; font-size: 1.2rem;">+</button>
+        <label style="font-size:0.95rem; color:#e8ddd0; font-weight:600; font-family: 'Inter', sans-serif;">Quantité</label>
+        <div style="display:flex; align-items:center; border:1px solid rgba(255,255,255,0.15); border-radius:999px; overflow:hidden;">
+          <button type="button" onclick="updateModalQuantity(-1)" style="width:40px; height:40px; background:rgba(255,255,255,0.1); border:none; cursor:pointer; color:#e8ddd0; font-weight:bold; font-size:1.3rem; font-family: 'Inter', sans-serif; transition:background 0.2s;">−</button>
+          <input type="number" id="modal_quantity" value="1" min="1" readonly style="width:44px; height:40px; text-align:center; border:none; outline:none; font-family: 'Inter', sans-serif; background:transparent; font-weight:700; font-size:1.1rem; color:#e8ddd0;">
+          <button type="button" onclick="updateModalQuantity(1)" style="width:40px; height:40px; background:rgba(255,255,255,0.1); border:none; cursor:pointer; color:#e8ddd0; font-weight:bold; font-size:1.3rem; font-family: 'Inter', sans-serif; transition:background 0.2s;">+</button>
         </div>
       </div>
-      <button onclick="submitAddToCart()" style="width: 100%; background:var(--maroon); color:#fff; padding:1rem; border:none; border-radius:99px; font-weight:600; cursor:pointer; font-size:1.1rem; transition:background 0.2s;">
+      
+      <!-- 2. PRIX en bas (affiché en grand) -->
+      <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:0.8rem 1rem; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+        <span style="font-family: 'Playfair Display', serif; font-size:1rem; color:rgba(232,221,208,0.7);">Total</span>
+        <span id="modal_total_display" style="font-family: 'Playfair Display', serif; font-size:1.6rem; font-weight:700; color:#e8ddd0;">0 FCFA</span>
+      </div>
+      
+      <!-- Bouton Ajouter au panier -->
+      <button onclick="submitAddToCart()" style="width: 100%; background:var(--terracotta, #8a4a3a); color:#fff; padding:1rem; border:none; border-radius:99px; font-weight:600; cursor:pointer; font-size:1.1rem; transition:all 0.3s ease; font-family: 'Inter', sans-serif;">
         Ajouter au panier
       </button>
     </div>
   </div>
 </div>
 
-{% csrf_token %}
-<script>
+<style>
+  /* Import des polices depuis Google Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,600&display=swap');
 
-let currentBasePrice = 0;
-let currentMaxIncluded = 0;
+  /* ===== TOAST / NOTIFICATION ===== */
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-function openAddToCartModal(id, name, desc, price, maxIncluded, btnElem) {
-  document.getElementById('modal_meal_id').value = id;
-  document.getElementById('modal_meal_name').innerText = name;
-  document.getElementById('modal_meal_desc').innerText = desc || "Aucune description disponible pour ce plat.";
-  document.getElementById('modal_meal_price').innerText = price;
-  document.getElementById('modal_quantity').value = 1;
-  
-  currentBasePrice = parseFloat(price.replace(',', '.'));
-  currentMaxIncluded = parseInt(maxIncluded) || 0;
-  
-  // Populate accompaniments dynamically
-  const accContainer = document.getElementById('modal_acc_container');
-  const accSection = document.getElementById('modal_acc_section');
-  accContainer.innerHTML = ''; // Clear previous
-  
-  // Find the hidden data div next to the button
-  const dataDiv = btnElem.closest('.dish-card').querySelector('.meal-accompaniments-data');
-  const accDataElements = dataDiv.querySelectorAll('.acc-data');
-  
-  if (accDataElements.length === 0) {
-    accSection.style.display = 'none';
-  } else {
-    accSection.style.display = 'block';
-    accDataElements.forEach(el => {
-      const accId = el.dataset.id;
-      const accName = el.dataset.name;
-      const accPrice = el.dataset.price;
-      
-      const label = document.createElement('label');
-      label.style.display = 'flex';
-      label.style.alignItems = 'center';
-      label.style.gap = '0.5rem';
-      label.style.cursor = 'pointer';
-      
-      label.innerHTML = `
-        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; padding: 0.5rem 0;">
-          <span style="font-size: 0.95rem; font-weight: 500;">${accName} <span style="font-size: 0.8rem; color:#8a7660; margin-left: 0.5rem;">(Si supplément : +${accPrice} FCFA)</span></span>
-          <div style="display:flex; align-items:center; border:1px solid rgba(107,42,31,.15); border-radius:999px; overflow:hidden;">
-            <button type="button" onclick="updateQty(this, -1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">-</button>
-            <input type="number" name="modal_accompaniments" data-id="${accId}" data-price="${accPrice}" value="0" min="0" readonly style="width:28px; text-align:center; border:none; outline:none; font-family:inherit; background:transparent;">
-            <button type="button" onclick="updateQty(this, 1)" style="width:28px; height:28px; background:var(--cream2); border:none; cursor:pointer; color:var(--maroon); font-weight:bold;">+</button>
-          </div>
-        </div>
-      `;
-      accContainer.appendChild(label);
-    });
+  .toast {
+    padding: 12px 20px;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    animation: toastIn 0.3s ease;
+    max-width: 350px;
+  }
+
+  .toast-success { background: #2e7d32; }
+  .toast-error { background: #c0392b; }
+  .toast-info { background: #2980b9; }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .light-bg {
+    background: #faf8f7;
+    padding: 5rem 0;
   }
   
-  // Reset all drink quantities to 0
-  document.querySelectorAll('input[name="modal_boissons"]').forEach(inp => {
-    inp.value = 0;
-  });
-  
-  // Remove the old updateModalPrice listener if exists to prevent duplicates (not strictly needed but clean)
-  
-  const text = maxIncluded > 0 
-    ? `Vous avez droit à ${maxIncluded} portion(s) incluse(s). Les suivantes seront facturées en supplément.`
-    : `Les accompagnements sont en supplément.`;
-  document.getElementById('modal_acc_text').innerText = text;
-  
-  updateModalPrice();
-  
-  const modal = document.getElementById('addToCartModal');
-  const content = document.getElementById('addToCartContent');
-  modal.style.display = 'flex';
-  setTimeout(() => {
-    content.style.transform = 'translateX(0)';
-  }, 10);
-}
+  .light-bg .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
 
-function updateModalQuantity(delta) {
+  .menu-controls {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .menu-row {
+    min-height: 60px;
+    width: 100%;
+  }
+
+  .category-filter-group {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .category-dropdown {
+    min-height: 38px;
+  }
+
+  .day-row {
+    padding-left: 0.25rem;
+    min-height: 46px;
+  }
+
+  .filter-pill {
+    border: 2px solid #ffffff !important;
+    background: #ffffff !important;
+    color: #3f231d !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+  }
+
+  .filter-pill.active {
+    background: #ffffff !important;
+    color: #3f231d !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 8px 18px rgba(255,255,255,0.18) !important;
+  }
+
+  /* Effets hover améliorés */
+  .dish-card {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  }
+  
+  .dish-card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.12) !important;
+  }
+  
+  .dish-card:hover .dish-img-wrap img {
+    transform: scale(1.08);
+  }
+  
+  .dish-add {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  }
+  
+  .dish-add:hover {
+    background: var(--terracotta) !important;
+    transform: scale(1.1) rotate(90deg) !important;
+    box-shadow: 0 6px 20px rgba(74, 44, 42, 0.3) !important;
+  }
+  
+  .dish-add:active {
+    transform: scale(0.9) !important;
+  }
+  
+  /* Filtres - Style actif */
+  .filter-pill.active {
+    background: #f4e1d6 !important;
+    color: #2d1b17 !important;
+    border-color: #f4e1d6 !important;
+    box-shadow: 0 8px 18px rgba(244,225,214,0.25) !important;
+  }
+  
+  .filter-pill:hover:not(.active) {
+    border-color: #ffffff;
+    background: #ffffff !important;
+    color: #3f231d !important;
+    transform: translateY(-2px);
+  }
+  
+  .filter-pill {
+    transition: all 0.3s ease !important;
+  }
+  
+  /* Barre de recherche focus */
+  .search-wrap input:focus {
+    border-color: var(--maroon) !important;
+    background: white !important;
+    box-shadow: 0 0 0 4px rgba(74, 44, 42, 0.08);
+  }
+
+  /* Animations reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+  }
+  
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Offcanvas - overlay - SANS FLOU */
+  .offcanvas-overlay {
+    display: none;
+  }
+  
+  .offcanvas-overlay.active {
+    display: flex !important;
+  }
+
+  .offcanvas-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .offcanvas-content::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .offcanvas-content::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .menu-controls {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.8rem !important;
+      padding: 1rem !important;
+    }
+    
+    .menu-controls .search-wrap {
+      min-width: 100% !important;
+    }
+    
+    .menu-controls .filter-pills {
+      justify-content: center !important;
+    }
+    
+    .menu-controls > div {
+      flex: 1 !important;
+    }
+    
+    .menu-controls > div:not(.search-wrap) {
+      justify-content: center !important;
+    }
+    
+    .story-text .eyebrow {
+      font-size: 0.7rem !important;
+    }
+    
+    .story-text h2 {
+      font-size: clamp(2rem, 4vw, 2.8rem) !important;
+    }
+    
+    .story-text p:first-of-type {
+      font-size: 1rem !important;
+    }
+    
+    .story-text .highlight-box p {
+      font-size: 1.1rem !important;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .light-bg {
+      padding: 3rem 0;
+    }
+    
+    .dish-grid {
+      grid-template-columns: 1fr !important;
+    }
+    
+    .filter-pills {
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+    }
+    
+    .filter-pill {
+      font-size: 0.7rem !important;
+      padding: 0.3rem 0.8rem !important;
+    }
+    
+    .highlight-box {
+      padding: 1rem !important;
+    }
+    
+    .highlight-box p {
+      font-size: 1rem !important;
+    }
+
+    .offcanvas-content {
+      max-width: 100% !important;
+      padding: 1.5rem !important;
+    }
+  }
+</style>
+
+{% csrf_token %}
+<script>
+  // ===== TOAST MANAGER =====
+  const toastManager = {
+    container: null,
+    
+    init: function() {
+      if (!this.container) {
+        this.container = document.createElement('div');
+        this.container.className = 'toast-container';
+        document.body.appendChild(this.container);
+      }
+      return this;
+    },
+    
+    create: function() {
+      this.init();
+      return this;
+    },
+    
+    setMessage: function(message) {
+      this.currentMessage = message;
+      return this;
+    },
+    
+    setType: function(type) {
+      this.currentType = type || 'info';
+      return this;
+    },
+    
+    show: function() {
+      const toast = document.createElement('div');
+      toast.className = 'toast toast-' + this.currentType;
+      toast.textContent = this.currentMessage;
+      this.container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(40px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 3000);
+      
+      return this;
+    }
+  };
+
+  // ===== VARIABLES =====
+  let currentBasePrice = 0;
+  let currentMaxIncluded = 0;
+
+  // ===== OPEN ADD TO CART MODAL =====
+  function openAddToCartModal(id, name, desc, price, maxIncluded, btnElem) {
+    const mealNameEl = document.getElementById('modal_meal_name');
+    const mealDescEl = document.getElementById('modal_meal_desc');
+    const mealIdEl = document.getElementById('modal_meal_id');
+    const quantityEl = document.getElementById('modal_quantity');
+    const modal = document.getElementById('addToCartModal');
+    const content = document.getElementById('addToCartContent');
+    
+    if (!modal || !content) {
+      console.error('Le modal ou son contenu est introuvable !');
+      return;
+    }
+    
+    if (!mealNameEl || !mealDescEl || !mealIdEl || !quantityEl) {
+      console.error('Un élément du modal est introuvable !');
+      return;
+    }
+    
+    mealIdEl.value = id;
+    mealNameEl.innerText = name;
+    mealDescEl.innerText = desc || "Aucune description disponible pour ce plat.";
+    
+    currentBasePrice = parseFloat(price.replace(',', '.'));
+    currentMaxIncluded = parseInt(maxIncluded) || 0;
+    quantityEl.value = 1;
+    
+    const accContainer = document.getElementById('modal_acc_container');
+    const accSection = document.getElementById('modal_acc_section');
+    if (accContainer) accContainer.innerHTML = '';
+    
+    const dataDiv = btnElem ? btnElem.closest('.dish-card')?.querySelector('.meal-accompaniments-data') : null;
+    const accDataElements = dataDiv ? dataDiv.querySelectorAll('.acc-data') : [];
+    
+    if (accSection) {
+      if (accDataElements.length === 0) {
+        accSection.style.display = 'none';
+      } else {
+        accSection.style.display = 'block';
+        accDataElements.forEach(el => {
+          const accId = el.dataset.id;
+          const accName = el.dataset.name;
+          const accPrice = el.dataset.price;
+          
+          const label = document.createElement('label');
+          label.style.display = 'flex';
+          label.style.alignItems = 'center';
+          label.style.gap = '0.5rem';
+          label.style.cursor = 'pointer';
+          label.style.fontFamily = "'Inter', sans-serif";
+          label.style.color = '#e8ddd0';
+          label.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+          label.style.padding = '0.3rem 0';
+          
+          label.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+              <span style="font-size: 0.9rem; font-weight: 500; color:#e8ddd0;">${accName} <span style="font-size: 0.75rem; color:rgba(232,221,208,0.5);">(+${accPrice} FCFA)</span></span>
+              <div style="display:flex; align-items:center; border:1px solid rgba(255,255,255,0.15); border-radius:999px; overflow:hidden;">
+                <button type="button" onclick="updateQty(this, -1)" style="width:28px; height:28px; background:rgba(255,255,255,0.1); border:none; cursor:pointer; color:#e8ddd0; font-weight:bold; font-size:1rem; font-family: 'Inter', sans-serif;">−</button>
+                <input type="number" name="modal_accompaniments" data-id="${accId}" data-price="${accPrice}" value="0" min="0" readonly style="width:30px; text-align:center; border:none; outline:none; font-family: 'Inter', sans-serif; background:transparent; font-weight:600; font-size:0.9rem; color:#e8ddd0;">
+                <button type="button" onclick="updateQty(this, 1)" style="width:28px; height:28px; background:rgba(255,255,255,0.1); border:none; cursor:pointer; color:#e8ddd0; font-weight:bold; font-size:1rem; font-family: 'Inter', sans-serif;">+</button>
+              </div>
+            </div>
+          `;
+          if (accContainer) accContainer.appendChild(label);
+        });
+      }
+    }
+    
+    document.querySelectorAll('input[name="modal_boissons"]').forEach(inp => {
+      inp.value = 0;
+    });
+    
+    const accTextEl = document.getElementById('modal_acc_text');
+    if (accTextEl) {
+      accTextEl.innerText = maxIncluded > 0 
+        ? `Vous avez droit à ${maxIncluded} portion(s) incluse(s). Les suivantes seront facturées en supplément.`
+        : 'Les accompagnements sont en supplément.';
+    }
+    
+    updateModalPrice();
+    
+    modal.style.display = 'flex';
+    setTimeout(() => {
+      content.style.transform = 'translateX(0)';
+    }, 10);
+  }
+
+  // ===== UPDATE QUANTITY =====
+  function updateModalQuantity(delta) {
     const input = document.getElementById('modal_quantity');
+    if (!input) return;
     let val = parseInt(input.value) || 1;
     val += delta;
     if (val < 1) val = 1;
     input.value = val;
     updateModalPrice();
-}
-
-function updateQty(btn, delta) {
-  const input = btn.parentElement.querySelector('input[type="number"]');
-  let val = parseInt(input.value) || 0;
-  val += delta;
-  if (val < parseInt(input.min)) val = parseInt(input.min);
-  input.value = val;
-  updateModalPrice();
-}
-
-function updateModalPrice() {
-  let extraFee = 0;
-  const accInputs = document.querySelectorAll('input[name="modal_accompaniments"]');
-  let selectedAccs = [];
-  
-  accInputs.forEach(inp => {
-    let qty = parseInt(inp.value) || 0;
-    let price = parseFloat(inp.dataset.price.replace(',', '.'));
-    for (let i = 0; i < qty; i++) {
-      selectedAccs.push(price);
-    }
-  });
-  
-  if (selectedAccs.length > currentMaxIncluded) {
-    selectedAccs.sort((a,b) => a - b);
-    let extraAccs = selectedAccs.slice(currentMaxIncluded);
-    extraFee = extraAccs.reduce((a,b) => a + b, 0);
   }
-  
-  const boissonInputs = document.querySelectorAll('input[name="modal_boissons"]');
-  let boissonPrice = 0;
-  boissonInputs.forEach(inp => {
-    let qty = parseInt(inp.value) || 0;
-    let price = parseFloat(inp.dataset.price.replace(',', '.'));
-    boissonPrice += price * qty;
-  });
-  
-  let quantity = parseInt(document.getElementById('modal_quantity').value) || 1;
-  let totalUnitPrice = currentBasePrice + extraFee + boissonPrice;
-  let totalPrice = totalUnitPrice * quantity;
-  
-  document.getElementById('modal_meal_price').innerText = totalPrice.toLocaleString('fr-FR');
-  
-  const extraFeeDisplay = document.getElementById('modal_extra_fee_display');
-  const extraFeeVal = document.getElementById('modal_extra_fee_val');
-  if (extraFee > 0) {
-    extraFeeDisplay.style.display = 'inline';
-    extraFeeVal.innerText = (extraFee * quantity).toLocaleString('fr-FR');
-  } else {
-    extraFeeDisplay.style.display = 'none';
+
+  function updateQty(btn, delta) {
+    const input = btn.parentElement.querySelector('input[type="number"]');
+    if (!input) return;
+    let val = parseInt(input.value) || 0;
+    val += delta;
+    if (val < parseInt(input.min)) val = parseInt(input.min);
+    input.value = val;
+    updateModalPrice();
   }
-}
 
-function closeAddToCartModal() {
-  const modal = document.getElementById('addToCartModal');
-  const content = document.getElementById('addToCartContent');
-  content.style.transform = 'translateX(100%)';
-  setTimeout(() => {
-    modal.style.display = 'none';
-  }, 300);
-}
-
-function submitAddToCart() {
-  const mealId = document.getElementById('modal_meal_id').value;
-  const quantity = document.getElementById('modal_quantity').value;
-  const accs = [];
-  document.querySelectorAll('input[name="modal_accompaniments"]').forEach(inp => {
-    let qty = parseInt(inp.value) || 0;
-    if (qty > 0) {
-      accs.push({ id: inp.dataset.id, quantity: qty });
+  // ===== UPDATE PRICE =====
+  function updateModalPrice() {
+    let extraFee = 0;
+    const accInputs = document.querySelectorAll('input[name="modal_accompaniments"]');
+    let selectedAccs = [];
+    
+    accInputs.forEach(inp => {
+      let qty = parseInt(inp.value) || 0;
+      let price = parseFloat(inp.dataset.price.replace(',', '.'));
+      for (let i = 0; i < qty; i++) {
+        selectedAccs.push(price);
+      }
+    });
+    
+    if (selectedAccs.length > currentMaxIncluded) {
+      selectedAccs.sort((a,b) => a - b);
+      let extraAccs = selectedAccs.slice(currentMaxIncluded);
+      extraFee = extraAccs.reduce((a,b) => a + b, 0);
     }
-  });
-
-  const boissons = [];
-  document.querySelectorAll('input[name="modal_boissons"]').forEach(inp => {
-    let qty = parseInt(inp.value) || 0;
-    if (qty > 0) {
-      boissons.push({ id: inp.dataset.id, quantity: qty });
+    
+    const boissonInputs = document.querySelectorAll('input[name="modal_boissons"]');
+    let boissonPrice = 0;
+    boissonInputs.forEach(inp => {
+      let qty = parseInt(inp.value) || 0;
+      let price = parseFloat(inp.dataset.price.replace(',', '.'));
+      boissonPrice += price * qty;
+    });
+    
+    let quantity = parseInt(document.getElementById('modal_quantity')?.value) || 1;
+    let totalUnitPrice = currentBasePrice + extraFee + boissonPrice;
+    let totalPrice = totalUnitPrice * quantity;
+    
+    const priceEl = document.getElementById('modal_meal_price');
+    const totalDisplayEl = document.getElementById('modal_total_display');
+    if (priceEl) priceEl.innerText = totalPrice.toLocaleString('fr-FR');
+    if (totalDisplayEl) totalDisplayEl.innerText = totalPrice.toLocaleString('fr-FR') + ' FCFA';
+    
+    const extraFeeDisplay = document.getElementById('modal_extra_fee_display');
+    const extraFeeVal = document.getElementById('modal_extra_fee_val');
+    if (extraFee > 0 && extraFeeDisplay && extraFeeVal) {
+      extraFeeDisplay.style.display = 'inline';
+      extraFeeVal.innerText = (extraFee * quantity).toLocaleString('fr-FR');
+    } else if (extraFeeDisplay) {
+      extraFeeDisplay.style.display = 'none';
     }
-  });
-  
-  fetch("{% url 'users:cart-add' %}", {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-    },
-    body: JSON.stringify({
-      meal_id: mealId,
-      quantity: quantity,
-      accompaniments: accs,
-      boissons: boissons
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(data.status === 'success') {
-      closeAddToCartModal();
-      toastManager.create().setMessage('Plat ajouté au panier !').setType('success').show();
-      // Update cart count badge if it exists
-      const badge = document.getElementById('cart-count-badge');
-      if(badge) badge.innerText = data.cart_count;
-    } else {
-      toastManager.create().setMessage('Erreur : ' + data.message).setType('error').show();
+  }
+
+  // ===== CLOSE MODAL =====
+  function closeAddToCartModal() {
+    const modal = document.getElementById('addToCartModal');
+    const content = document.getElementById('addToCartContent');
+    if (content) content.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (modal) modal.style.display = 'none';
+    }, 300);
+  }
+
+  // ===== SUBMIT TO CART =====
+  function submitAddToCart() {
+    const mealIdEl = document.getElementById('modal_meal_id');
+    const quantityEl = document.getElementById('modal_quantity');
+    const nameEl = document.getElementById('modal_meal_name');
+    
+    if (!mealIdEl || !quantityEl || !nameEl) {
+      toastManager.create().setMessage('Erreur : éléments manquants').setType('error').show();
+      return;
     }
-  })
-  .catch(err => {
-    console.error(err);
-    toastManager.create().setMessage('Une erreur est survenue.').setType('error').show();
-  });
-}
-
-// Search and Filter Logic
-document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('dish-search');
-  const catPills = document.querySelectorAll('.cat-filter-pill');
-  const dayPills = document.querySelectorAll('.day-filter-pill');
-  const dishCards = document.querySelectorAll('.dish-card');
-  const noResults = document.getElementById('no-results');
-  
-  let currentCatFilter = 'all';
-  let currentDayFilter = 'all';
-
-  function filterDishes() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    let visibleCount = 0;
-
-    dishCards.forEach(card => {
-      const category = card.dataset.category || '';
-      const days = card.dataset.days || '';
-      const name = card.dataset.name || '';
-      
-      const matchesCat = currentCatFilter === 'all' || category === currentCatFilter;
-      const matchesDay = currentDayFilter === 'all' || days === 'all' || days.includes(currentDayFilter);
-      const matchesSearch = name.includes(searchTerm);
-
-      if (matchesCat && matchesDay && matchesSearch) {
-        card.style.display = 'block';
-        visibleCount++;
-      } else {
-        card.style.display = 'none';
+    
+    const mealId = mealIdEl.value;
+    const quantity = parseInt(quantityEl.value) || 1;
+    const name = nameEl.textContent;
+    
+    const accs = [];
+    document.querySelectorAll('input[name="modal_accompaniments"]').forEach(inp => {
+      let qty = parseInt(inp.value) || 0;
+      if (qty > 0) {
+        accs.push({ id: inp.dataset.id, quantity: qty });
       }
     });
 
-    if (visibleCount === 0) {
-      noResults.removeAttribute('hidden');
-      
-      let cardsArray = Array.from(dishCards).filter(c => c.dataset.category !== 'cat_boissons');
-      cardsArray.sort(() => 0.5 - Math.random());
-      
-      let suggestionCount = 0;
-      cardsArray.forEach(card => {
-        if (suggestionCount < 3) {
+    const boissons = [];
+    document.querySelectorAll('input[name="modal_boissons"]').forEach(inp => {
+      let qty = parseInt(inp.value) || 0;
+      if (qty > 0) {
+        boissons.push({ id: inp.dataset.id, quantity: qty });
+      }
+    });
+    
+    const card = document.querySelector(`.dish-card[data-category*="${mealId}"]`) || document.querySelector('.dish-card');
+    const image = card?.querySelector('img')?.src || '';
+    
+    fetch("/api/cart/add/", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: JSON.stringify({
+        meal_id: mealId,
+        quantity: quantity,
+        accompaniments: accs,
+        boissons: boissons
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.status === 'success') {
+        if (typeof addToFloatingCart === 'function') {
+          addToFloatingCart({
+            id: mealId,
+            type: 'meal',
+            name: name,
+            price: currentBasePrice,
+            image: image,
+            quantity: quantity,
+            detail: accs.length > 0 ? `${accs.length} accompagnement(s)` : ''
+          });
+        }
+        
+        closeAddToCartModal();
+        toastManager.create().setMessage('Plat ajouté au panier !').setType('success').show();
+        const badge = document.getElementById('cart-count-badge');
+        if(badge) badge.innerText = data.cart_count;
+      } else {
+        toastManager.create().setMessage('Erreur : ' + data.message).setType('error').show();
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      toastManager.create().setMessage('Une erreur est survenue.').setType('error').show();
+    });
+  }
+
+  // ===== SEARCH AND FILTER =====
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('dish-search');
+    const categoryDropdown = document.getElementById('category-dropdown');
+    const catPills = document.querySelectorAll('.cat-filter-pill');
+    const dayPills = document.querySelectorAll('.day-filter-pill');
+    const dishCards = document.querySelectorAll('.dish-card');
+    const noResults = document.getElementById('no-results');
+    
+    if (!searchInput || !dishCards.length) return;
+    
+    let currentCatFilter = 'all';
+    let currentDayFilter = 'all';
+
+    const activeDay = document.querySelector('.day-filter-pill.active');
+    if (activeDay) {
+      currentDayFilter = activeDay.dataset.day || 'all';
+    }
+
+    function syncCategorySelection() {
+      catPills.forEach(p => p.classList.remove('active'));
+      const chosenButton = document.querySelector('.cat-filter-pill[data-filter="' + currentCatFilter + '"]');
+      if (chosenButton) {
+        chosenButton.classList.add('active');
+      }
+      if (categoryDropdown) {
+        categoryDropdown.value = currentCatFilter === 'all' || currentCatFilter === 'cat_boissons' ? 'all' : currentCatFilter;
+      }
+    }
+
+    function filterDishes() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      dishCards.forEach(card => {
+        const category = card.dataset.category || '';
+        const days = card.dataset.days || '';
+        const name = card.dataset.name || '';
+        
+        const matchesCat = currentCatFilter === 'all' || category === currentCatFilter;
+        const matchesDay = currentDayFilter === 'all' || days === 'all' || days.includes(currentDayFilter);
+        const matchesSearch = name.includes(searchTerm);
+
+        if (matchesCat && matchesDay && matchesSearch) {
           card.style.display = 'block';
-          suggestionCount++;
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
         }
       });
-    } else {
-      noResults.setAttribute('hidden', '');
+
+      if (visibleCount === 0 && noResults) {
+        noResults.removeAttribute('hidden');
+      } else if (noResults) {
+        noResults.setAttribute('hidden', '');
+      }
     }
-  }
 
-  if (searchInput) {
-    searchInput.addEventListener('input', filterDishes);
-  }
+    if (searchInput) {
+      searchInput.addEventListener('input', filterDishes);
+    }
 
-  catPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      catPills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      currentCatFilter = pill.dataset.filter;
-      filterDishes();
+    catPills.forEach(pill => {
+      pill.addEventListener('click', function() {
+        currentCatFilter = this.dataset.filter;
+        syncCategorySelection();
+        filterDishes();
+      });
     });
+
+    if (categoryDropdown) {
+      categoryDropdown.addEventListener('change', function() {
+        currentCatFilter = this.value || 'all';
+        syncCategorySelection();
+        filterDishes();
+      });
+    }
+
+    dayPills.forEach(pill => {
+      pill.addEventListener('click', function() {
+        dayPills.forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+        currentDayFilter = this.dataset.day || 'all';
+        filterDishes();
+      });
+    });
+
+    syncCategorySelection();
+    filterDishes();
   });
 
-  dayPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      dayPills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      currentDayFilter = pill.dataset.day;
-      filterDishes();
-    });
-  });
-});
-
-function addStandaloneBoisson(boissonId, buttonElement) {
+  // ===== ADD STANDALONE BOISSON =====
+  function addStandaloneBoisson(boissonId, buttonElement) {
     const originalText = buttonElement.innerHTML;
     buttonElement.innerHTML = '...';
     buttonElement.disabled = true;
     
+    const card = buttonElement.closest('.dish-card');
+    const name = card?.querySelector('h3')?.textContent || 'Boisson';
+    const priceText = card?.querySelector('.dish-price')?.textContent || '0';
+    const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+    const image = card?.querySelector('img')?.src || '';
+    
     fetch('/api/cart/add-boisson/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        },
-        body: JSON.stringify({
-            boisson_id: boissonId,
-            quantity: 1
-        })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: JSON.stringify({
+        boisson_id: boissonId,
+        quantity: 1
+      })
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status === 'success') {
-            const badge = document.getElementById('cart-count-badge');
-            if(badge) badge.innerText = data.cart_count;
-            toastManager.create().setMessage('Boisson ajoutée au panier !').setType('success').show();
-        } else {
-            toastManager.create().setMessage('Erreur : ' + data.message).setType('error').show();
+      if (data.status === 'success') {
+        const badge = document.getElementById('cart-count-badge');
+        if(badge) badge.innerText = data.cart_count;
+        
+        if (typeof addBoissonToFloatingCart === 'function') {
+          addBoissonToFloatingCart(boissonId, name, price, image);
         }
+        
+        toastManager.create().setMessage('Boisson ajoutée au panier !').setType('success').show();
+      } else {
+        toastManager.create().setMessage('Erreur : ' + data.message).setType('error').show();
+      }
     })
     .catch(error => {
-        console.error('Error:', error);
-        toastManager.create().setMessage('Une erreur est survenue.').setType('error').show();
+      console.error('Error:', error);
+      toastManager.create().setMessage('Une erreur est survenue.').setType('error').show();
     })
     .finally(() => {
-        buttonElement.innerHTML = originalText;
-        buttonElement.disabled = false;
+      buttonElement.innerHTML = originalText;
+      buttonElement.disabled = false;
     });
-}
+  }
 </script>
