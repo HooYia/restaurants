@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from restaurants.users.models import (
     HeroSection,
@@ -78,6 +79,14 @@ class LoginView(View):
         )
 
         messages.success(request, "Connexion réussie ! Heureux de vous revoir.")
+
+        next_url = request.POST.get("next") or request.GET.get("next")
+        if next_url and url_has_allowed_host_and_scheme(
+            next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            return redirect(next_url)
 
         # ADMIN
 

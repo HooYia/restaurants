@@ -194,10 +194,10 @@
         {% csrf_token %}
 
         <div class="field">
-          <label for="{{ form.username.id_for_label }}">Nom d'utilisateur</label>
-          {{ form.username }}
-          {% if form.username.errors %}
-            <p class="field-error">{{ form.username.errors.0 }}</p>
+          <label for="{{ form.login.id_for_label }}">Email</label>
+          {{ form.login }}
+          {% if form.login.errors %}
+            <p class="field-error">{{ form.login.errors.0 }}</p>
           {% endif %}
         </div>
 
