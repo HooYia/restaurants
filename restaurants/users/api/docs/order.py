@@ -4,6 +4,13 @@ Documentation Swagger des API de commandes client.
 
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
+from ..serializers.mobile_serializers import (
+    CustomOrderRequestSerializer,
+    ErrorResponseSerializer,
+    OrderCreateSerializer,
+    OrderSerializer,
+)
+
 
 ORDER_TAG = "Commandes"
 
@@ -19,10 +26,12 @@ order_list_doc = extend_schema(
     ),
     responses={
         200: OpenApiResponse(
-            description="Liste des commandes du client retournée avec succès."
+            response=OrderSerializer(many=True),
+            description="Liste des commandes du client retournée avec succès.",
         ),
         401: OpenApiResponse(
-            description="Authentification requise."
+            response=ErrorResponseSerializer,
+            description="Authentification requise.",
         ),
     },
 )
@@ -37,13 +46,16 @@ order_detail_doc = extend_schema(
     ),
     responses={
         200: OpenApiResponse(
-            description="Détails de la commande retournés avec succès."
+            response=OrderSerializer,
+            description="Détails de la commande retournés avec succès.",
         ),
         401: OpenApiResponse(
-            description="Authentification requise."
+            response=ErrorResponseSerializer,
+            description="Authentification requise.",
         ),
         404: OpenApiResponse(
-            description="Commande introuvable."
+            response=ErrorResponseSerializer,
+            description="Commande introuvable.",
         ),
     },
 )
@@ -57,15 +69,19 @@ order_create_doc = extend_schema(
         "par le client authentifié. La commande créée est ensuite "
         "retournée avec ses informations détaillées."
     ),
+    request=OrderCreateSerializer,
     responses={
         201: OpenApiResponse(
-            description="Commande créée avec succès."
+            response=OrderSerializer,
+            description="Commande créée avec succès.",
         ),
         400: OpenApiResponse(
-            description="Données de commande invalides."
+            response=ErrorResponseSerializer,
+            description="Données de commande invalides.",
         ),
         401: OpenApiResponse(
-            description="Authentification requise."
+            response=ErrorResponseSerializer,
+            description="Authentification requise.",
         ),
     },
 )
@@ -80,13 +96,15 @@ custom_order_request_list_doc = extend_schema(
     ),
     responses={
         200: OpenApiResponse(
+            response=CustomOrderRequestSerializer(many=True),
             description=(
                 "Liste des demandes de commande personnalisées "
                 "retournée avec succès."
             )
         ),
         401: OpenApiResponse(
-            description="Authentification requise."
+            response=ErrorResponseSerializer,
+            description="Authentification requise.",
         ),
     },
 )
@@ -101,13 +119,16 @@ custom_order_request_detail_doc = extend_schema(
     ),
     responses={
         200: OpenApiResponse(
-            description="Demande retournée avec succès."
+            response=CustomOrderRequestSerializer,
+            description="Demande retournée avec succès.",
         ),
         401: OpenApiResponse(
-            description="Authentification requise."
+            response=ErrorResponseSerializer,
+            description="Authentification requise.",
         ),
         404: OpenApiResponse(
-            description="Demande de commande introuvable."
+            response=ErrorResponseSerializer,
+            description="Demande de commande introuvable.",
         ),
     },
 )
@@ -121,15 +142,19 @@ custom_order_request_create_doc = extend_schema(
         "de commande personnalisée. Le client est automatiquement "
         "associé à la demande."
     ),
+    request=CustomOrderRequestSerializer,
     responses={
         201: OpenApiResponse(
-            description="Demande créée avec succès."
+            response=CustomOrderRequestSerializer,
+            description="Demande créée avec succès.",
         ),
         400: OpenApiResponse(
-            description="Données de demande invalides."
+            response=ErrorResponseSerializer,
+            description="Données de demande invalides.",
         ),
         401: OpenApiResponse(
-            description="Authentification requise."
+            response=ErrorResponseSerializer,
+            description="Authentification requise.",
         ),
     },
 )

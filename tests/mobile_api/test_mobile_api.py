@@ -11,7 +11,7 @@ from restaurants.users.models import Address, RegistrationOtp, User
 def test_mobile_authentication_requires_otp_and_returns_jwt():
     client = APIClient()
     response = client.post(
-        "/api/v1/users/auth/register/",
+        "/api/v1/auth/register/",
         {
             "email": "mobile@example.com",
             "first_name": "Mobile",
@@ -24,16 +24,16 @@ def test_mobile_authentication_requires_otp_and_returns_jwt():
     )
 
     assert response.status_code == 201
-    assert "verification_id" in response.data
+    assert response.data["email"] == "mobile@example.com"
     assert response.data["detail"] == "OTP envoyé par email."
 
     otp = RegistrationOtp.objects.get(email="mobile@example.com", purpose="register")
     assert otp.otp_code
 
     verify = client.post(
-        "/api/v1/users/auth/verify-otp/",
+        "/api/v1/auth/verify-otp/",
         {
-            "verification_id": str(otp.id),
+            "email": "mobile@example.com",
             "otp": otp.otp_code,
         },
         format="json",

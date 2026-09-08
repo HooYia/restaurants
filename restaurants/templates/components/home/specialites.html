@@ -82,7 +82,7 @@
 
       <!-- Meals -->
       {% for meal in meals %}
-      <div class="dish-card reveal" data-category="cat_{{ meal.category.slug }}" data-days="{% for dm in meal.daily_menus.all %}day_{{ dm.day }} {% endfor %}" data-name="{{ meal.name|lower }}" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.4s ease; border: 1px solid #f0ebe8;">
+      <div class="dish-card" data-category="cat_{{ meal.category.slug }}" data-days="{% for dm in meal.daily_menus.all %}day_{{ dm.day }} {% endfor %}" data-name="{{ meal.name|lower }}" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.4s ease; border: 1px solid #f0ebe8;">
         <div class="dish-img-wrap {% if not meal.image %}dish-img-placeholder{% endif %}" style="position: relative; aspect-ratio: 16/10; overflow: hidden; background: #f5f0ed;">
           {% if meal.image %}
             <img src="{{ meal.image.url }}" alt="{{ meal.name }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease;">
@@ -97,7 +97,7 @@
         </div>
         <div class="dish-body" style="padding: 1.5rem;">
           <h3 style="font-family: 'Playfair Display', 'Georgia', serif; font-size: 1.15rem; font-weight: 700; color: var(--maroon); margin-bottom: 0.4rem; letter-spacing: 0.3px;">{{ meal.name|capfirst }}</h3>
-          <p style="font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-size: 0.9rem; color: #6b5a4a; line-height: 1.6; margin-bottom: 1rem; font-weight: 400;">{{ meal.description|truncatewords:15 }}</p>
+          <p style="font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-size: 0.9rem; color: #6b5a4a; line-height: 1.6; margin-bottom: 1rem; font-weight: 400;">{{ meal.description|default:"Une recette maison préparée avec soin."|truncatewords:15 }}</p>
           <div class="dish-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.8rem; border-top: 1px solid #f0ebe8;">
             <span class="dish-price" style="font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--maroon); letter-spacing: -0.5px;">{{ meal.price }} <span style="font-size: 0.75rem; font-weight: 400; color: #8a7660;">FCFA</span></span>
             <button class="dish-add" aria-label="Ajouter {{ meal.name }} à la commande" onclick="openAddToCartModal('{{ meal.id }}', '{{ meal.name|capfirst|escapejs }}', '{{ meal.description|escapejs }}', '{{ meal.price }}', '{{ meal.max_included_accompaniments }}', this)" style="width: 44px; height: 44px; border-radius: 50%; background: var(--maroon); color: #fff; border: none; font-size: 1.3rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-weight: 300; box-shadow: 0 4px 12px rgba(74, 44, 42, 0.2); font-family: 'Inter', sans-serif;">
@@ -115,7 +115,7 @@
 
       <!-- Boissons -->
       {% for boisson in boissons %}
-      <div class="dish-card reveal" data-category="cat_boissons" data-days="all" data-name="{{ boisson.name|lower }}" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.4s ease; border: 1px solid #f0ebe8;">
+      <div class="dish-card" data-category="cat_boissons" data-days="all" data-name="{{ boisson.name|lower }}" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.4s ease; border: 1px solid #f0ebe8;">
         <div class="dish-img-wrap {% if not boisson.image %}dish-img-placeholder{% endif %}" style="position: relative; aspect-ratio: 16/10; overflow: hidden; background: #f5f0ed;">
           {% if boisson.image %}
             <img src="{{ boisson.image.url }}" alt="{{ boisson.name }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease;">
@@ -358,7 +358,7 @@
     transition: all 0.8s ease;
   }
   
-  .reveal.visible {
+  .reveal.in-view {
     opacity: 1;
     transform: translateY(0);
   }

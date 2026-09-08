@@ -28,8 +28,83 @@ class RegisterOtpSerializer(serializers.Serializer):
 
 
 class VerifyOtpSerializer(serializers.Serializer):
-    verification_id = serializers.UUIDField()
-    otp = serializers.CharField()
+    email = serializers.EmailField(
+        help_text="Adresse email utilisée lors de l'inscription.",
+    )
+    otp = serializers.CharField(
+        min_length=6,
+        max_length=6,
+        help_text="Code OTP à 6 chiffres reçu par email.",
+    )
+
+
+class OtpSentSerializer(serializers.Serializer):
+    detail = serializers.CharField()
+    email = serializers.EmailField()
+
+
+class TokenResponseSerializer(serializers.Serializer):
+    access = serializers.CharField()
+    refresh = serializers.CharField()
+    user = UserSerializer()
+
+
+class ErrorResponseSerializer(serializers.Serializer):
+    detail = serializers.CharField(required=False)
+    error = serializers.CharField(required=False)
+    field = serializers.ListField(child=serializers.CharField(), required=False)
+
+
+class CartComponentSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    quantity = serializers.IntegerField(min_value=1, default=1)
+
+
+class CartAddSerializer(serializers.Serializer):
+    meal_id = serializers.UUIDField()
+    quantity = serializers.IntegerField(min_value=1, default=1)
+    accompaniments = CartComponentSerializer(many=True, required=False)
+    boissons = CartComponentSerializer(many=True, required=False)
+
+
+class CartBoissonSerializer(serializers.Serializer):
+    boisson_id = serializers.UUIDField()
+    quantity = serializers.IntegerField(min_value=1, default=1)
+
+
+class CartItemUpdateSerializer(serializers.Serializer):
+    item_id = serializers.CharField()
+    quantity = serializers.IntegerField(min_value=0)
+
+
+class CartItemRemoveSerializer(serializers.Serializer):
+    item_id = serializers.CharField()
+
+
+class CartComponentUpdateSerializer(serializers.Serializer):
+    item_id = serializers.CharField()
+    component_type = serializers.ChoiceField(choices=["accompaniment", "boisson"])
+    component_id = serializers.UUIDField()
+    quantity = serializers.IntegerField(min_value=0)
+
+
+class CartItemSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    quantity = serializers.IntegerField()
+    meal_id = serializers.UUIDField(required=False)
+    boisson_id = serializers.UUIDField(required=False)
+    meal_name = serializers.CharField()
+    meal_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_unit_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    accompaniments = serializers.ListField()
+    boissons = serializers.ListField()
+
+
+class CartResponseSerializer(serializers.Serializer):
+    items = CartItemSerializer(many=True)
+    count = serializers.IntegerField()
+    total = serializers.DecimalField(max_digits=10, decimal_places=2)
 
 
 class LoginSerializer(serializers.Serializer):

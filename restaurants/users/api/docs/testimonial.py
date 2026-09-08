@@ -4,6 +4,8 @@ Documentation Swagger de l'API des avis client.
 
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
+from ..serializers.mobile_serializers import ErrorResponseSerializer, TestimonialSerializer
+
 
 TESTIMONIAL_TAG = "Avis client"
 
@@ -18,13 +20,15 @@ testimonial_get_doc = extend_schema(
     ),
     responses={
         200: OpenApiResponse(
+            response=TestimonialSerializer,
             description=(
                 "Avis du client retourné avec succès, "
                 "ou réponse vide si aucun avis n'existe."
             )
         ),
         401: OpenApiResponse(
-            description="Authentification requise."
+            response=ErrorResponseSerializer,
+            description="Authentification requise.",
         ),
     },
 )
@@ -38,15 +42,19 @@ testimonial_update_doc = extend_schema(
         "L'avis est automatiquement associé au client connecté et "
         "son statut est défini à PENDING après l'enregistrement."
     ),
+    request=TestimonialSerializer,
     responses={
         200: OpenApiResponse(
-            description="Avis créé ou modifié avec succès."
+            response=TestimonialSerializer,
+            description="Avis créé ou modifié avec succès.",
         ),
         400: OpenApiResponse(
-            description="Données de l'avis invalides."
+            response=ErrorResponseSerializer,
+            description="Données de l'avis invalides.",
         ),
         401: OpenApiResponse(
-            description="Authentification requise."
+            response=ErrorResponseSerializer,
+            description="Authentification requise.",
         ),
     },
 )

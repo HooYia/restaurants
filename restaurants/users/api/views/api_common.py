@@ -84,7 +84,7 @@ class RegisterAPIView(generics.GenericAPIView):
         return Response(
             {
                 "detail": "OTP envoyé par email.",
-                "verification_id": str(registration_otp.id),
+                "email": email,
             },
             status=status.HTTP_201_CREATED,
         )
@@ -99,11 +99,11 @@ class VerifyOtpAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        verification_id = serializer.validated_data["verification_id"]
+        email = serializer.validated_data["email"].lower()
         otp_value = serializer.validated_data["otp"].strip()
 
         registration_otp = RegistrationOtp.objects.filter(
-            id=verification_id,
+            email=email,
             purpose="register",
             is_verified=False,
             expires_at__gt=timezone.now(),

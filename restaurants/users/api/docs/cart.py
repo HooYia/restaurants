@@ -2,7 +2,16 @@
 Documentation Swagger de l'API panier.
 """
 
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+
+from ..serializers.mobile_serializers import (
+    CartAddSerializer,
+    CartBoissonSerializer,
+    CartComponentUpdateSerializer,
+    CartItemRemoveSerializer,
+    CartItemUpdateSerializer,
+    CartResponseSerializer,
+)
 
 
 CART_TAG = "Panier"
@@ -17,7 +26,8 @@ cart_detail_doc = extend_schema(
     ),
     responses={
         200: OpenApiResponse(
-            description="Contenu du panier retourné avec succès."
+            description="Contenu du panier retourné avec succès.",
+            response=CartResponseSerializer,
         ),
     },
 )
@@ -30,9 +40,11 @@ cart_add_doc = extend_schema(
         "Ajoute un plat disponible au panier. "
         "Le plat peut être accompagné d'accompagnements et de boissons."
     ),
+    request=CartAddSerializer,
     responses={
         200: OpenApiResponse(
-            description="Plat ajouté au panier avec succès."
+            description="Plat ajouté au panier avec succès.",
+            response=CartResponseSerializer,
         ),
         400: OpenApiResponse(
             description=(
@@ -52,9 +64,11 @@ cart_remove_doc = extend_schema(
     description=(
         "Supprime un article du panier à partir de son identifiant."
     ),
+    request=CartItemRemoveSerializer,
     responses={
         200: OpenApiResponse(
-            description="Article supprimé du panier avec succès."
+            description="Article supprimé du panier avec succès.",
+            response=CartResponseSerializer,
         ),
     },
 )
@@ -66,9 +80,11 @@ cart_update_doc = extend_schema(
     description=(
         "Modifie la quantité d'un article déjà présent dans le panier."
     ),
+    request=CartItemUpdateSerializer,
     responses={
         200: OpenApiResponse(
-            description="Quantité mise à jour avec succès."
+            description="Quantité mise à jour avec succès.",
+            response=CartResponseSerializer,
         ),
     },
 )
@@ -81,9 +97,11 @@ cart_update_component_doc = extend_schema(
         "Modifie la quantité d'un accompagnement ou d'une boisson "
         "associée à un article du panier."
     ),
+    request=CartComponentUpdateSerializer,
     responses={
         200: OpenApiResponse(
-            description="Composant mis à jour avec succès."
+            description="Composant mis à jour avec succès.",
+            response=CartResponseSerializer,
         ),
         400: OpenApiResponse(
             description="Type de composant invalide."
@@ -98,9 +116,11 @@ cart_add_boisson_doc = extend_schema(
     description=(
         "Ajoute une boisson disponible directement au panier."
     ),
+    request=CartBoissonSerializer,
     responses={
         200: OpenApiResponse(
-            description="Boisson ajoutée au panier avec succès."
+            description="Boisson ajoutée au panier avec succès.",
+            response=CartResponseSerializer,
         ),
         400: OpenApiResponse(
             description="La quantité doit être supérieure à zéro."

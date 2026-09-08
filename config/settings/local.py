@@ -12,8 +12,26 @@ SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
     default="2AUnjnDk1GUQxz9YIpusUS0POV2ZJbbPYHLdc72y0aVA0PRYRiifpKlAOYaChV98",
 )
+
+# Allow local developers to open Swagger without an admin session.
+SPECTACULAR_SETTINGS = {
+    **SPECTACULAR_SETTINGS,
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+}
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]  # noqa: S104
+ALLOWED_HOSTS = [
+    "localhost",
+    "0.0.0.0",
+    "127.0.0.1",
+    ".ngrok-free.dev",
+    ".ngrok-free.app",
+]  # noqa: S104
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok-free.app",
+]
 
 # CACHES
 # ------------------------------------------------------------------------------

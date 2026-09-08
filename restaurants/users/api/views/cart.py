@@ -10,6 +10,10 @@ from ..docs.cart import (
     cart_add_boisson_doc, cart_add_doc, cart_detail_doc, cart_remove_doc,
     cart_update_component_doc, cart_update_doc,
 )
+from ..serializers.mobile_serializers import (
+    CartAddSerializer, CartBoissonSerializer, CartComponentSerializer,
+    CartResponseSerializer,
+)
 
 
 class CartRequestSerializer(serializers.Serializer):
@@ -25,6 +29,7 @@ class CartAPIView(APIView):
 
     permission_classes = (permissions.AllowAny,)
     serializer_class = CartRequestSerializer
+    response_serializer_class = CartResponseSerializer
 
     @staticmethod
     def response(cart):

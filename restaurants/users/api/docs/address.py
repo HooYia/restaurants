@@ -7,6 +7,8 @@ from drf_spectacular.utils import (
     OpenApiResponse,
 )
 
+from ..serializers.mobile_serializers import AddressSerializer, ErrorResponseSerializer
+
 
 ADDRESS_TAG = "Adresses"
 
@@ -18,6 +20,10 @@ address_list_doc = extend_schema(
         "Retourne la liste des adresses appartenant "
         "au client authentifié."
     ),
+    responses={
+        200: OpenApiResponse(response=AddressSerializer(many=True), description="Liste des adresses."),
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Authentification requise."),
+    },
 )
 
 
@@ -28,6 +34,12 @@ address_create_doc = extend_schema(
         "Crée une nouvelle adresse pour le client "
         "authentifié."
     ),
+    request=AddressSerializer,
+    responses={
+        201: OpenApiResponse(response=AddressSerializer, description="Adresse créée."),
+        400: OpenApiResponse(response=ErrorResponseSerializer, description="Données invalides."),
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Authentification requise."),
+    },
 )
 
 
@@ -38,6 +50,11 @@ address_detail_doc = extend_schema(
         "Retourne les informations d'une adresse "
         "du client authentifié."
     ),
+    responses={
+        200: OpenApiResponse(response=AddressSerializer, description="Adresse retournée."),
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Authentification requise."),
+        404: OpenApiResponse(response=ErrorResponseSerializer, description="Adresse introuvable."),
+    },
 )
 
 
@@ -47,6 +64,13 @@ address_update_doc = extend_schema(
     description=(
         "Modifie complètement une adresse existante."
     ),
+    request=AddressSerializer,
+    responses={
+        200: OpenApiResponse(response=AddressSerializer, description="Adresse entièrement modifiée."),
+        400: OpenApiResponse(response=ErrorResponseSerializer, description="Données invalides."),
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Authentification requise."),
+        404: OpenApiResponse(response=ErrorResponseSerializer, description="Adresse introuvable."),
+    },
 )
 
 
@@ -56,6 +80,13 @@ address_partial_update_doc = extend_schema(
     description=(
         "Modifie partiellement une adresse existante."
     ),
+    request=AddressSerializer,
+    responses={
+        200: OpenApiResponse(response=AddressSerializer, description="Adresse partiellement modifiée."),
+        400: OpenApiResponse(response=ErrorResponseSerializer, description="Données invalides."),
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Authentification requise."),
+        404: OpenApiResponse(response=ErrorResponseSerializer, description="Adresse introuvable."),
+    },
 )
 
 
@@ -65,6 +96,11 @@ address_delete_doc = extend_schema(
     description=(
         "Supprime logiquement une adresse existante."
     ),
+    responses={
+        204: OpenApiResponse(description="Adresse supprimée logiquement."),
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Authentification requise."),
+        404: OpenApiResponse(response=ErrorResponseSerializer, description="Adresse introuvable."),
+    },
 )
 
 
@@ -77,7 +113,10 @@ address_set_default_doc = extend_schema(
     ),
     responses={
         200: OpenApiResponse(
-            description="Adresse définie comme adresse par défaut."
+            response=AddressSerializer,
+            description="Adresse définie comme adresse par défaut.",
         ),
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Authentification requise."),
+        404: OpenApiResponse(response=ErrorResponseSerializer, description="Adresse introuvable."),
     },
 )
