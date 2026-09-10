@@ -276,3 +276,4 @@ restaurants/media/
 .env
 .envs/*
 !.envs/.local/
+db.sqlite3

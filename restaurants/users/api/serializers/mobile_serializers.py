@@ -203,3 +203,4 @@ class NewsletterSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsletterSubscriber
         fields = ["id", "email"]
+
