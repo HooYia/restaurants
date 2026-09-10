@@ -1,0 +1,31 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Mise à jour de votre commande</h2>
+<p>Bonjour {{ order.client.user.first_name }},</p>
+<p>Nous vous informons que le statut de votre commande <strong>#{{ order.id|truncatechars:12 }}</strong> a changé.</p>
+
+<div class="order-summary">
+    <h3 style="text-align: center; color: #c97a3a; font-size: 24px; margin: 10px 0;">
+        Statut actuel : {{ order.get_status_display }}
+    </h3>
+</div>
+
+<p>
+    {% if order.status == 'ready' %}
+        Votre commande est prête et n'attend plus que vous !
+    {% elif order.status == 'delivering' %}
+        Notre livreur est en route. Préparez-vous à vous régaler !
+    {% elif order.status == 'delivered' %}
+        Votre commande a été livrée. Bon appétit ! N'hésitez pas à nous laisser un avis.
+    {% elif order.status == 'cancelled' %}
+        Votre commande a été annulée. Si vous avez des questions, n'hésitez pas à nous contacter.
+    {% else %}
+        Nous mettons tout en œuvre pour préparer votre commande dans les meilleurs délais.
+    {% endif %}
+</p>
+
+<p>
+    <a href="{{ base_url }}/client/commandes/{{ order.id }}/suivi/" class="btn">Suivre ma commande</a>
+</p>
+{% endblock %}

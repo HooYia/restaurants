@@ -12,8 +12,26 @@ SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
     default="2AUnjnDk1GUQxz9YIpusUS0POV2ZJbbPYHLdc72y0aVA0PRYRiifpKlAOYaChV98",
 )
+
+# Allow local developers to open Swagger without an admin session.
+SPECTACULAR_SETTINGS = {
+    **SPECTACULAR_SETTINGS,
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+}
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]  # noqa: S104
+ALLOWED_HOSTS = [
+    "localhost",
+    "0.0.0.0",
+    "127.0.0.1",
+    ".ngrok-free.dev",
+    ".ngrok-free.app",
+]  # noqa: S104
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok-free.app",
+]
 
 # CACHES
 # ------------------------------------------------------------------------------
@@ -28,10 +46,7 @@ CACHES = {
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = env(
-    "DJANGO_EMAIL_BACKEND",
-    default="django.core.mail.backends.console.EmailBackend",
-)
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 # WhiteNoise
 # ------------------------------------------------------------------------------
@@ -47,6 +62,7 @@ INSTALLED_APPS += ["debug_toolbar"]
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config
 DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: False,
     "DISABLE_PANELS": [
         "debug_toolbar.panels.redirects.RedirectsPanel",
         # Disable profiling panel due to an issue with Python 3.12+:

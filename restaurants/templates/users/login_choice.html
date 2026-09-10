@@ -1,0 +1,79 @@
+{% load static %}
+<!-- Modal choix connexion Premium -->
+
+<div id="login-choice-modal" class="auth-modal-overlay">
+    <div class="auth-modal">
+        <button id="close-login-choice" class="modal-close">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <div class="modal-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+        </div>
+
+        <h2>Bienvenue</h2>
+        <p>Choisissez votre espace pour continuer</p>
+
+        <div class="modal-buttons">
+            <a href="{% url 'users:login' %}" class="btn-choice primary">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                Connexion Client
+            </a>
+
+            <a href="{% url 'users:login' %}" class="btn-choice">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Connexion Admin
+            </a>
+        </div>
+
+        <div class="modal-footer">
+            Nouveau client ? <a href="{% url 'users:register' %}">Créer un compte</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const openBtn = document.getElementById("open-login-choice");
+    const modal = document.getElementById("login-choice-modal");
+    const closeBtn = document.getElementById("close-login-choice");
+
+    if (openBtn && modal) {
+        openBtn.addEventListener("click", function() {
+            modal.classList.add("active");
+            document.body.style.overflow = "hidden";
+        });
+    }
+
+    if (closeBtn && modal) {
+        closeBtn.addEventListener("click", function() {
+            modal.classList.remove("active");
+            document.body.style.overflow = "";
+        });
+    }
+
+    if (modal) {
+        modal.addEventListener("click", function(e) {
+            if (e.target === modal) {
+                modal.classList.remove("active");
+                document.body.style.overflow = "";
+            }
+        });
+    }
+
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape" && modal && modal.classList.contains("active")) {
+            modal.classList.remove("active");
+            document.body.style.overflow = "";
+        }
+    });
+});
+</script>

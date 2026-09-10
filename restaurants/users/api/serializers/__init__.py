@@ -1,0 +1,5 @@
+"""Serializers API du module users."""
+
+from .user import UserSerializer
+
+__all__ = ["UserSerializer"]

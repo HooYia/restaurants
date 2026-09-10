@@ -1,0 +1,52 @@
+from django.db import models
+
+
+class AvailabilityMode(models.TextChoices):
+    """Mode de disponibilité d'un plat."""
+    ALWAYS = "always", "Toujours disponible"
+    SPECIFIC_DAYS = "specific_days", "Jours spécifiques"
+    SOLD_OUT = "sold_out", "Épuisé"
+
+
+class DayOfWeek(models.TextChoices):
+    """Jours de la semaine pour les menus journaliers."""
+    MONDAY = "monday", "Lundi"
+    TUESDAY = "tuesday", "Mardi"
+    WEDNESDAY = "wednesday", "Mercredi"
+    THURSDAY = "thursday", "Jeudi"
+    FRIDAY = "friday", "Vendredi"
+    SATURDAY = "saturday", "Samedi"
+    SUNDAY = "sunday", "Dimanche"
+
+
+class OrderStatus(models.TextChoices):
+    """Statut d'avancement d'une commande."""
+    PENDING = "pending", "En attente"
+    CONFIRMED = "confirmed", "Confirmée"
+    PREPARING = "preparing", "En préparation"
+    READY = "ready", "Prête"
+    DELIVERED = "delivered", "Livrée"
+    CANCELLED = "cancelled", "Annulée"
+
+
+class PaymentMethod(models.TextChoices):
+    """Moyen de paiement d'une commande."""
+    CASH = "cash", "Espèces"
+    MOBILE_MONEY = "mobile_money", "Mobile Money"
+    CARD = "card", "Carte bancaire"
+
+
+class PaymentStatus(models.TextChoices):
+    """Statut du paiement lié à une commande."""
+    PENDING = "pending", "En attente"
+    PAID = "paid", "Payé"
+    FAILED = "failed", "Échoué"
+    REFUNDED = "refunded", "Remboursé"
+
+
+class CustomRequestStatus(models.TextChoices):
+    """Statut d'une demande de plat sur mesure."""
+    PENDING = "pending", "En attente"
+    PRICED = "priced", "Tarif proposé"
+    ACCEPTED = "accepted", "Acceptée et ajoutée au panier"
+    REJECTED = "rejected", "Refusée"

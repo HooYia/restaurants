@@ -1,0 +1,96 @@
+<!-- HISTOIRE AVEC STYLE SPÉCIALITÉS -->
+<section class="dark-bg" id="histoire">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Notre histoire</p>
+      <h2 style="font-family:var(--font-script);font-size:clamp(2.4rem,4vw,3.2rem);color:var(--maroon);margin-bottom:1.2rem;">La cuisine de Mam's, transmise avec cœur</h2>
+      <p>Tout a commencé dans la cuisine familiale à Bafoussam, où Mam's préparait ses plats pour toute la famille et le voisinage. Aujourd'hui, cette même recette, ce même goût du fait-maison, est servie à notre table chaque jour.</p>
+    </div>
+
+    <div class="story-grid reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-top: 2rem;">
+      <div class="story-frame-wrap">
+        <div class="story-frame" style="border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15);">
+          <img src="../static/images/restaurent.jpg" alt="Mam's dans sa cuisine" style="width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block;">
+          <div class="story-badge" style="position: absolute; bottom: 1.5rem; left: 1.5rem; background: var(--maroon); color: #fff; padding: 0.5rem 1.2rem; border-radius: 99px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Fait avec amour</div>
+        </div>
+      </div>
+      <div class="story-text" style="color: #e8ddd0;">
+        <p style="font-size: 1.05rem; line-height: 1.8; margin-bottom: 1.2rem;">Nous travaillons avec des producteurs locaux pour garder des saveurs justes : huile de palme, légumes verts, poissons fumés et épices choisies avec soin — comme Mam's l'a toujours fait.</p>
+        <p style="font-size: 1.05rem; line-height: 1.8; margin-bottom: 1.5rem;">Aujourd'hui, cette même recette, ce même goût du fait-maison, est servie à notre table chaque jour.</p>
+        <p class="signature" style="font-family: var(--font-script); font-size: 1.4rem; color: var(--terracotta);">— Toute l'équipe de Mam's</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dark-bg {
+    background: linear-gradient(135deg, #1a0e0a 0%, #2d1a14 50%, #1a0e0a 100%);
+    padding: 5rem 0;
+    color: #e8ddd0;
+    position: relative;
+  }
+  
+  .dark-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  
+  .dark-bg .container {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .story-frame {
+    position: relative;
+  }
+  
+  .story-frame .story-badge {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    background: var(--maroon);
+    color: #fff;
+    padding: 0.5rem 1.2rem;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  
+  .story-text p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin-bottom: 1.2rem;
+    color: #d5c8bc;
+  }
+  
+  .story-text p:last-of-type {
+    margin-bottom: 1.5rem;
+  }
+  
+  .story-text .signature {
+    font-family: var(--font-script);
+    font-size: 1.4rem;
+    color: var(--terracotta);
+    margin-top: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .story-grid {
+      grid-template-columns: 1fr !important;
+      gap: 2rem !important;
+    }
+    
+    .dark-bg {
+      padding: 3rem 0;
+    }
+  }
+</style>

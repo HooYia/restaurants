@@ -1,0 +1,402 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Mes Adresses — Mam's{% endblock %}
+{% block dashboard_title %}Mes Adresses{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/user_dashboad/client_sidebar.html' with active_page="addresses" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  /* ---- Page header ---- */
+  .addr-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.4rem;
+  }
+  .addr-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--dark); }
+  .btn-add-addr {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .6rem 1.2rem;
+    border-radius: 999px;
+    background: var(--maroon);
+    color: #fff;
+    font-size: .85rem; font-weight: 600;
+    border: none; cursor: pointer; font-family: inherit;
+    transition: background .2s, transform .15s;
+  }
+  .btn-add-addr:hover { background: var(--terracotta); transform: translateY(-1px); }
+  .btn-add-addr svg { width: 16px; height: 16px; }
+
+  /* ---- Address cards ---- */
+  .addr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.2rem;
+  }
+  .addr-card {
+    background: #fff;
+    border: 1.5px solid rgba(107,42,31,.1);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.5rem;
+    box-shadow: 0 6px 20px rgba(35,22,16,.05);
+    position: relative;
+    transition: box-shadow .2s, border-color .2s;
+  }
+  .addr-card:hover { box-shadow: 0 10px 30px rgba(35,22,16,.1); }
+  .addr-card.is-default {
+    border-color: var(--terracotta);
+    background: linear-gradient(135deg, #fff 0%, rgba(201,122,58,.04) 100%);
+  }
+  .addr-default-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: var(--terracotta); color: #fff;
+    font-size: .68rem; font-weight: 700;
+    padding: .2rem .6rem; border-radius: 999px;
+    margin-bottom: .8rem;
+  }
+  .addr-default-badge svg { width: 11px; height: 11px; }
+  .addr-street { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: .25rem; }
+  .addr-city { font-size: .88rem; color: var(--terracotta); font-weight: 600; margin-bottom: .4rem; }
+  .addr-extra { font-size: .8rem; color: #9a8570; line-height: 1.5; }
+  .addr-actions {
+    display: flex; align-items: center; gap: .5rem;
+    margin-top: 1.1rem; padding-top: 1rem;
+    border-top: 1px solid rgba(107,42,31,.07);
+  }
+  .addr-btn {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .38rem .8rem; border-radius: 999px;
+    font-size: .76rem; font-weight: 600;
+    transition: all .2s; border: none; cursor: pointer;
+    font-family: inherit; text-decoration: none;
+  }
+  .addr-btn svg { width: 13px; height: 13px; }
+  .addr-btn.edit { background: rgba(201,122,58,.12); color: var(--terracotta); }
+  .addr-btn.edit:hover { background: var(--terracotta); color: #fff; }
+  .addr-btn.del { background: rgba(192,57,43,.08); color: #c0392b; margin-left: auto; }
+  .addr-btn.del:hover { background: #e74c3c; color: #fff; }
+  .addr-btn.default { background: rgba(92,112,72,.1); color: var(--green); }
+  .addr-btn.default:hover { background: var(--green); color: #fff; }
+  .empty-addr {
+    grid-column: 1/-1; text-align: center;
+    padding: 4rem 2rem; background: #fff;
+    border: 2px dashed rgba(107,42,31,.12);
+    border-radius: var(--radius); color: #9a8570;
+  }
+  .empty-addr svg { width: 52px; height: 52px; color: rgba(107,42,31,.15); margin-bottom: 1rem; }
+  @media (max-width: 600px) { .addr-grid { grid-template-columns: 1fr; } }
+
+  /* ---- Modal overlay ---- */
+  .addr-modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(35,22,16,.55);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(3px);
+  }
+  .addr-modal-overlay.open { display: flex; }
+
+  .addr-modal {
+    background: #fff;
+    border-radius: var(--radius);
+    width: 100%; max-width: 540px;
+    box-shadow: 0 24px 60px rgba(35,22,16,.2);
+    overflow: hidden;
+    animation: modal-in .25s cubic-bezier(.34,1.3,.64,1) both;
+  }
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(.92) translateY(16px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.3rem 1.6rem;
+    border-bottom: 1px solid rgba(107,42,31,.08);
+  }
+  .modal-head h3 { font-size: 1rem; font-weight: 700; color: var(--maroon); display: flex; align-items: center; gap: .6rem; }
+  .modal-head h3 svg { width: 18px; height: 18px; color: var(--terracotta); }
+  .modal-close-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(107,42,31,.07); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #9a8570; transition: background .2s, color .2s;
+  }
+  .modal-close-btn:hover { background: rgba(107,42,31,.15); color: var(--dark); }
+  .modal-close-btn svg { width: 16px; height: 16px; }
+
+  .modal-body { padding: 1.6rem; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1rem; }
+  .field label { font-size: .8rem; font-weight: 600; color: #6b5a48; }
+  .field label .req { color: var(--terracotta); }
+  .field input {
+    padding: .62rem .9rem;
+    border: 1.5px solid rgba(107,42,31,.15);
+    border-radius: 10px; font-family: inherit;
+    font-size: .88rem; color: var(--dark); background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+  }
+  .field input:focus {
+    outline: none; border-color: var(--terracotta);
+    box-shadow: 0 0 0 3px rgba(201,122,58,.1);
+  }
+  .field-hint { font-size: .74rem; color: #bba98a; }
+  .check-row {
+    display: flex; align-items: center; gap: .7rem;
+    background: rgba(239,224,196,.3); border-radius: 10px;
+    padding: .8rem 1rem; margin-bottom: 1.2rem; cursor: pointer;
+    border: 1.5px solid transparent; transition: border-color .2s;
+  }
+  .check-row:has(input:checked) { border-color: var(--terracotta); background: rgba(201,122,58,.07); }
+  .check-row input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--terracotta); flex-shrink: 0; }
+  .check-label { font-size: .88rem; font-weight: 600; color: var(--dark); }
+  .check-sub { font-size: .77rem; color: #9a8570; }
+
+  .modal-footer {
+    display: flex; align-items: center; gap: .8rem;
+    padding: 1.2rem 1.6rem;
+    border-top: 1px solid rgba(107,42,31,.08);
+    background: rgba(239,224,196,.2);
+  }
+  .btn-save {
+    padding: .62rem 1.5rem; border-radius: 999px;
+    background: var(--maroon); color: #fff;
+    font-size: .88rem; font-weight: 700;
+    border: none; cursor: pointer; font-family: inherit;
+    transition: background .2s, transform .15s;
+    display: inline-flex; align-items: center; gap: .5rem;
+  }
+  .btn-save:hover { background: var(--terracotta); transform: translateY(-1px); }
+  .btn-save svg { width: 15px; height: 15px; }
+  .btn-cancel-modal {
+    padding: .62rem 1.1rem; border-radius: 999px;
+    border: 1.5px solid rgba(107,42,31,.2);
+    background: transparent; color: #6b5a48;
+    font-size: .88rem; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: border-color .2s, color .2s;
+  }
+  .btn-cancel-modal:hover { border-color: var(--terracotta); color: var(--terracotta); }
+
+  /* ---- Delete confirm modal ---- */
+  .del-modal-body { padding: 1.6rem; text-align: center; }
+  .del-modal-body svg { width: 48px; height: 48px; color: #e74c3c; margin-bottom: 1rem; }
+  .del-modal-body p { font-size: .9rem; color: #6b5a48; margin-top: .5rem; }
+  .del-modal-body strong { font-size: 1rem; font-weight: 700; color: var(--dark); }
+  .del-modal-footer { display: flex; gap: .8rem; padding: 1.1rem 1.6rem; border-top: 1px solid rgba(107,42,31,.08); }
+  .btn-del-confirm {
+    flex: 1; padding: .62rem; border-radius: 999px;
+    background: #e74c3c; color: #fff;
+    font-size: .88rem; font-weight: 700; border: none; cursor: pointer; font-family: inherit;
+    transition: background .2s;
+  }
+  .btn-del-confirm:hover { background: #c0392b; }
+</style>
+
+<!-- Page header -->
+<div class="addr-header">
+  <h2 id="addr-count">{{ addresses|length }} adresse{{ addresses|length|pluralize }}</h2>
+  <button class="btn-add-addr" onclick="openCreateModal()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Ajouter une adresse
+  </button>
+</div>
+
+<!-- Address grid -->
+<div class="addr-grid" id="addr-grid">
+  {% for addr in addresses %}
+  <div class="addr-card {% if addr.is_default %}is-default{% endif %}" id="addr-card-{{ addr.pk }}">
+
+    {% if addr.is_default %}
+    <div class="addr-default-badge">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Adresse par défaut
+    </div>
+    {% endif %}
+
+    <div class="addr-street">{{ addr.street }}</div>
+    <div class="addr-city">{{ addr.city }}</div>
+    {% if addr.description %}<div class="addr-extra">📍 {{ addr.description }}</div>{% endif %}
+    {% if addr.complement %}<div class="addr-extra">🏢 {{ addr.complement }}</div>{% endif %}
+
+    <div class="addr-actions">
+      <button class="addr-btn edit"
+        onclick="openEditModal('{{ addr.pk }}','{{ addr.city|escapejs }}','{{ addr.street|escapejs }}','{{ addr.description|escapejs }}','{{ addr.complement|escapejs }}',{{ addr.is_default|yesno:'true,false' }})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Modifier
+      </button>
+
+      {% if not addr.is_default %}
+      <form method="post" action="{% url 'users:address-set-default' addr.pk %}" style="margin:0;">
+        {% csrf_token %}
+        <button type="submit" class="addr-btn default">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Par défaut
+        </button>
+      </form>
+      {% endif %}
+
+      <button class="addr-btn del"
+        onclick="openDeleteModal('{{ addr.pk }}','{{ addr.street|escapejs }}, {{ addr.city|escapejs }}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+  {% empty %}
+  <div class="empty-addr" id="empty-state">
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+    <p style="font-size:.95rem;font-weight:600;color:var(--dark);margin-bottom:.4rem;">Aucune adresse enregistrée</p>
+    <p>Cliquez sur « Ajouter une adresse » pour commencer.</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ===================== CREATE / EDIT MODAL ===================== -->
+<div class="addr-modal-overlay" id="addr-form-modal" onclick="handleOverlayClick(event,'addr-form-modal')">
+  <div class="addr-modal">
+    <div class="modal-head">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="modal-form-title">Ajouter une adresse</span>
+      </h3>
+      <button class="modal-close-btn" onclick="closeModal('addr-form-modal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <form id="addr-form" method="post" action="{% url 'users:address-create' %}">
+      {% csrf_token %}
+      <input type="hidden" name="_method" id="form-method" value="create">
+
+      <div class="modal-body">
+        <div class="field-row">
+          <div class="field">
+            <label for="f-city">Ville <span class="req">*</span></label>
+            <input type="text" id="f-city" name="city" placeholder="Ex : Yaoundé" required>
+          </div>
+          <div class="field">
+            <label for="f-street">Rue / Quartier <span class="req">*</span></label>
+            <input type="text" id="f-street" name="street" placeholder="Ex : Bastos" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-description">Point de repère</label>
+          <input type="text" id="f-description" name="description" placeholder="Ex : En face du marché">
+          <span class="field-hint">Aide le livreur à trouver facilement.</span>
+        </div>
+        <div class="field">
+          <label for="f-complement">Complément</label>
+          <input type="text" id="f-complement" name="complement" placeholder="Ex : Apt 3B, 2ème étage">
+        </div>
+        <label class="check-row" for="f-is-default">
+          <input type="checkbox" id="f-is-default" name="is_default">
+          <div>
+            <div class="check-label">Adresse par défaut</div>
+            <div class="check-sub">Présélectionnée pour vos prochaines commandes.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn-save">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span id="modal-save-label">Ajouter</span>
+        </button>
+        <button type="button" class="btn-cancel-modal" onclick="closeModal('addr-form-modal')">Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== DELETE CONFIRM MODAL ===================== -->
+<div class="addr-modal-overlay" id="addr-delete-modal" onclick="handleOverlayClick(event,'addr-delete-modal')">
+  <div class="addr-modal" style="max-width:400px;">
+    <div class="modal-head">
+      <h3 style="color:#c0392b;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Supprimer l'adresse
+      </h3>
+      <button class="modal-close-btn" onclick="closeModal('addr-delete-modal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="del-modal-body">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <strong id="del-addr-name"></strong>
+      <p>Cette action est irréversible. Êtes-vous sûr de vouloir supprimer cette adresse ?</p>
+    </div>
+    <form id="delete-form" method="post" action="">
+      {% csrf_token %}
+      <div class="del-modal-footer">
+        <button type="button" class="btn-cancel-modal" onclick="closeModal('addr-delete-modal')" style="flex:1;">Annuler</button>
+        <button type="submit" class="btn-del-confirm">Supprimer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const CREATE_URL = "{% url 'users:address-create' %}";
+  const UPDATE_BASE = "/client/adresses/";   // + pk + /modifier/
+
+  function openCreateModal() {
+    document.getElementById('modal-form-title').textContent = 'Ajouter une adresse';
+    document.getElementById('modal-save-label').textContent = 'Ajouter';
+    document.getElementById('addr-form').action = CREATE_URL;
+    document.getElementById('f-city').value = '';
+    document.getElementById('f-street').value = '';
+    document.getElementById('f-description').value = '';
+    document.getElementById('f-complement').value = '';
+    document.getElementById('f-is-default').checked = false;
+    openModal('addr-form-modal');
+  }
+
+  function openEditModal(pk, city, street, description, complement, isDefault) {
+    document.getElementById('modal-form-title').textContent = 'Modifier l\'adresse';
+    document.getElementById('modal-save-label').textContent = 'Enregistrer';
+    document.getElementById('addr-form').action = UPDATE_BASE + pk + '/modifier/';
+    document.getElementById('f-city').value = city;
+    document.getElementById('f-street').value = street;
+    document.getElementById('f-description').value = description;
+    document.getElementById('f-complement').value = complement;
+    document.getElementById('f-is-default').checked = isDefault;
+    openModal('addr-form-modal');
+  }
+
+  function openDeleteModal(pk, name) {
+    document.getElementById('del-addr-name').textContent = name;
+    document.getElementById('delete-form').action = UPDATE_BASE + pk + '/supprimer/';
+    openModal('addr-delete-modal');
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleOverlayClick(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeModal('addr-form-modal');
+      closeModal('addr-delete-modal');
+    }
+  });
+</script>
+
+{% endblock %}

@@ -2,6 +2,7 @@
 """Base settings to build other settings files upon."""
 
 import ssl
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -11,7 +12,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 APPS_DIR = BASE_DIR / "restaurants"
 env = environ.Env()
 
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
+READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR / ".env"))
@@ -46,6 +47,17 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# DATABASES
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#databases
+DATABASES = {
+    "default": env.db(
+        "DATABASE_URL",
+        default="sqlite:///db.sqlite3",
+    ),
+}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # URLS
 # ------------------------------------------------------------------------------
@@ -83,6 +95,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "restaurants.users",
+    "restaurants.core",
+    "restaurants.meal",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -105,7 +119,7 @@ AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
 LOGIN_REDIRECT_URL = "users:redirect"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
-LOGIN_URL = "account_login"
+LOGIN_URL = "users:login"
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -188,6 +202,9 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "restaurants.users.context_processors.allauth_settings",
+                "restaurants.users.context_processors.cart_processor",
+                "restaurants.users.context_processors.dashboard_stats",
+                "restaurants.users.context_processors.company_setting",
             ],
         },
     },
@@ -217,9 +234,39 @@ X_FRAME_OPTIONS = "DENY"
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = env(
-    "DJANGO_EMAIL_BACKEND",
-    default="django.core.mail.backends.smtp.EmailBackend",
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
+
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL",
+    default="nancysikati@gmail.com",
+)
+
+SERVER_EMAIL = env(
+    "SERVER_EMAIL",
+    default=DEFAULT_FROM_EMAIL,
+)
+
+# ADMIN
+# ------------------------------------------------------------------------------
+ADMIN_URL = "admin/"
+
+ADMINS = [
+    ("Nancy Melissa", "nancysikati@gmail.com"),
+]
+
+MANAGERS = ADMINS
+
+DJANGO_ADMIN_FORCE_ALLAUTH = env.bool(
+    "DJANGO_ADMIN_FORCE_ALLAUTH",
+    default=False,
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
@@ -331,11 +378,19 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
@@ -352,3 +407,4 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+CART_SESSION_ID = 'cart'

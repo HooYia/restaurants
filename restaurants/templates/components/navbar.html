@@ -1,0 +1,522 @@
+{% load static %}
+
+<header id="site-header">
+  <div class="container nav-wrap">
+    <a href="{% url 'users:home' %}#top" class="brand">
+      {% if company_setting.logo %}
+        <img 
+          src="{{ company_setting.logo.url }}" 
+          alt="{{ company_setting.restaurant_name }}"
+        >
+      {% else %}
+        <img 
+          src="{% static 'images/logo-mams.png' %}" 
+          alt="Logo Mam's"
+          onerror="this.src='{% static 'images/restaurent.jpg' %}'"
+        >
+      {% endif %}
+      <span>
+        {{ company_setting.restaurant_name|default:"Mam's" }}
+      </span>
+    </a>
+
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="{% url 'users:home' %}#top">Accueil</a></li>
+        <li><a href="{% url 'users:home' %}#histoire">Notre histoire</a></li>
+        <li><a href="{% url 'users:home' %}#menu">Spécialités</a></li>
+        <li>
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'users:custom-request-create' %}">Sur Mesure</a>
+          {% else %}
+            <a href="{% url 'users:login' %}?next={% url 'users:custom-request-create' %}">Sur Mesure</a>
+          {% endif %}
+        </li>
+        <li><a href="{% url 'users:home' %}#contact">Contact</a></li>
+        <li class="mobile-only-item"><a href="{% url 'users:home' %}#contact" class="btn btn-primary" style="width:100%; padding:1rem; text-align:center;">Réserver une table</a></li>
+        {% if request.user.is_authenticated %}
+          <li class="mobile-only-item">
+            {% if request.user.is_staff or request.user.is_superuser %}
+              <a href="{% url 'users:admin-dashboard' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Mon Espace</a>
+            {% else %}
+              <a href="{% url 'users:client-dashboard' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Mon Espace</a>
+            {% endif %}
+          </li>
+          <li class="mobile-only-item">
+            <a href="{% url 'users:logout' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem; border-color:#c0392b; color:#c0392b;">Déconnexion</a>
+          </li>
+        {% else %}
+          <li class="mobile-only-item">
+            <a href="{% url 'users:register' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Créer un compte</a>
+          </li>
+          <li class="mobile-only-item">
+            <a href="{% url 'users:login' %}" class="btn btn-outline" style="width:100%; text-align:center; margin-top:0.5rem;">Se connecter</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <div class="user-dropdown">
+        <button class="user-btn" aria-label="Compte utilisateur">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+        <div class="user-dropdown-content">
+          {% if request.user.is_authenticated %}
+            {% if request.user.is_staff or request.user.is_superuser %}
+              <a href="{% url 'users:admin-dashboard' %}">Mon Espace</a>
+            {% else %}
+              <a href="{% url 'users:client-dashboard' %}">Mon Espace</a>
+            {% endif %}
+            <a href="{% url 'users:logout' %}" style="color:#c0392b; border-top:1px solid rgba(107,42,31,.1);">Déconnexion</a>
+          {% else %}
+            <a href="{% url 'users:login' %}">Se connecter</a>
+            <a href="{% url 'users:register' %}">Créer un compte</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Bouton Panier avec badge -->
+      <a href="{% url 'users:cart' %}" id="cart-btn" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:var(--amber, #e0a85c); color:#fff; position:relative; margin-left:0.5rem; transition:transform 0.2s;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span id="cart-count-badge" style="position:absolute; top:-4px; right:-4px; background:var(--maroon, #6b2a1f); color:#fff; font-size:11px; font-weight:bold; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          {{ cart|length|default:"0" }}
+        </span>
+      </a>
+
+      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== PANIER FLOTTANT (FLOATING CART) - A GAUCHE ===== -->
+<div id="floating-cart" class="floating-cart" style="display:none;">
+  <div class="floating-cart-header">
+    <button class="floating-cart-close" onclick="closeFloatingCart()">&times;</button>
+    <span class="floating-cart-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px; height:18px;">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      </svg>
+      Mon Panier
+    </span>
+  </div>
+  
+  <div class="floating-cart-body" id="floating-cart-body">
+    <div class="floating-cart-empty">
+      <span style="font-size:2rem;">🛒</span>
+      <p>Votre panier est vide</p>
+    </div>
+  </div>
+  
+  <div class="floating-cart-footer">
+    <div class="floating-cart-total">
+      <span>Total</span>
+      <span id="floating-cart-total-price">0 FCFA</span>
+    </div>
+    <a href="{% url 'users:cart' %}" class="floating-cart-btn">Voir le panier</a>
+  </div>
+</div>
+
+<div class="menu-overlay" id="menu-overlay"></div>
+<div class="wax-divider" style="margin-top:0;"></div>
+
+<style>
+  /* ===== PANIER FLOTTANT - A GAUCHE ===== */
+  .floating-cart {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 380px;
+    max-height: 500px;
+    background: linear-gradient(135deg, #1a0e0a 0%, #2d1a14 50%, #1a0e0a 100%);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    animation: slideUpLeft 0.3s ease;
+    transform-origin: bottom left;
+    color: #e8ddd0;
+  }
+
+  @keyframes slideUpLeft {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes pulseBadge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .badge-pulse {
+    animation: pulseBadge 0.3s ease;
+  }
+
+  .floating-cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px 16px 0 0;
+    flex-direction: row-reverse;
+  }
+
+  .floating-cart-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    color: #e8ddd0;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .floating-cart-title svg {
+    stroke: #e8ddd0;
+  }
+
+  .floating-cart-close {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #e8ddd0;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .floating-cart-close:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .floating-cart-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    max-height: 300px;
+    font-family: 'Inter', sans-serif;
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .floating-cart-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .floating-cart-body::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .floating-cart-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+  }
+
+  .floating-cart-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    animation: slideItem 0.3s ease;
+    transition: background 0.2s;
+  }
+
+  .floating-cart-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  @keyframes slideItem {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .floating-cart-item:last-child {
+    border-bottom: none;
+  }
+
+  .floating-cart-item-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .floating-cart-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .floating-cart-item-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e8ddd0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .floating-cart-item-detail {
+    font-size: 0.75rem;
+    color: rgba(232, 221, 208, 0.6);
+  }
+
+  .floating-cart-item-price {
+    font-weight: 700;
+    color: #e8ddd0;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .floating-cart-item-remove {
+    background: none;
+    border: none;
+    color: rgba(232, 221, 208, 0.4);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .floating-cart-item-remove:hover {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.15);
+  }
+
+  .floating-cart-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: rgba(232, 221, 208, 0.5);
+  }
+
+  .floating-cart-empty p {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .floating-cart-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 16px 16px;
+  }
+
+  .floating-cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #e8ddd0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .floating-cart-total span:last-child {
+    color: #e8ddd0;
+    font-size: 1.1rem;
+  }
+
+  .floating-cart-btn {
+    display: block;
+    width: 100%;
+    padding: 0.8rem;
+    text-align: center;
+    background: var(--maroon, #6b2a1f);
+    color: white;
+    border: none;
+    border-radius: 99px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .floating-cart-btn:hover {
+    background: var(--terracotta, #8a4a3a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 480px) {
+    .floating-cart {
+      width: calc(100% - 40px);
+      bottom: 10px;
+      left: 20px;
+      max-height: 400px;
+    }
+    
+    .floating-cart-body {
+      max-height: 200px;
+    }
+  }
+</style>
+
+<script>
+  // ===== PANIER FLOTTANT =====
+  let floatingCartItems = [];
+  let floatingCartVisible = false;
+
+  function openFloatingCart() {
+    const cart = document.getElementById('floating-cart');
+    cart.style.display = 'flex';
+    floatingCartVisible = true;
+  }
+
+  function closeFloatingCart() {
+    const cart = document.getElementById('floating-cart');
+    cart.style.display = 'none';
+    floatingCartVisible = false;
+  }
+
+  function addToFloatingCart(item) {
+    const existingIndex = floatingCartItems.findIndex(i => i.id === item.id && i.type === item.type);
+    
+    if (existingIndex !== -1) {
+      floatingCartItems[existingIndex].quantity += item.quantity || 1;
+    } else {
+      floatingCartItems.push({
+        id: item.id,
+        type: item.type || 'meal',
+        name: item.name,
+        price: item.price,
+        image: item.image || '',
+        quantity: item.quantity || 1,
+        detail: item.detail || ''
+      });
+    }
+
+    updateCartBadge();
+    renderFloatingCart();
+    openFloatingCart();
+  }
+
+  function removeFromFloatingCart(index) {
+    floatingCartItems.splice(index, 1);
+    renderFloatingCart();
+    updateCartBadge();
+    
+    if (floatingCartItems.length === 0) {
+      setTimeout(() => closeFloatingCart(), 1000);
+    }
+  }
+
+  function updateCartBadge() {
+    const badge = document.getElementById('cart-count-badge');
+    const totalItems = floatingCartItems.reduce((sum, item) => sum + item.quantity, 0);
+    
+    if (badge) {
+      badge.textContent = totalItems;
+      badge.classList.remove('badge-pulse');
+      void badge.offsetWidth;
+      badge.classList.add('badge-pulse');
+    }
+  }
+
+  function renderFloatingCart() {
+    const body = document.getElementById('floating-cart-body');
+    const totalSpan = document.getElementById('floating-cart-total-price');
+    
+    if (floatingCartItems.length === 0) {
+      body.innerHTML = `
+        <div class="floating-cart-empty">
+          <span style="font-size:2rem;">🛒</span>
+          <p>Votre panier est vide</p>
+        </div>
+      `;
+      totalSpan.textContent = '0 FCFA';
+      return;
+    }
+
+    let html = '';
+    let total = 0;
+
+    floatingCartItems.forEach((item, index) => {
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
+
+      html += `
+        <div class="floating-cart-item">
+          ${item.image ? `<img src="${item.image}" alt="${item.name}" class="floating-cart-item-img">` : `<div class="floating-cart-item-img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:rgba(232,221,208,0.3);">${item.type === 'boisson' ? '🥤' : '🍲'}</div>`}
+          <div class="floating-cart-item-info">
+            <div class="floating-cart-item-name">${item.name}</div>
+            ${item.detail ? `<div class="floating-cart-item-detail">${item.detail}</div>` : ''}
+            <div class="floating-cart-item-detail">Quantité: ${item.quantity}</div>
+          </div>
+          <div class="floating-cart-item-price">${itemTotal.toLocaleString()} FCFA</div>
+          <button class="floating-cart-item-remove" onclick="removeFromFloatingCart(${index})">&times;</button>
+        </div>
+      `;
+    });
+
+    body.innerHTML = html;
+    totalSpan.textContent = total.toLocaleString() + ' FCFA';
+  }
+
+  function addBoissonToFloatingCart(boissonId, name, price, image) {
+    const item = {
+      id: boissonId,
+      type: 'boisson',
+      name: name,
+      price: parseFloat(price),
+      image: image || '',
+      quantity: 1,
+      detail: 'Boisson'
+    };
+    addToFloatingCart(item);
+  }
+
+  // ===== SUPPRESSION DE L'APPEL /api/cart/items/ =====
+  // Le code ci-dessous a été supprimé car il causait une erreur 404
+  // et bloquait l'ouverture du Offcanvas
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && floatingCartVisible) {
+      closeFloatingCart();
+    }
+  });
+
+  document.getElementById('floating-cart')?.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+</script>

@@ -1,0 +1,311 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Commandes — Mam's Admin{% endblock %}
+{% block dashboard_title %}Gestion des Commandes{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  /* ---- Filter bar ---- */
+  .order-toolbar {
+    display: flex; align-items: center; gap: .8rem;
+    flex-wrap: wrap; margin-bottom: 1.4rem;
+  }
+  .search-field {
+    display: flex; align-items: center; gap: .5rem;
+    background: #fff; border: 1.5px solid rgba(107,42,31,.15);
+    border-radius: 999px; padding: .5rem 1rem;
+    flex: 1; min-width: 200px; max-width: 340px;
+    transition: border-color .2s;
+  }
+  .search-field:focus-within { border-color: var(--terracotta); }
+  .search-field svg { width: 15px; height: 15px; color: #9a8570; flex-shrink: 0; }
+  .search-field input { border: none; outline: none; font-family: inherit; font-size: .85rem; width: 100%; }
+
+  .filter-chips { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .4rem .9rem; border-radius: 999px;
+    font-size: .78rem; font-weight: 600;
+    background: #fff; border: 1.5px solid rgba(107,42,31,.14);
+    color: #6b5a48; text-decoration: none; transition: all .2s;
+  }
+  .chip:hover { border-color: var(--terracotta); color: var(--terracotta); }
+  .chip.active { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+  .chip-count {
+    background: rgba(255,255,255,.2); color: inherit;
+    font-size: .68rem; font-weight: 700;
+    padding: .05rem .38rem; border-radius: 999px;
+  }
+  .chip.active .chip-count { background: rgba(255,255,255,.22); }
+  .chip:not(.active) .chip-count { background: rgba(107,42,31,.08); color: #9a8570; }
+
+  /* ---- Panel ---- */
+  .orders-panel {
+    background: #fff; border: 1px solid rgba(107,42,31,.08);
+    border-radius: var(--radius); box-shadow: 0 10px 24px rgba(35,22,16,.05);
+    overflow: hidden;
+  }
+  .orders-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.1rem 1.6rem; border-bottom: 1px solid rgba(107,42,31,.07);
+  }
+  .orders-panel-head h2 { font-size: 1rem; font-weight: 700; color: var(--maroon); }
+  .orders-count { font-size: .82rem; color: #9a8570; }
+
+  /* ---- Order rows ---- */
+  .order-row {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1fr 1.3fr 1.5fr auto;
+    align-items: center; gap: 1rem;
+    padding: .95rem 1.6rem;
+    border-bottom: 1px solid rgba(107,42,31,.05);
+    transition: background .2s;
+  }
+  .order-row:last-child { border-bottom: none; }
+  .order-row:hover { background: rgba(239,224,196,.2); }
+  .order-row.header-row {
+    background: rgba(239,224,196,.35);
+    border-bottom: 1px solid rgba(107,42,31,.08);
+    font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .05em; color: #9a8570; font-weight: 700;
+    cursor: default;
+  }
+  .order-row.header-row:hover { background: rgba(239,224,196,.35); }
+
+  .client-cell { display: flex; align-items: center; gap: .7rem; }
+  .order-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--maroon); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .72rem; font-weight: 700; flex-shrink: 0;
+  }
+  .client-name { font-size: .88rem; font-weight: 600; color: var(--dark); }
+  .client-email { font-size: .75rem; color: #9a8570; }
+
+  .order-id-cell { font-size: .82rem; font-weight: 700; color: var(--dark); }
+  .order-date-cell { font-size: .78rem; color: #9a8570; margin-top: .1rem; }
+  .order-meals { font-size: .83rem; color: #6b5a48; }
+  .order-amount { font-size: .9rem; font-weight: 700; color: var(--dark); white-space: nowrap; }
+
+  /* Status select dropdown */
+  .status-select-wrap { position: relative; }
+  .status-select {
+    appearance: none;
+    padding: .38rem 2rem .38rem .75rem;
+    border-radius: 999px;
+    font-size: .76rem; font-weight: 600;
+    border: 1.5px solid transparent;
+    cursor: pointer; font-family: inherit;
+    transition: all .2s; outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .6rem center;
+  }
+  .status-select.pending  { background-color: rgba(224,168,92,.18); color: #a9762f; border-color: rgba(224,168,92,.3); }
+  .status-select.confirmed{ background-color: rgba(92,112,72,.14); color: var(--green); border-color: rgba(92,112,72,.25); }
+  .status-select.preparing{ background-color: rgba(201,122,58,.16); color: var(--terracotta); border-color: rgba(201,122,58,.3); }
+  .status-select.ready    { background-color: rgba(52,152,219,.12); color: #2980b9; border-color: rgba(52,152,219,.25); }
+  .status-select.delivered{ background-color: rgba(107,42,31,.12); color: var(--maroon); border-color: rgba(107,42,31,.2); }
+  .status-select.cancelled{ background-color: rgba(192,57,43,.1); color: #c0392b; border-color: rgba(192,57,43,.2); }
+  .status-select:hover { opacity: .85; }
+
+  .empty-orders {
+    padding: 4rem 2rem; text-align: center; color: #9a8570;
+  }
+  .empty-orders svg { width: 54px; height: 54px; color: rgba(107,42,31,.12); margin-bottom: 1rem; }
+
+  .ms-sub.cancelled{ color: #c0392b; }
+
+  @media (max-width: 900px) {
+    .order-row { grid-template-columns: 1fr auto; }
+    .order-meals, .order-amount, .order-id-cell, .order-date-cell { display: none; }
+  }
+  @media (max-width: 600px) {
+    .stats-mini { grid-template-columns: repeat(2, 1fr); }
+    .filter-chips { gap: .35rem; }
+    .chip { font-size: .72rem; padding: .35rem .7rem; }
+  }
+</style>
+
+<!-- Mini stats -->
+<div class="stats-mini">
+  <div class="mini-stat">
+    <div class="ms-label">Total commandes</div>
+    <div class="ms-value">{{ total }}</div>
+  </div>
+  <div class="mini-stat">
+    <div class="ms-label">En attente</div>
+    <div class="ms-value">{{ counts.pending }}</div>
+    <div class="ms-sub pending">À confirmer</div>
+  </div>
+  <div class="mini-stat">
+    <div class="ms-label">En préparation</div>
+    <div class="ms-value">{{ counts.preparing }}</div>
+    <div class="ms-sub preparing">En cuisine</div>
+  </div>
+  <div class="mini-stat">
+    <div class="ms-label">Livrées</div>
+    <div class="ms-value">{{ counts.delivered }}</div>
+    <div class="ms-sub delivered">Complétées</div>
+  </div>
+  <div class="mini-stat">
+    <div class="ms-label">Annulées</div>
+    <div class="ms-value">{{ counts.cancelled }}</div>
+    <div class="ms-sub cancelled">Annulées</div>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="order-toolbar">
+  <form method="get" class="search-field" style="padding:0;">
+    <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;width:100%;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="search" name="q" value="{{ search }}" placeholder="Rechercher un client…"
+             {% if status_filter %}
+             onchange="this.form.querySelector('[name=status]').value='{{ status_filter }}';"
+             {% endif %}>
+      {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+    </label>
+  </form>
+
+  <div class="filter-chips">
+    <a href="{% url 'meal:order-list' %}{% if search %}?q={{ search }}{% endif %}"
+       class="chip {% if not status_filter %}active{% endif %}">
+      Toutes <span class="chip-count">{{ total }}</span>
+    </a>
+    {% for value, label, count in status_choices_with_counts %}
+    <a href="?status={{ value }}{% if search %}&q={{ search }}{% endif %}"
+       class="chip {% if status_filter == value %}active{% endif %}">
+      {{ label }} <span class="chip-count">{{ count }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Orders table -->
+<div class="orders-panel">
+  <div class="orders-panel-head">
+    <h2>
+      {% if status_filter %}
+        {% for v, l in status_choices %}{% if v == status_filter %}{{ l }}{% endif %}{% endfor %}
+      {% elif search %}
+        Résultats pour « {{ search }} »
+      {% else %}
+        Toutes les commandes
+      {% endif %}
+    </h2>
+    <span class="orders-count">{{ orders|length }} commande{{ orders|length|pluralize }}</span>
+  </div>
+
+  {% if orders %}
+  <div class="order-row header-row">
+    <div>Client</div>
+    <div>N° Commande</div>
+    <div>Plats</div>
+    <div>Montant</div>
+    <div>Statut</div>
+    <div>Actions</div>
+  </div>
+
+  {% for order in orders %}
+  <div class="order-row">
+
+    <!-- Client -->
+    <div class="client-cell">
+      <div class="order-avatar">
+        {{ order.client.user.first_name|slice:":1" }}{{ order.client.user.last_name|slice:":1" }}
+      </div>
+      <div>
+        <div class="client-name">{{ order.client.user.get_full_name|default:order.client.user.email }}</div>
+        <div class="client-email">{{ order.client.user.email }}</div>
+      </div>
+    </div>
+
+    <!-- ID + date -->
+    <div>
+      <div class="order-id-cell">
+        #{{ order.id|stringformat:"s"|slice:":8"|upper }}
+        {% if order.has_loyalty_gift %}
+          <span style="font-size:1.1rem; margin-left: 0.3rem;" title="Cadeau de fidélité à inclure !">🎁</span>
+        {% endif %}
+      </div>
+      <div class="order-date-cell">{{ order.created|date:"d M Y à H:i" }}</div>
+    </div>
+
+    <!-- Plats -->
+    <div class="order-meals">
+      {{ order.items.count }} plat{{ order.items.count|pluralize }}
+    </div>
+
+    <!-- Montant -->
+    <div class="order-amount">{{ order.total_amount|floatformat:0 }} FCFA</div>
+
+    <!-- Statut — select inline avec bouton -->
+    <div>
+      <form id="status-form-{{ order.id }}" method="post" action="{% url 'meal:order-update-status' order.pk %}" class="status-select-wrap">
+        {% csrf_token %}
+        <select name="status" class="status-select {{ order.status }}"
+                {% if order.status == 'cancelled' %}disabled{% endif %}>
+          {% for value, label in status_choices %}
+          <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+
+    <!-- Actions -->
+    <div>
+      {% if order.status != 'cancelled' %}
+      <button type="submit" form="status-form-{{ order.id }}" class="btn-mini" style="background:var(--terracotta);color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:0.8rem;transition:background 0.2s;" onmouseover="this.style.background='var(--maroon)'" onmouseout="this.style.background='var(--terracotta)'">Valider</button>
+      {% endif %}
+    </div>
+
+  </div>
+  {% endfor %}
+
+  {% else %}
+  <div class="empty-orders">
+    <div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/>
+      </svg>
+    </div>
+    <p style="font-weight:600;color:var(--dark);margin-bottom:.3rem;">
+      {% if search %}Aucun résultat pour « {{ search }} »{% else %}Aucune commande{% endif %}
+    </p>
+    {% if status_filter or search %}
+    <p><a href="{% url 'meal:order-list' %}" style="color:var(--terracotta);font-weight:600;">Voir toutes les commandes →</a></p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block mobile_nav %}
+<a href="{% url 'users:admin-dashboard' %}" class="mob-nav-item">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+  Tableau
+</a>
+<a href="{% url 'meal:order-list' %}" class="mob-nav-item active">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/></svg>
+  Commandes
+</a>
+<a href="{% url 'meal:meal-list' %}" class="mob-nav-item">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v7a3 3 0 003 3v8M17 3c-2 1-3 3-3 6s1 4 3 4v8"/></svg>
+  Plats
+</a>
+<a href="{% url 'users:home' %}" class="mob-nav-item">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  Accueil
+</a>
+<a href="{% url 'users:logout' %}" class="mob-nav-item">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+  Quitter
+</a>
+{% endblock %}

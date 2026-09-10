@@ -1,0 +1,291 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Suivi Commande #{{ order.id|stringformat:"s"|slice:":8"|upper }} — Mam's{% endblock %}
+{% block dashboard_title %}Suivi de commande{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/user_dashboad/client_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  /* ---- Tracking page extra styles ---- */
+  .track-back {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .85rem; font-weight: 600;
+    color: var(--terracotta);
+    margin-bottom: 1.6rem;
+    transition: color .2s;
+  }
+  .track-back:hover { color: var(--maroon); }
+  .track-back svg { width: 16px; height: 16px; }
+
+  .track-header {
+    background: #fff;
+    border: 1px solid rgba(107,42,31,.08);
+    border-radius: var(--radius);
+    padding: 1.6rem 2rem;
+    margin-bottom: 1.4rem;
+    box-shadow: 0 10px 24px rgba(35,22,16,.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .track-order-id { font-size: 1.15rem; font-weight: 700; color: var(--maroon); }
+  .track-order-id span { font-size: .85rem; font-weight: 400; color: #9a8570; margin-left: .5rem; }
+  .track-amount { font-size: 1.4rem; font-weight: 700; color: var(--dark); }
+  .track-amount small { font-size: .8rem; font-weight: 400; color: #9a8570; display: block; }
+
+  /* ---- Timeline ---- */
+  .timeline-wrap {
+    background: #fff;
+    border: 1px solid rgba(107,42,31,.08);
+    border-radius: var(--radius);
+    padding: 2rem 2rem 1.4rem;
+    margin-bottom: 1.4rem;
+    box-shadow: 0 10px 24px rgba(35,22,16,.05);
+  }
+  .timeline-title { font-size: 1rem; font-weight: 700; color: var(--maroon); margin-bottom: 2rem; }
+  .timeline {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    position: relative;
+  }
+  .timeline-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  /* Connector line between steps */
+  .timeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    width: 100%;
+    height: 3px;
+    background: rgba(107,42,31,.1);
+    z-index: 0;
+  }
+  .timeline-step.done:not(:last-child)::after,
+  .timeline-step.active:not(:last-child)::after {
+    background: var(--terracotta);
+  }
+  .timeline-step.cancelled:not(:last-child)::after {
+    background: #e74c3c;
+  }
+
+  .step-circle {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+    border: 3px solid rgba(107,42,31,.12);
+    background: #fff;
+    transition: all .3s;
+  }
+  .step-circle svg { width: 16px; height: 16px; color: #9a8570; }
+  .timeline-step.done .step-circle {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+  }
+  .timeline-step.done .step-circle svg { color: #fff; }
+  .timeline-step.active .step-circle {
+    background: var(--maroon);
+    border-color: var(--maroon);
+    box-shadow: 0 0 0 6px rgba(107,42,31,.12);
+    animation: pulse 2s infinite;
+  }
+  .timeline-step.active .step-circle svg { color: #fff; }
+  .timeline-step.cancelled .step-circle {
+    background: #e74c3c;
+    border-color: #e74c3c;
+  }
+  .timeline-step.cancelled .step-circle svg { color: #fff; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(107,42,31,.15); }
+    50% { box-shadow: 0 0 0 10px rgba(107,42,31,.06); }
+  }
+
+  .step-label {
+    margin-top: .7rem;
+    font-size: .74rem;
+    font-weight: 600;
+    text-align: center;
+    color: #9a8570;
+    max-width: 80px;
+  }
+  .timeline-step.done .step-label,
+  .timeline-step.active .step-label { color: var(--dark); }
+  .timeline-step.cancelled .step-label { color: #e74c3c; }
+
+  /* ---- Order Items ---- */
+  .items-wrap {
+    background: #fff;
+    border: 1px solid rgba(107,42,31,.08);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 24px rgba(35,22,16,.05);
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+  }
+  .items-head {
+    padding: 1.2rem 1.6rem;
+    border-bottom: 1px solid rgba(107,42,31,.08);
+    font-size: 1rem; font-weight: 700; color: var(--maroon);
+  }
+  .order-item-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.6rem;
+    border-bottom: 1px solid rgba(107,42,31,.05);
+    transition: background .2s;
+  }
+  .order-item-row:last-child { border-bottom: none; }
+  .order-item-row:hover { background: rgba(239,224,196,.25); }
+  .item-img {
+    width: 52px; height: 52px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: rgba(201,122,58,.1);
+    flex-shrink: 0;
+  }
+  .item-img-placeholder {
+    width: 52px; height: 52px;
+    border-radius: 10px;
+    background: rgba(201,122,58,.12);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--terracotta);
+  }
+  .item-img-placeholder svg { width: 24px; height: 24px; }
+  .item-info { flex: 1; }
+  .item-name { font-size: .92rem; font-weight: 600; color: var(--dark); }
+  .item-extras { font-size: .78rem; color: #9a8570; margin-top: .2rem; }
+  .item-qty {
+    font-size: .82rem; font-weight: 700;
+    background: rgba(201,122,58,.12);
+    color: var(--terracotta);
+    padding: .25rem .6rem;
+    border-radius: 999px;
+  }
+  .item-price { font-size: .92rem; font-weight: 700; color: var(--dark); min-width: 100px; text-align: right; }
+
+  /* ---- Cancelled Banner ---- */
+  .cancelled-banner {
+    background: rgba(231,76,60,.08);
+    border: 1px solid rgba(231,76,60,.2);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.6rem;
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.4rem;
+    color: #c0392b;
+    font-weight: 600;
+  }
+  .cancelled-banner svg { width: 24px; height: 24px; flex-shrink: 0; }
+
+  @media (max-width: 640px) {
+    .timeline { gap: 0; overflow-x: auto; padding-bottom: 1rem; }
+    .step-label { font-size: .65rem; max-width: 60px; }
+    .track-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+
+<a href="{% url 'users:client-dashboard' %}" class="track-back">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+  Retour au tableau de bord
+</a>
+
+<!-- Header -->
+<div class="track-header">
+  <div>
+    <div class="track-order-id">
+      Commande #{{ order.id|stringformat:"s"|slice:":8"|upper }}
+      <span>{{ order.created|date:"d M Y à H:i" }}</span>
+    </div>
+    <div style="margin-top:.4rem;">
+      <span class="badge {{ order.status }}">{{ order.get_status_display }}</span>
+      <span style="font-size:.8rem;color:#9a8570;margin-left:.8rem;">
+        {{ order.get_payment_method_display }}
+      </span>
+    </div>
+  </div>
+  <div>
+    <div class="track-amount">
+      {{ order.total_amount|floatformat:0 }} FCFA
+      <small>Montant total</small>
+    </div>
+  </div>
+</div>
+
+{% if is_cancelled %}
+<div class="cancelled-banner">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+  </svg>
+  Cette commande a été annulée. Contactez-nous si vous avez des questions.
+</div>
+{% endif %}
+
+<!-- Timeline -->
+<div class="timeline-wrap">
+  <div class="timeline-title">Progression de la commande</div>
+  <div class="timeline">
+
+    {% for step in steps %}
+    <div class="timeline-step {{ step.state }}">
+      <div class="step-circle">
+        {% if step.state == "done" %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        {% elif step.state == "active" %}
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>
+        {% elif step.state == "cancelled" %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        {% else %}
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>
+        {% endif %}
+      </div>
+      <div class="step-label">{{ step.label }}</div>
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+<!-- Order Items -->
+<div class="items-wrap">
+  <div class="items-head">Détail de la commande</div>
+  {% for item in order.items.all %}
+  <div class="order-item-row">
+    {% if item.meal.image %}
+      <img src="{{ item.meal.image.url }}" alt="{{ item.meal.name }}" class="item-img">
+    {% else %}
+      <div class="item-img-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/></svg>
+      </div>
+    {% endif %}
+    <div class="item-info">
+      <div class="item-name">{{ item.meal.name }}</div>
+      {% if item.order_item_accompaniments.exists %}
+        <div class="item-extras">
+          + Acc: {% for acc in item.order_item_accompaniments.all %}{{ acc.quantity }}x {{ acc.accompaniment.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </div>
+      {% endif %}
+      {% if item.order_item_boissons.exists %}
+        <div class="item-extras">🥤 {% for boi in item.order_item_boissons.all %}{{ boi.quantity }}x {{ boi.boisson.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+      {% endif %}
+    </div>
+    <span class="item-qty">× {{ item.quantity }}</span>
+    <div class="item-price">{{ item.subtotal|floatformat:0 }} FCFA</div>
+  </div>
+  {% empty %}
+  <div class="empty-state">Aucun article trouvé.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}

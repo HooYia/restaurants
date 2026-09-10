@@ -1,0 +1,116 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+
+{% block title %}Utilisateurs — Mam's Admin{% endblock %}
+{% block dashboard_title %}Utilisateurs{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/admin_dashboard/admin_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  .search-form { display: flex; gap: 1rem; margin-bottom: 2rem; align-items: center; flex-wrap: wrap; }
+  .search-input { 
+    padding: .8rem 1rem; border: 1px solid rgba(107,42,31,.15); border-radius: 8px; 
+    font-family: inherit; font-size: .9rem; outline: none; flex: 1; min-width: 250px;
+  }
+  .search-input:focus { border-color: var(--terracotta); }
+  
+  .filter-select { 
+    padding: .8rem 1rem; border: 1px solid rgba(107,42,31,.15); border-radius: 8px; 
+    font-family: inherit; font-size: .9rem; outline: none; background: #fff;
+  }
+  
+  .btn-primary { 
+    background: var(--terracotta); color: #fff; border: none; padding: .8rem 1.5rem; 
+    border-radius: 8px; font-weight: 600; cursor: pointer; transition: background .2s;
+  }
+  .btn-primary:hover { background: var(--maroon); }
+  
+  .badge { padding: .25rem .6rem; border-radius: 99px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+  .badge-admin { background: rgba(92,112,72,.14); color: var(--green); }
+  .badge-client { background: #f3f4f6; color: #4b5563; }
+</style>
+
+<form method="get" class="search-form">
+  <input type="text" name="q" value="{{ search_query }}" placeholder="Rechercher par nom, prénom ou email..." class="search-input">
+  <select name="role" class="filter-select">
+    <option value="">Tous les rôles</option>
+    <option value="client" {% if role_filter == 'client' %}selected{% endif %}>Clients uniquement</option>
+    <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admins uniquement</option>
+  </select>
+  <button type="submit" class="btn-primary">Filtrer</button>
+  {% if search_query or role_filter %}
+    <a href="{% url 'users:admin-user-list' %}" style="color: var(--maroon); text-decoration: none; font-size: .9rem; font-weight: 600;">Réinitialiser</a>
+  {% endif %}
+</form>
+
+<div class="panel">
+  <div class="panel-head">
+    <h2>Liste des inscrits ({{ paginator.count|default:users.count }})</h2>
+  </div>
+  <div style="overflow-x: auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>Nom & Prénom</th>
+          <th>Email</th>
+          <th>Téléphone</th>
+          <th>Fidélité</th>
+          <th>Type</th>
+          <th>Date d'inscription</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user_obj in users %}
+        <tr>
+          <td>
+            <div style="font-weight: 600; color: var(--dark);">
+              {{ user_obj.first_name }} {{ user_obj.last_name }}
+              {% if not user_obj.first_name and not user_obj.last_name %}-{% endif %}
+            </div>
+          </td>
+          <td style="color: #6b7280;">{{ user_obj.email }}</td>
+          <td>{{ user_obj.phone|default:"-" }}</td>
+          <td>
+            {% if user_obj.client_profile %}
+              {{ user_obj.client_profile.loyalty_points }} pts
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if user_obj.is_staff or user_obj.is_superuser %}
+              <span class="badge badge-admin">Admin</span>
+            {% else %}
+              <span class="badge badge-client">Client</span>
+            {% endif %}
+          </td>
+          <td style="color: #8a7660; font-size: .8rem;">{{ user_obj.date_joined|date:"d M Y à H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 2rem; color: #8a7660;">Aucun utilisateur trouvé.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  {% if is_paginated %}
+  <div style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(107,42,31,.08);">
+    <div style="font-size: .85rem; color: #8a7660;">
+      Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+    </div>
+    <div style="display: flex; gap: .5rem;">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" style="padding: .4rem .8rem; border: 1px solid rgba(107,42,31,.2); border-radius: 6px; text-decoration: none; color: var(--dark); font-size: .85rem; font-weight: 600;">&larr; Précédent</a>
+      {% endif %}
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" style="padding: .4rem .8rem; border: 1px solid rgba(107,42,31,.2); border-radius: 6px; text-decoration: none; color: var(--dark); font-size: .85rem; font-weight: 600;">Suivant &rarr;</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends 'pages/dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Espace Client — Mam's{% endblock %}
+{% block dashboard_title %}Espace Client{% endblock %}
+
+{% block sidebar %}
+  {% include 'pages/dashboard/user_dashboad/client_sidebar.html' %}
+{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  /* ---- Recommendation cards ---- */
+  .reco-grid {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    padding: 1rem 1.5rem 1.5rem;
+  }
+  .reco-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .9rem 1rem;
+    border-radius: 12px;
+    background: var(--paper);
+    border: 1px solid rgba(107,42,31,.07);
+    transition: background .2s, box-shadow .2s;
+  }
+  .reco-card:hover {
+    background: rgba(239,224,196,.5);
+    box-shadow: 0 4px 12px rgba(35,22,16,.07);
+  }
+  .reco-img {
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(201,122,58,.1);
+  }
+  .reco-img-placeholder {
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    background: rgba(201,122,58,.12);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--terracotta);
+  }
+  .reco-img-placeholder svg { width: 22px; height: 22px; }
+  .reco-info { flex: 1; }
+  .reco-name { font-size: .9rem; font-weight: 600; color: var(--dark); }
+  .reco-price {
+    font-size: .82rem; font-weight: 700;
+    color: var(--terracotta);
+    margin-top: .15rem;
+  }
+  .btn-mini {
+    padding: .45rem 1rem;
+    border-radius: 999px;
+    font-size: .76rem;
+    font-weight: 600;
+    background: var(--maroon);
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background .2s, transform .15s;
+  }
+  .btn-mini:hover {
+    background: var(--terracotta);
+    transform: translateY(-1px);
+  }
+
+  /* ---- Orders: tracking link ---- */
+  .track-link {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .78rem; font-weight: 600;
+    color: var(--terracotta);
+    transition: color .2s;
+  }
+  .track-link:hover { color: var(--maroon); }
+  .track-link svg { width: 13px; height: 13px; }
+</style>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div>
+      <p class="label">Commandes passées</p>
+      <p class="value">{{ stats.total_orders|default:"0" }}</p>
+      <p class="delta neutral">Depuis votre inscription</p>
+    </div>
+    <div class="stat-icon orange">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/></svg>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <p class="label">Points fidélité</p>
+      <p class="value">{{ stats.loyalty_points|default:"0" }} pts</p>
+      {% if stats.points_to_gift == 0 %}
+        <p class="delta up" style="color:var(--terracotta); font-weight: 700;">🎁 Cadeau à la prochaine commande !</p>
+      {% else %}
+        <p class="delta up">Plus que {{ stats.points_to_gift }} pts avant votre cadeau !</p>
+      {% endif %}
+    </div>
+    <div class="stat-icon amber">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <p class="label">Réservations à venir</p>
+      <p class="value">{{ stats.upcoming_reservations|default:"0" }}</p>
+      <p class="delta neutral">Voir mes réservations</p>
+    </div>
+    <div class="stat-icon green">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <p class="label">Avis laissés</p>
+      <p class="value">{{ stats.total_testimonials|default:"0" }}</p>
+      <p class="delta up">Merci de votre fidélité</p>
+    </div>
+    <div class="stat-icon maroon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </div>
+  </div>
+</div>
+
+<div class="panels-grid">
+
+  <!-- Mes commandes -->
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Mes dernières commandes</h2>
+      <a href="{% url 'users:order-list' %}" class="panel-link">Historique complet</a>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>N° Commande</th>
+          <th>Plats</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in client_orders %}
+        <tr>
+          <td>#{{ order.id|stringformat:"s"|slice:":8"|upper }}</td>
+          <td>{{ order.items.count }} plat{{ order.items.count|pluralize }}</td>
+          <td>{{ order.total_amount|floatformat:0 }} FCFA</td>
+          <td><span class="badge {{ order.status }}">{{ order.get_status_display }}</span></td>
+          <td>{{ order.created|date:"d M Y" }}</td>
+          <td>
+            <a href="{% url 'users:order-tracking' order.id %}" class="track-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Suivi
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">Vous n'avez pas encore passé de commande. Découvrez notre menu !</div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recommandations -->
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Nos recommandations</h2>
+      <a href="{% url 'users:home' %}" class="panel-link">Menu</a>
+    </div>
+    <div class="reco-grid">
+      {% for meal in popular_meals %}
+      <div class="reco-card">
+        {% if meal.image %}
+          <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="reco-img">
+        {% else %}
+          <div class="reco-img-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2l1.5 4M18 2l-1.5 4M4 6h16l-1.5 12a2 2 0 01-2 1.8H7.5a2 2 0 01-2-1.8L4 6z"/></svg>
+          </div>
+        {% endif %}
+        <div class="reco-info">
+          <div class="reco-name">{{ meal.name }}</div>
+          <div class="reco-price">{{ meal.price|floatformat:0 }} FCFA</div>
+        </div>
+        <a href="{% url 'users:home' %}" class="btn-mini">Commander</a>
+      </div>
+      {% empty %}
+      <div class="empty-state" style="padding:1.5rem 0;">Aucun plat disponible pour le moment.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

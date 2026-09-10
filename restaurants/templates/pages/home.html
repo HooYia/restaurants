@@ -1,345 +1,101 @@
 {% extends "base.html" %}
 
-{% block title %}
-Accueil - Gourmet Restaurant
-{% endblock %}
-
 {% block content %}
-<!-- ============================================
-SECTION HERO
-============================================ -->
-<section class="container mx-auto px-4 md:px-6 py-12 md:py-20">
-    <div class="grid md:grid-cols-2 gap-12 items-center min-h-[70vh]">
-        <!-- Texte -->
-        <div class="space-y-6">
-            <div class="hero-badge">
-                🍽️ Cuisine authentique
-            </div>
-            <h1 class="hero-title">
-                Découvrez nos plats
-                <span>préparés avec passion</span>
-            </h1>
-            <p class="hero-description">
-                Commandez facilement vos repas préférés et suivez votre commande en temps réel. 
-                Une expérience culinaire unique vous attend.
-            </p>
-            <div class="flex flex-wrap gap-4">
-                <a href="#menu" class="btn-primary">
-                    Commander maintenant
-                </a>
-                <a href="#about" class="btn-secondary">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
-                    </svg>
-                    Voir le menu
-                </a>
-            </div>
-            <!-- Statistiques -->
-            <div class="flex gap-8 pt-6 border-t border-gray-200">
-                <div>
-                    <p class="stat-number">50+</p>
-                    <p class="stat-label">Plats disponibles</p>
-                </div>
-                <div>
-                    <p class="stat-number">200+</p>
-                    <p class="stat-label">Clients satisfaits</p>
-                </div>
-                <div>
-                    <p class="stat-number">4.8⭐</p>
-                    <p class="stat-label">Avis clients</p>
-                </div>
-            </div>
-        </div>
+    {% include "components/home/hero.html" %}
+    {% include "components/home/specialites.html" %}
+    {% include "components/home/histoire.html" %}
+    {% include "components/home/cta.html" %}
+    {% include "components/home/stats.html" %}
+    {% include "components/home/temoignages.html" %}
+    {% include "components/home/contact.html" %}
 
-        <!-- Image -->
-        <div class="relative">
-            <div class="bg-gradient-resto rounded-3xl p-1">
-                <div class="bg-white rounded-3xl overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600&h=400&fit=crop" 
-                         class="hero-image h-96"
-                         alt="Restaurant Gourmet">
-                </div>
-            </div>
-            <!-- Badge flottant -->
-            <div class="absolute -bottom-6 -right-6 bg-white rounded-2xl shadow-2xl p-4 hidden md:block">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-bold text-gray-900">Livraison gratuite</p>
-                        <p class="text-sm text-gray-600">Pour toute commande > 20€</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- ============================================
-SECTION FILTRES CATÉGORIES (DYNAMIQUE)
-============================================ -->
-<section id="menu" class="container mx-auto px-4 md:px-6 py-8">
-    <div class="text-center mb-8">
-        <h2 class="text-3xl font-bold text-gray-900">Notre menu</h2>
-        <p class="text-gray-600 mt-2">Filtrez par catégorie pour découvrir nos plats</p>
-    </div>
-    
-    <!-- Boutons filtres - Dynamiques depuis la base de données -->
-    <div class="flex flex-wrap justify-center gap-3 mb-12">
-        <button class="category-filter active" data-category="all">
-            Tous les plats
+  <!-- <div
+    id="register-modal"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"
+>
+
+    <div class="bg-white rounded-2xl p-8 w-full max-w-lg relative">
+
+        <button
+            id="close-register-modal"
+            class="absolute top-4 right-4 text-2xl"
+        >
+            ×
         </button>
-        
-        <!-- Ces catégories viennent de la base de données -->
-        {% for category in categories %}
-        <button class="category-filter" data-category="{{ category.id }}">
-            {{ category.name }}
-        </button>
-        {% endfor %}
+
+        <h2 class="text-3xl font-bold mb-6">
+            Créer un compte
+        </h2>
+
+        <form
+            method="post"
+            action="{% url 'users:register' %}"
+        >
+
+            {% csrf_token %}
+
+            <input
+                type="text"
+                name="first_name"
+                placeholder="Nom"
+                class="form-input mb-4"
+                required
+            >
+
+            <input
+                type="text"
+                name="last_name"
+                placeholder="Prénom"
+                class="form-input mb-4"
+                required
+            >
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Adresse email"
+                class="form-input mb-4"
+                required
+            >
+
+            <input 
+type="text"
+name="phone"
+placeholder="Numéro de téléphone">
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Mot de passe"
+                class="form-input mb-4"
+                required
+            >
+
+            <input
+                type="password"
+                name="confirm_password"
+                placeholder="Confirmer le mot de passe"
+                class="form-input mb-6"
+                required
+            >
+
+
+
+            <button
+                type="submit"
+                class="form-button"
+            >
+                Créer mon compte
+            </button>
+
+        </form>
+
     </div>
-</section>
 
-<!-- ============================================
-SECTION PLATS (FILTRÉS PAR CATÉGORIE)
-============================================ -->
-<section class="container mx-auto px-4 md:px-6 pb-16">
-    <div class="grid md:grid-cols-3 gap-8" id="food-grid">
-        <!-- Les plats sont affichés dynamiquement -->
-        {% for food in foods %}
-        <div class="food-item" data-category="{{ food.category.id }}">
-            <div class="food-card">
-                {% if food.image %}
-                <img src="{{ food.image.url }}" class="food-image" alt="{{ food.name }}">
-                {% else %}
-                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop" 
-                     class="food-image" alt="{{ food.name }}">
-                {% endif %}
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="food-title">{{ food.name }}</h3>
-                        <span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
-                            {{ food.category.name }}
-                        </span>
-                    </div>
-                    <p class="text-gray-600 text-sm mt-1">{{ food.description|truncatechars:50 }}</p>
-                    <div class="flex justify-between items-center mt-4">
-                        <span class="food-price">{{ food.price }} €</span>
-                        <button class="food-btn">Ajouter</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-span-3 text-center py-12">
-            <p class="text-gray-500">Aucun plat disponible pour le moment.</p>
-        </div>
-        {% endfor %}
-    </div>
-</section>
+</div> -->
 
-<!-- ============================================
-SECTION TÉMOIGNAGES (À la place des catégories)
-============================================ -->
-<section class="bg-gray-50 py-16">
-    <div class="container mx-auto px-4 md:px-6">
-        <div class="text-center mb-12">
-            <h2 class="text-4xl font-bold text-gray-900">Ce que disent nos clients</h2>
-            <p class="text-gray-600 mt-2">Des avis authentiques de nos visiteurs</p>
-        </div>
-        
-        <div class="grid md:grid-cols-3 gap-8">
-            <!-- Témoignage 1 -->
-            <div class="testimonial-card">
-                <div class="flex items-center space-x-4 mb-4">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" 
-                         class="testimonial-avatar" 
-                         alt="Client">
-                    <div>
-                        <p class="testimonial-name">Sophie Martin</p>
-                        <p class="testimonial-role">Cliente régulière</p>
-                    </div>
-                </div>
-                <div class="testimonial-stars mb-3">
-                    ★★★★★
-                </div>
-                <p class="testimonial-text">
-                    "Une expérience culinaire exceptionnelle ! Les plats sont délicieux et le service est irréprochable. Je recommande vivement !"
-                </p>
-            </div>
 
-            <!-- Témoignage 2 -->
-            <div class="testimonial-card">
-                <div class="flex items-center space-x-4 mb-4">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" 
-                         class="testimonial-avatar" 
-                         alt="Client">
-                    <div>
-                        <p class="testimonial-name">Thomas Dubois</p>
-                        <p class="testimonial-role">Amateur de cuisine</p>
-                    </div>
-                </div>
-                <div class="testimonial-stars mb-3">
-                    ★★★★★
-                </div>
-                <p class="testimonial-text">
-                    "Les saveurs sont authentiques et les ingrédients frais. Un vrai régal pour les papilles ! Le meilleur restaurant de la ville."
-                </p>
-            </div>
 
-            <!-- Témoignage 3 -->
-            <div class="testimonial-card">
-                <div class="flex items-center space-x-4 mb-4">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" 
-                         class="testimonial-avatar" 
-                         alt="Client">
-                    <div>
-                        <p class="testimonial-name">Marie Lefèvre</p>
-                        <p class="testimonial-role">Foodie</p>
-                    </div>
-                </div>
-                <div class="testimonial-stars mb-3">
-                    ★★★★★
-                </div>
-                <p class="testimonial-text">
-                    "Une découverte magnifique ! La carte est variée et chaque plat est une œuvre d'art. Le rapport qualité-prix est excellent."
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- ============================================
-SECTION À PROPOS
-============================================ -->
-<section id="about" class="bg-white py-16">
-    <div class="container mx-auto px-4 md:px-6">
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop" 
-                     class="about-image" 
-                     alt="Notre restaurant">
-            </div>
-            <div>
-                <span class="about-tag">À propos</span>
-                <h2 class="about-title">Une passion pour la cuisine</h2>
-                <p class="text-gray-600 leading-relaxed mb-4">
-                    Chez Gourmet, nous croyons que chaque repas est une expérience. 
-                    Nos chefs talentueux préparent chaque plat avec des ingrédients frais 
-                    et de saison, dans le respect des traditions culinaires.
-                </p>
-                <p class="text-gray-600 leading-relaxed">
-                    Que vous soyez en quête d'un déjeuner rapide ou d'un dîner raffiné, 
-                    notre équipe est là pour vous offrir un service exceptionnel.
-                </p>
-                <a href="#" class="btn-primary mt-8 inline-block">
-                    En savoir plus
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ============================================
-SECTION CONTACT
-============================================ -->
-<section id="contact" class="bg-gray-50 py-16">
-    <div class="container mx-auto px-4 md:px-6">
-        <div class="text-center mb-12">
-            <h2 class="text-4xl font-bold text-gray-900">Contactez-nous</h2>
-            <p class="text-gray-600 mt-2">Une question ? Une réservation ?</p>
-        </div>
-        <div class="grid md:grid-cols-2 gap-12">
-            <div>
-                <form class="space-y-4">
-                    <input type="text" placeholder="Votre nom" class="form-input">
-                    <input type="email" placeholder="Votre email" class="form-input">
-                    <textarea rows="4" placeholder="Votre message" class="form-input"></textarea>
-                    <button type="submit" class="form-button">
-                        Envoyer
-                    </button>
-                </form>
-            </div>
-            <div class="space-y-6">
-                <div class="flex items-start space-x-4">
-                    <div class="contact-icon-wrapper">
-                        <svg class="contact-icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="contact-title">Adresse</h4>
-                        <p class="contact-text">123 Rue de la Gastronomie, Paris</p>
-                    </div>
-                </div>
-                <div class="flex items-start space-x-4">
-                    <div class="contact-icon-wrapper">
-                        <svg class="contact-icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="contact-title">Téléphone</h4>
-                        <p class="contact-text">+33 1 23 45 67 89</p>
-                    </div>
-                </div>
-                <div class="flex items-start space-x-4">
-                    <div class="contact-icon-wrapper">
-                        <svg class="contact-icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="contact-title">Email</h4>
-                        <p class="contact-text">contact@gourmet.com</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ============================================
-JAVASCRIPT POUR LE FILTRAGE DES CATÉGORIES
-============================================ -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Sélectionner tous les boutons de filtre
-        const filterButtons = document.querySelectorAll('.category-filter');
-        const foodItems = document.querySelectorAll('.food-item');
-
-        // Ajouter un événement de clic à chaque bouton
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Retirer la classe active de tous les boutons
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Ajouter la classe active au bouton cliqué
-                this.classList.add('active');
-
-                // Récupérer la catégorie sélectionnée
-                const categoryId = this.getAttribute('data-category');
-
-                // Filtrer les plats
-                foodItems.forEach(item => {
-                    const itemCategory = item.getAttribute('data-category');
-                    
-                    if (categoryId === 'all' || itemCategory === categoryId) {
-                        item.classList.remove('hidden-item');
-                        // Animation d'apparition
-                        item.style.opacity = '0';
-                        item.style.transform = 'scale(0.95)';
-                        setTimeout(() => {
-                            item.style.opacity = '1';
-                            item.style.transform = 'scale(1)';
-                        }, 100);
-                    } else {
-                        item.classList.add('hidden-item');
-                    }
-                });
-            });
-        });
-    });
-</script>
 {% endblock %}

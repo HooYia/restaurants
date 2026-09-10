@@ -14,9 +14,9 @@ urlpatterns = [
  
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
-    # User management
     path("", include("restaurants.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
+    path("meal/", include("restaurants.meal.urls", namespace="meal")),
     # Your stuff: custom urls includes go here
     # ...
     # Media files

@@ -1,0 +1,56 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Nouvelle Commande #{{ order.id|truncatechars:12 }}</h2>
+<p>Bonjour l'équipe,</p>
+<p>Une nouvelle commande vient d'être passée par <strong>{{ order.client.user.first_name }} {{ order.client.user.last_name }}</strong> ({{ order.client.user.email }}).</p>
+
+<div class="order-summary">
+    <h3>Détails de la commande</h3>
+    <p><strong>Statut :</strong> {{ order.get_status_display }}</p>
+    <p><strong>Paiement :</strong> {{ order.get_payment_method_display }}</p>
+    <p><strong>Adresse de livraison :</strong> 
+        {% if order.delivery_address %}
+            {{ order.delivery_address.street }}, {{ order.delivery_address.city }}
+            {% if order.delivery_address.description %} ({{ order.delivery_address.description }}){% endif %}
+        {% else %}
+            Non renseignée
+        {% endif %}
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Plat</th>
+                <th>Qté</th>
+                <th>Prix</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td>
+                    {{ item.meal.name }}
+                    {% if item.order_item_accompaniments.exists %}
+                        <br><small>+ Acc: {% for acc in item.order_item_accompaniments.all %}{{ acc.quantity }}x {{ acc.accompaniment.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
+                    {% endif %}
+                    {% if item.order_item_boissons.exists %}
+                        <br><small>+ Boisson(s): {% for boi in item.order_item_boissons.all %}{{ boi.quantity }}x {{ boi.boisson.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
+                    {% endif %}
+                </td>
+                <td>x{{ item.quantity }}</td>
+                <td>{{ item.total_price }} FCFA</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="2">Total (incl. livraison)</td>
+                <td>{{ order.total_amount }} FCFA</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>
+    <a href="{{ base_url }}/admin-dashboard/" class="btn">Voir le Dashboard Admin</a>
+</p>
+{% endblock %}
