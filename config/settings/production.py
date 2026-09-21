@@ -22,6 +22,8 @@ ALLOWED_HOSTS = env.list(
     default=["restaurant.onrender.com"],
 )
 
+INSTALLED_APPS += ["anymail"]
+
 
 # DATABASES
 # ------------------------------------------------------------------------------
@@ -111,17 +113,26 @@ STORAGES = {
 
 # EMAIL
 # ------------------------------------------------------------------------------
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
 
 # Read from your environment variables
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SERVER_EMAIL=env('SERVER_EMAIL')
+SERVER_EMAIL=EMAIL_HOST_USER
+
+# ANYMAIL / BREVO
+# ------------------------------------------------------------------------------
+
+ANYMAIL = {
+    "BREVO_API_KEY": env(
+        "BREVO_API_KEY",
+        default="",
+    ),
+    "BREVO_API_URL": env(
+        "BREVO_API_URL",
+        default="https://api.brevo.com/v3/",
+    ),
+}
 
 # ADMIN
 # ------------------------------------------------------------------------------
@@ -130,21 +141,6 @@ ADMIN_URL = env(
     default="admin/",
 )
 
-
-# ANYMAIL / BREVO
-# ------------------------------------------------------------------------------
-# INSTALLED_APPS += ["anymail"]
-
-# ANYMAIL = {
-#     "BREVO_API_KEY": env(
-#         "BREVO_API_KEY",
-#         default="",
-#     ),
-#     "BREVO_API_URL": env(
-#         "BREVO_API_URL",
-#         default="https://api.brevo.com/v3/",
-#     ),
-# }
 
 
 # DJANGO-COMPRESSOR
