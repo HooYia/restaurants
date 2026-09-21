@@ -19,4 +19,7 @@ uv run python manage.py collectstatic --noinput --ignore=input.css
 echo "Running database migrations..."
 uv run python manage.py migrate --noinput
 
+echo "Creating superuser if it doesn't exist..."
+uv run python manage.py createsuperuser --noinput || echo "Superuser creation skipped (might already exist)."
+
 echo "Build process completed successfully!"
